@@ -1,5 +1,12 @@
 {
+    "cSpell.enabled": true,
     "cSpell.language": "en,es",
+    "cSpell.ignorePaths": [
+        "README.md",
+        "**/*.md",
+        "**/locales/**",
+        "**/i18n/**"
+    ],
     "cSpell.words": [
         "AIRM",
         "Giantucchi",
