@@ -1,6 +1,18 @@
 {
+    "cSpell.language": "en,es",
     "cSpell.words": [
+        "AIRM",
+        "Giantucchi",
+        "GOWA",
+        "pgvector",
+        "Coolify",
         "chatwoot",
-        "dompurify"
+        "dompurify",
+        "sidekiq",
+        "actioncable",
+        "realtimekit",
+        "multidispositivo",
+        "omnicanal",
+        "omnicanalidad"
     ]
 }

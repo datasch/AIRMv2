@@ -1,3 +1,4 @@
+<!-- cspell:disable -->
 # 🚀 AIRM by Giantucchi
 
 <p align="center">
