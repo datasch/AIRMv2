@@ -376,17 +376,17 @@ es:
       name: 'Panel de aplicaciones'
       description: 'Las aplicaciones de panel te permiten crear e incrustar aplicaciones que muestran información de usuario, pedidos o historial de pagos, proporcionando más contexto a tus agentes de soporte al cliente.'
     dyte:
-      name: 'Dyte'
-      short_description: 'Start video/voice calls with customers directly from Chatwoot.'
-      description: 'Dyte es un producto que integra funcionalidades de audio y video en tu aplicación. Con esta integración, tus agentes pueden iniciar llamadas de video/voz con tus clientes directamente desde Chatwoot.'
+      name: 'Cloudflare RealtimeKit'
+      short_description: 'Inicia llamadas de voz/video con clientes directamente desde AIRM.'
+      description: 'Cloudflare RealtimeKit es un producto que integra funcionalidades de audio y video en tu aplicación. Con esta integración, tus agentes pueden iniciar llamadas de video/voz con tus clientes directamente desde AIRM.'
       meeting_name: '%{agent_name} ha iniciado una reunión'
     slack:
       name: 'Slack'
-      short_description: 'Receive notifications and respond to conversations directly in Slack.'
-      description: "Integra Chatwoot con Slack para mantener a tu equipo sincronizado. Esta integración te permite recibir notificaciones de nuevas conversaciones y responder directamente desde la interfaz de Slack."
+      short_description: 'Recibe notificaciones y responde a conversaciones directamente en Slack.'
+      description: "Integra AIRM con Slack para mantener a tu equipo sincronizado. Esta integración te permite recibir notificaciones de nuevas conversaciones y responder directamente desde la interfaz de Slack."
     webhooks:
-      name: 'Webhook'
-      description: 'Los eventos de webhook proporcionan actualizaciones en tiempo real sobre las actividades en tu cuenta de Chatwoot. Puedes suscribirte a los eventos que prefieras y Chatwoot te enviará llamadas HTTP con las actualizaciones.'
+      name: 'Webhooks'
+      description: 'Los eventos de webhook proporcionan actualizaciones en tiempo real sobre las actividades en tu cuenta de AIRM. Puedes suscribirte a los eventos que prefieras y AIRM te enviará llamadas HTTP con las actualizaciones.'
     dialogflow:
       name: 'Dialogflow'
       short_description: 'Build chatbots to handle initial queries before transferring to agents.'
@@ -596,7 +596,80 @@ es:
       subject: 'Finish setting up %{custom_domain}'
     ssl_status:
       custom_domain_not_configured: 'Custom domain is not configured'
+  administrate:
+    actions:
+      confirm: '¿Está seguro/a?'
+      destroy: 'Eliminar'
+      edit: 'Editar'
+      edit_resource: 'Editar %{name}'
+      show_resource: '%{name}'
+      new_resource: 'Nuevo/a %{name}'
+      back: 'Volver'
+    controller:
+      create:
+        success: '%{resource} se creó exitosamente.'
+      update:
+        success: '%{resource} se actualizó correctamente.'
+      destroy:
+        success: '%{resource} se eliminó correctamente.'
+    search:
+      clear: 'Limpiar búsqueda'
+      label: 'Buscar %{resource}'
+    form:
+      error: 'error'
+      errors: 'Se encontraron %{pluralized_errors} al guardar %{resource_name}:'
   super_admin:
+    navigation:
+      dashboard: 'Panel Principal'
+      sidekiq: 'Panel de Sidekiq'
+      instance_health: 'Estado de la Instancia'
+      push_diagnostics: 'Diagnóstico Push'
+      agent_dashboard: 'Panel de Agentes'
+      logout: 'Cerrar Sesión'
+      settings: 'Configuración'
+      super_admin_console: 'Consola de Super Administrador'
+    filters:
+      filter_by: 'Filtrar por'
+      all_records: 'Todos los registros'
+      clear_filter: 'Limpiar filtro'
+    actions:
+      submit: 'Guardar Cambios'
+      reset_cache: 'Restablecer Caché del Frontend'
+      generate_seed: 'Generar Datos de Prueba'
+      impersonate: 'Suplantar Identidad de Usuario'
+      refresh: 'Actualizar'
+      manage: 'Administrar'
+    instance_status:
+      metric: 'Métrica'
+      value: 'Valor'
+    accounts:
+      reset_cache_hint: 'Esto borrará las claves de caché de IndexedDB en Redis. La próxima carga obtendrá los datos del servidor.'
+      seed_data_hint: 'Haga clic para generar datos de prueba en esta cuenta para demostraciones.'
+      seed_data_warning: 'Nota: Esto borrará todos los datos existentes en esta cuenta.'
+    users:
+      impersonate_warning: 'Precaución: Cualquier acción realizada tras suplantar la identidad aparecerá como ejecutada por el usuario'
+      mfa: 'MFA (Autenticación en Dos Pasos)'
+      mfa_enabled: 'Habilitado'
+      mfa_disabled: 'Deshabilitado'
+      resend_confirmation:
+        button: 'Reenviar correo de confirmación'
+        sent: 'Correo de confirmación enviado.'
+        already_confirmed: 'El usuario ya está confirmado.'
+    settings:
+      title: 'Configuración'
+      description: 'Actualice los ajustes de su instancia y acceda a la configuración del sistema.'
+      installation_identifier: 'Identificador de Instalación'
+      current_plan: 'Plan Actual'
+      features: 'Módulos y Características'
+      need_help: '¿Necesita ayuda?'
+      need_help_desc: 'Soporte y asistencia técnica de AIRM por Giantucchi.'
+      support: 'Soporte Giantucchi'
+      chat_support: 'Soporte por Chat'
+      configure: 'Configurar'
+      true_val: 'Verdadero'
+      false_val: 'Falso'
+      upgrade_now: 'Actualizar ahora'
+      switch_enterprise: 'Cambiar a edición Enterprise'
     account_suspension:
       categories:
         spam: 'Spam'
@@ -614,30 +687,150 @@ es:
         empty: 'No hay historial de suspensiones registrado.'
     captain_model_overrides:
       form:
-        helper_text: 'Deje un modelo en blanco para usar el valor por defecto de YAML para esa función de IA.'
+        helper_text: 'Deje un modelo en blanco para usar el valor por defecto para esa función de IA.'
+        customer_features: 'Funciones para clientes'
+        internal_features: 'Funciones internas'
         use_default: 'Usar por defecto: %{model} (%{model_id})'
+        use_installation_model: 'Usar modelo de instalación: %{model} (%{model_id})'
       show:
         summary: 'Ver ruta del modelo'
         provider: 'Proveedor'
         model: 'Modelo'
       sources:
         account_override: 'Anulación de cuenta'
+        installation_override: 'Ajuste de instalación'
         default: 'Predeterminado'
       features:
+        conversation_completion: 'Evaluador de finalización de conversaciones inactivas'
         editor: 'Editor'
         assistant: 'Asistente'
         copilot: 'Copilot'
         label_suggestion: 'Sugerencia de etiqueta'
         document_faq_generation: 'Generación de FAQ de documentos'
         conversation_faq_generation: 'Generación de FAQ de conversación'
-        conversation_faq_matching: 'Coincidencia de preguntas frecuentes con conversaciones'
-        help_center_article_generation: 'Centro de ayuda para la generación de artículos'
-        onboarding_content_generation: 'Generación de contenidos integrados'
-        help_center_query_translation: 'Traducción de consultas al centro de ayuda'
+        conversation_faq_matching: 'Coincidencia de preguntas frecuentes'
+        help_center_article_generation: 'Generación de artículos para centro de ayuda'
+        onboarding_content_generation: 'Generación de contenido de bienvenida'
+        help_center_query_translation: 'Traducción de consultas del centro de ayuda'
         audio_transcription: 'Transcripción de audio'
-        help_center_search: 'Centro de búsqueda de ayuda'
+        help_center_search: 'Búsqueda en centro de ayuda'
     push_diagnostics:
+      intro: 'Envíe una notificación push de prueba a los dispositivos registrados de un usuario específico para diagnosticar problemas de entrega. Los resultados muestran la respuesta directa de FCM / Web Push / retransmisión para verificar el estado exacto.'
+      step1_title: 'Buscar usuario'
+      search_placeholder: 'usuario@ejemplo.com o ID numérico de usuario'
+      search_button: 'Buscar'
+      no_user_found: 'No se encontró ningún usuario para'
+      accounts: 'Cuentas / Organizaciones:'
+      step2_title: 'Seleccionar suscripciones'
+      warning: 'Esto envía una notificación push real a cada dispositivo seleccionado. Úselo únicamente para diagnóstico.'
+      no_subscriptions: 'Este usuario no tiene suscripciones push registradas.'
+      title_label: 'Título'
+      body_label: 'Mensaje'
+      notification_preview_hint: 'Los usuarios verán este texto como una notificación push en sus dispositivos.'
+      type: 'Tipo'
+      endpoint: 'Dispositivo / Endpoint'
+      token: 'Token Push'
+      details: 'Detalles'
+      created: 'Creado'
+      updated: 'Actualizado'
+      send_test: 'Enviar Notificación de Prueba a Seleccionados'
+      delete_selected: 'Eliminar Suscripciones Seleccionadas'
+      delete_confirm: '¿Eliminar las suscripciones seleccionadas? El usuario no recibirá notificaciones push en esos dispositivos hasta que abra la app nuevamente.'
+      step3_title: 'Resultados'
+      device: 'Dispositivo'
+      status: 'Estado'
       user_not_found: 'Usuario no encontrado.'
       no_subscriptions_to_test: 'Seleccione al menos una suscripción para probar.'
       no_subscriptions_to_delete: 'Seleccione al menos una suscripción a eliminar.'
-      subscriptions_deleted: "Suscripción(es) %{count} eliminada(s). El dispositivo(s) del usuario volverá a registrarse en el próximo lanzamiento de la aplicación."
+      subscriptions_deleted:
+        one: 'Se eliminó %{count} suscripción.'
+        other: 'Se eliminaron %{count} suscripciones.'
+  activerecord:
+    models:
+      account:
+        one: 'Organización'
+        other: 'Organizaciones'
+      user:
+        one: 'Usuario'
+        other: 'Usuarios'
+      agent_bot:
+        one: 'Bot Agente'
+        other: 'Bots Agentes'
+      platform_app:
+        one: 'Aplicación de Plataforma'
+        other: 'Aplicaciones de Plataforma'
+      platform_banner:
+        one: 'Banner de Plataforma'
+        other: 'Banners de Plataforma'
+      access_token:
+        one: 'Token de Acceso'
+        other: 'Tokens de Acceso'
+      installation_config:
+        one: 'Configuración de Instalación'
+        other: 'Configuraciones de Instalación'
+      account_user:
+        one: 'Usuario de Cuenta'
+        other: 'Usuarios de Cuentas'
+  helpers:
+    label:
+      account:
+        id: 'ID'
+        name: 'Nombre de la Organización'
+        locale: 'Idioma Predeterminado'
+        domain: 'Dominio de Entrada'
+        support_email: 'Correo de Soporte'
+        feature_flags: 'Funcionalidades Activas'
+        auto_resolve_duration: 'Tiempo de Auto-resolución (días)'
+        created_at: 'Fecha de Creación'
+        updated_at: 'Última Modificación'
+        status: 'Estado'
+        custom_attributes: 'Atributos Personalizados'
+        limits: 'Límites de Uso'
+        users: 'Usuarios Asignados'
+      user:
+        id: 'ID'
+        name: 'Nombre Completo'
+        email: 'Correo Electrónico'
+        display_name: 'Nombre Público'
+        role: 'Rol en el Sistema'
+        account: 'Organización Principal'
+        accounts: 'Organizaciones Asociadas'
+        confirmed_at: 'Fecha de Confirmación'
+        invitation_accepted_at: 'Fecha de Aceptación de Invitación'
+        created_at: 'Fecha de Registro'
+        updated_at: 'Última Actualización'
+        type: 'Tipo de Cuenta'
+        custom_attributes: 'Atributos Personalizados'
+        ui_settings: 'Preferencias de Interfaz'
+        availability_status: 'Disponibilidad'
+      agent_bot:
+        id: 'ID'
+        name: 'Nombre del Bot'
+        description: 'Descripción'
+        outgoing_url: 'URL del Webhook (Salida)'
+        bot_type: 'Tipo de Bot'
+        bot_config: 'Configuración JSON'
+        account: 'Organización'
+        created_at: 'Fecha de Creación'
+      platform_app:
+        id: 'ID'
+        name: 'Nombre de la Aplicación'
+        access_token: 'Token de Acceso API'
+        created_at: 'Fecha de Creación'
+      platform_banner:
+        id: 'ID'
+        text: 'Texto del Mensaje'
+        banner_type: 'Tipo de Banner'
+        created_at: 'Fecha de Creación'
+      access_token:
+        id: 'ID'
+        owner_type: 'Tipo de Entidad'
+        owner_id: 'ID del Propietario'
+        token: 'Token Secreto'
+        created_at: 'Fecha de Creación'
+      installation_config:
+        id: 'ID'
+        name: 'Parámetro'
+        serialized_value: 'Valor Configurado'
+        created_at: 'Fecha de Creación'
+        updated_at: 'Última Modificación'

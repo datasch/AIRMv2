@@ -1,5 +1,5 @@
 <% content_for(:title) do %>
-  Configure Settings - <%= @config.titleize %>
+  <%= t('super_admin.settings.configure', default: 'Configurar') %> - <%= @config.titleize %>
 <% end %>
 
 <header class="main-content__header" role="banner">
@@ -24,7 +24,7 @@
         <div class="-mt-2 field-unit__field ">
           <% if @installation_configs[key]&.dig('type') == 'boolean' %>
             <%= form.select "app_config[#{key}]",
-              [["True", true], ["False", false]],
+              [[t('super_admin.settings.true_val', default: "Verdadero"), true], [t('super_admin.settings.false_val', default: "Falso"), false]],
               { selected: ActiveModel::Type::Boolean.new.cast(@app_config[key]) },
               class: "mt-2 border border-slate-100 p-1 rounded-md"
             %>
@@ -71,7 +71,7 @@
       </div>
     <% end %>
     <div class="form-actions">
-      <%= form.submit "Submit" %>
+      <%= form.submit t('super_admin.actions.submit', default: 'Guardar Cambios') %>
     </div>
   <% end %>
 </section>

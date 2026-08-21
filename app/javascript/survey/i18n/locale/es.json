@@ -12,8 +12,8 @@
     },
     "API": {
       "SUCCESS_MESSAGE": "Encuesta actualizada correctamente",
-      "ERROR_MESSAGE": "No se pudo conectar al servidor Woot, por favor inténtalo de nuevo más tarde"
+      "ERROR_MESSAGE": "No se pudo conectar al servidor de AIRM, por favor inténtalo de nuevo más tarde"
     }
   },
-  "POWERED_BY": "Desarrollado por Chatwoot"
+  "POWERED_BY": "Desarrollado por AIRM"
 }

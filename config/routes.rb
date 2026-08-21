@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   if ActiveModel::Type::Boolean.new.cast(ENV.fetch('CW_API_ONLY_SERVER', false))
     root to: 'api#index'
   else
-    root to: 'dashboard#index'
+    root to: 'landing#index'
 
     get '/app', to: 'dashboard#index'
     get '/app/*params', to: 'dashboard#index'
@@ -290,6 +290,12 @@ Rails.application.routes.draw do
           resources :custom_attribute_definitions, only: [:index, :show, :create, :update, :destroy]
           resources :custom_filters, only: [:index, :show, :create, :update, :destroy]
           resource :branded_email_layout, only: [:show, :update]
+          resource :gowa, only: [], controller: 'gowa' do
+            get :status
+            post :pair
+            post :create_inbox
+            post :disconnect
+          end
           resources :inboxes, only: [:index, :show, :create, :update, :destroy] do
             get :assignable_agents, on: :member
             get :campaigns, on: :member

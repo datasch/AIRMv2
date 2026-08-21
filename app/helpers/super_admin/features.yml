@@ -4,117 +4,118 @@
 # ------- Premium Features ------- #
 saml:
   name: 'SAML SSO'
-  description: 'Configuration for controlling SAML Single Sign-On availability'
+  description: 'Configuración para controlar la disponibilidad del inicio de sesión único SAML.'
   enabled: <%= ChatwootApp.enterprise? %>
   icon: 'icon-lock-line'
   config_key: 'saml'
   enterprise: true
 custom_branding:
-  name: 'Custom Branding'
-  description: 'Apply your own branding to this installation.'
+  name: 'Personalización de Marca'
+  description: 'Aplique su propia identidad y marca a esta instalación de AIRM.'
   enabled: <%= (ChatwootHub.pricing_plan != 'community') %>
   icon: 'icon-paint-brush-line'
   config_key: 'custom_branding'
   enterprise: true
 agent_capacity:
-  name: 'Agent Capacity'
-  description: 'Set limits to auto-assigning conversations to your agents.'
+  name: 'Capacidad de Agentes'
+  description: 'Establezca límites para la asignación automática de conversaciones a sus agentes.'
   enabled: <%= (ChatwootHub.pricing_plan != 'community') %>
   icon: 'icon-hourglass-line'
   enterprise: true
 audit_logs:
-  name: 'Audit Logs'
-  description: 'Track and trace account activities with ease with detailed audit logs.'
+  name: 'Registros de Auditoría'
+  description: 'Rastree y supervise todas las actividades de las cuentas con registros detallados.'
   enabled: <%= (ChatwootHub.pricing_plan != 'community') %>
   icon: 'icon-menu-search-line'
   enterprise: true
 disable_branding:
-  name: 'Disable Branding'
-  description: 'Disable branding on live-chat widget and external emails.'
+  name: 'Desactivar Marca de Pie'
+  description: 'Elimine las marcas de agua en el widget de chat y en los correos externos.'
   enabled: <%= (ChatwootHub.pricing_plan != 'community') %>
   icon: 'icon-sailbot-fill'
   enterprise: true
 voice_calls:
-  name: 'Voice Calls'
-  description: 'Enable voice calling capabilities for your agents and customers.'
+  name: 'Llamadas de Voz'
+  description: 'Habilite capacidades de llamadas de voz para sus agentes y clientes.'
   enabled: <%= (ChatwootHub.pricing_plan != 'community') %>
   icon: 'icon-voice-line'
   enterprise: true
 
 # ------- Product Features ------- #
 help_center:
-  name: 'Help Center'
-  description: 'Allow agents to create help center articles and publish them in a portal.'
+  name: 'Centro de Ayuda'
+  description: 'Permita que los agentes creen artículos y los publiquen en un portal de autoservicio.'
   enabled: true
   icon: 'icon-book-2-line'
 captain:
-  name: 'Captain'
-  description: 'Enable AI-powered conversations with your customers.'
+  name: 'Captain AI'
+  description: 'Habilite conversaciones y respuestas potenciadas por Inteligencia Artificial.'
   enabled: true
   icon: 'icon-captain'
   config_key: 'captain'
 
 # ------- Communication Channels ------- #
 live_chat:
-  name: 'Live Chat'
-  description: 'Improve your customer experience using a live chat on your website.'
+  name: 'Chat en Vivo'
+  description: 'Mejore la experiencia de sus clientes con un widget de chat interactivo en su sitio web.'
   enabled: true
   icon: 'icon-chat-smile-3-line'
 email:
-  name: 'Email'
-  description: 'Manage your email customer interactions from Chatwoot.'
+  name: 'Correo Electrónico'
+  description: 'Gestione las interacciones por email de sus clientes directamente desde AIRM.'
   enabled: true
   icon: 'icon-mail-send-fill'
   config_key: 'email'
 sms:
   name: 'SMS'
-  description: 'Manage your SMS customer interactions from Chatwoot.'
+  description: 'Gestione interacciones por mensajes de texto SMS con sus clientes.'
   enabled: true
   icon: 'icon-message-line'
 messenger:
   name: 'Messenger'
-  description: 'Stay connected with your customers on Facebook & Instagram.'
+  description: 'Conecte y atienda a sus clientes a través de Facebook & Instagram Messenger.'
   enabled: true
   icon: 'icon-messenger-line'
   config_key: 'facebook'
 instagram:
   name: 'Instagram'
-  description: 'Stay connected with your customers on Instagram'
+  description: 'Gestione mensajes directos y comentarios de Instagram en tiempo real.'
   enabled: true
   icon: 'icon-instagram'
   config_key: 'instagram'
 tiktok:
   name: 'TikTok'
-  description: 'Stay connected with your customers on TikTok'
+  description: 'Conéctese e interactúe con su audiencia de TikTok desde una sola bandeja.'
   enabled: true
   icon: 'icon-tiktok'
   config_key: 'tiktok'
 whatsapp:
-  name: 'WhatsApp'
-  description: 'Manage your WhatsApp business interactions from Chatwoot.'
+  name: 'WhatsApp Cloud API'
+  description: 'Gestione interacciones oficiales de WhatsApp Business API desde AIRM.'
   enabled: true
   icon: 'icon-whatsapp-line'
+  config_key: 'whatsapp'
 telegram:
   name: 'Telegram'
-  description: 'Manage your Telegram customer interactions from Chatwoot.'
+  description: 'Atienda consultas de clientes y grupos a través de bots de Telegram.'
   enabled: true
   icon: 'icon-telegram-line'
 line:
   name: 'Line'
-  description: 'Manage your Line customer interactions from Chatwoot.'
+  description: 'Gestione interacciones con clientes a través del canal Line.'
   enabled: true
   icon: 'icon-line-line'
 
 # ------- OAuth & Authentication ------- #
 google:
-  name: 'Google'
-  description: 'Configuration for setting up Google OAuth Integration'
+  name: 'Google OAuth'
+  description: 'Configuración para habilitar inicio de sesión y sincronización con Google.'
   enabled: true
   icon: 'icon-google'
   config_key: 'google'
 microsoft:
   name: 'Microsoft'
-  description: 'Configuration for setting up Microsoft Email'
+  description: 'Configuración para sincronización de correo e inicio de sesión con Microsoft 365.'
   enabled: true
   icon: 'icon-microsoft'
   config_key: 'microsoft'
@@ -122,31 +123,31 @@ microsoft:
 # ------- Third-party Integrations ------- #
 linear:
   name: 'Linear'
-  description: 'Configuration for setting up Linear Integration'
+  description: 'Configuración para vincular problemas y tickets de soporte con Linear.'
   enabled: true
   icon: 'icon-linear'
   config_key: 'linear'
 notion:
   name: 'Notion'
-  description: 'Configuration for setting up Notion Integration'
+  description: 'Configuración para sincronizar bases de datos y conocimiento con Notion.'
   enabled: true
   icon: 'icon-notion'
   config_key: 'notion'
 slack:
   name: 'Slack'
-  description: 'Configuration for setting up Slack Integration'
+  description: 'Configuración para recibir notificaciones y responder chats desde canales de Slack.'
   enabled: true
   icon: 'icon-slack'
   config_key: 'slack'
 whatsapp_embedded:
-  name: 'WhatsApp Embedded'
-  description: 'Configuration for setting up WhatsApp Embedded Integration'
+  name: 'WhatsApp Embedded Signup'
+  description: 'Configuración del registro integrado de WhatsApp Business para clientes.'
   enabled: true
   icon: 'icon-whatsapp-line'
   config_key: 'whatsapp_embedded'
 shopify:
   name: 'Shopify'
-  description: 'Configuration for setting up Shopify Integration'
+  description: 'Configuración para integrar tiendas, pedidos e información de clientes de Shopify.'
   enabled: true
   icon: 'icon-shopify'
   config_key: 'shopify'

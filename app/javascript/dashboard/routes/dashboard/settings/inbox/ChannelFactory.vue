@@ -13,6 +13,7 @@ import Telegram from './channels/Telegram.vue';
 import Instagram from './channels/Instagram.vue';
 import Tiktok from './channels/Tiktok.vue';
 import Voice from './channels/Voice.vue';
+import Gowa from './channels/Gowa.vue';
 
 const channelViewList = {
   facebook: Facebook,
@@ -22,6 +23,9 @@ const channelViewList = {
   email: Email,
   sms: Sms,
   whatsapp: Whatsapp,
+  gowa: Gowa,
+  whatsapp_gowa: Gowa,
+  whatsapp_qr: Gowa,
   whatsapp_call: WhatsappCall,
   line: Line,
   telegram: Telegram,

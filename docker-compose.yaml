@@ -37,6 +37,7 @@ services:
       - 3000:3000
     env_file: .env
     environment:
+      - VITE_RUBY_HOST=vite
       - VITE_DEV_SERVER_HOST=vite
       - NODE_ENV=development
       - RAILS_ENV=development
@@ -86,13 +87,14 @@ services:
     image: pgvector/pgvector:pg16
     restart: always
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - postgres:/data/postgres
     environment:
       - POSTGRES_DB=chatwoot
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST_AUTH_METHOD=trust
 
   redis:
     image: redis:alpine
@@ -102,13 +104,27 @@ services:
     volumes:
       - redis:/data/redis
     ports:
-      - '6379:6379'
+      - '6380:6379'
 
   mailhog:
     image: mailhog/mailhog
     ports:
       - 1025:1025
       - 8025:8025
+
+  gowa:
+    image: aldinokemal2104/go-whatsapp-web-multidevice:latest
+    restart: always
+    ports:
+      - '3030:3000'
+    volumes:
+      - gowa_data:/app/storages
+    environment:
+      - PORT=3000
+      - CHATWOOT_ENABLED=true
+      - CHATWOOT_URL=http://rails:3000
+      - CORS_ALLOWED_ORIGINS=*
+    command: ["rest"]
 
 volumes:
   postgres:
@@ -117,3 +133,4 @@ volumes:
   node_modules:
   cache:
   bundle:
+  gowa_data:

@@ -22,13 +22,13 @@ onMounted(async () => {
 });
 
 const metrics = computed(() => [
-  { label: 'Accounts', value: stats.value?.accountsCount },
-  { label: 'Users', value: stats.value?.usersCount },
-  { label: 'Inboxes', value: stats.value?.inboxesCount },
-  { label: 'Conversations', value: stats.value?.conversationsCount },
+  { label: 'Organizaciones', value: stats.value?.accountsCount },
+  { label: 'Usuarios', value: stats.value?.usersCount },
+  { label: 'Bandejas de Entrada', value: stats.value?.inboxesCount },
+  { label: 'Conversaciones', value: stats.value?.conversationsCount },
 ]);
 
-const chartAriaLabel = 'Conversations created by day';
+const chartAriaLabel = 'Conversaciones creadas por día';
 
 const chartData = computed(() => {
   const sourceData = stats.value?.chartData || [];
@@ -37,8 +37,8 @@ const chartData = computed(() => {
     series: [
       {
         id: 'conversations',
-        label: 'Conversations',
-        color: '#1f93ff',
+        label: 'Conversaciones',
+        color: '#06b6d4',
         data: sourceData.map(([, value]) => value),
       },
     ],
@@ -50,7 +50,7 @@ const chartData = computed(() => {
   <div class="w-full h-full">
     <header class="main-content__header" role="banner">
       <h1 id="page-title" class="main-content__page-title">
-        {{ 'Admin Dashboard' }}
+        {{ 'Panel de Administración' }}
       </h1>
     </header>
 

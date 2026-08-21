@@ -20,11 +20,11 @@
 - name: channel_email
   display_name: Email Channel
   enabled: true
-  help_url: https://chwt.app/hc/email
+  help_url: https://giantucchi.com/help/email
 - name: channel_facebook
   display_name: Facebook Channel
   enabled: true
-  help_url: https://chwt.app/hc/fb
+  help_url: https://giantucchi.com/help/fb
 - name: conversation_unread_counts
   display_name: Conversation Unread Counts
   enabled: false
@@ -34,7 +34,7 @@
   enabled: false
 - name: disable_branding
   display_name: Disable Branding
-  enabled: false
+  enabled: true
   premium: true
 - name: email_continuity_on_api_channel
   display_name: Email Continuity on API Channel
@@ -42,11 +42,11 @@
 - name: help_center
   display_name: Help Center
   enabled: true
-  help_url: https://chwt.app/hc/help-center
+  help_url: https://giantucchi.com/help/help-center
 - name: agent_bots
   display_name: Agent Bots
   enabled: true
-  help_url: https://chwt.app/hc/agent-bots
+  help_url: https://giantucchi.com/help/agent-bots
 - name: macros
   display_name: Macros
   enabled: true
@@ -56,29 +56,29 @@
 - name: team_management
   display_name: Team Management
   enabled: true
-  help_url: https://chwt.app/hc/teams
+  help_url: https://giantucchi.com/help/teams
 - name: inbox_management
   display_name: Inbox Management
   enabled: true
 - name: labels
   display_name: Labels
   enabled: true
-  help_url: https://chwt.app/hc/labels
+  help_url: https://giantucchi.com/help/labels
 - name: custom_attributes
   display_name: Custom Attributes
   enabled: true
-  help_url: https://chwt.app/hc/custom-attributes
+  help_url: https://giantucchi.com/help/custom-attributes
 - name: automations
   display_name: Automations
   enabled: true
 - name: canned_responses
   display_name: Canned Responses
   enabled: true
-  help_url: https://chwt.app/hc/canned
+  help_url: https://giantucchi.com/help/canned
 - name: integrations
   display_name: Integrations
   enabled: true
-  help_url: https://chwt.app/hc/integrations
+  help_url: https://giantucchi.com/help/integrations
 - name: voice_recorder
   display_name: Voice Recorder
   enabled: true
@@ -91,11 +91,11 @@
 - name: campaigns
   display_name: Campaigns
   enabled: true
-  help_url: https://chwt.app/hc/campaigns
+  help_url: https://giantucchi.com/help/campaigns
 - name: reports
   display_name: Reports
   enabled: true
-  help_url: https://chwt.app/hc/reports
+  help_url: https://giantucchi.com/help/reports
 - name: crm
   display_name: CRM
   enabled: true
@@ -110,11 +110,11 @@
   enabled: false
 - name: audit_logs
   display_name: Audit Logs
-  enabled: false
+  enabled: true
   premium: true
 - name: custom_tools
   display_name: Custom Tools
-  enabled: false
+  enabled: true
   premium: true
 - name: message_reply_to
   display_name: Message Reply To
@@ -122,16 +122,16 @@
   deprecated: true
 - name: branded_email_templates
   display_name: Branded Email Templates
-  enabled: false
+  enabled: true
 - name: inbox_view
   display_name: Inbox View
   enabled: false
   chatwoot_internal: true
 - name: sla
   display_name: SLA
-  enabled: false
+  enabled: true
   premium: true
-  help_url: https://chwt.app/hc/sla
+  help_url: https://giantucchi.com/help/sla
 - name: help_center_embedding_search
   display_name: Help Center Embedding Search
   enabled: false
@@ -139,14 +139,14 @@
   chatwoot_internal: true
 - name: linear_integration
   display_name: Linear Integration
-  enabled: false
+  enabled: true
 - name: captain_integration
   display_name: Captain
-  enabled: false
+  enabled: true
   premium: true
 - name: custom_roles
   display_name: Custom Roles
-  enabled: false
+  enabled: true
   premium: true
 - name: chatwoot_v4
   display_name: Chatwoot V4
@@ -176,14 +176,14 @@
   enabled: false
 - name: channel_voice
   display_name: Voice Channel
-  enabled: false
+  enabled: true
   premium: true
 - name: notion_integration
   display_name: Notion Integration
-  enabled: false
+  enabled: true
 - name: captain_integration_v2
   display_name: Captain V2
-  enabled: false
+  enabled: true
   premium: true
 - name: whatsapp_embedded_signup
   display_name: WhatsApp Embedded Signup
@@ -191,7 +191,7 @@
   deprecated: true
 - name: whatsapp_campaign
   display_name: WhatsApp Campaign
-  enabled: false
+  enabled: true
 - name: crm_v2
   display_name: CRM V2
   enabled: false
@@ -201,19 +201,19 @@
   enabled: true
 - name: captain_document_auto_sync
   display_name: Captain Document Auto Sync
-  enabled: false
+  enabled: true
   premium: true
 - name: advanced_search
   display_name: Advanced Search
-  enabled: false
+  enabled: true
   premium: true
 - name: saml
   display_name: SAML
-  enabled: false
+  enabled: true
   premium: true
 - name: advanced_search_indexing
   display_name: Advanced Search Indexing
-  enabled: false
+  enabled: true
   premium: true
   chatwoot_internal: true
 - name: reply_mailer_migration
@@ -228,25 +228,25 @@
   chatwoot_internal: true
 - name: companies
   display_name: Companies
-  enabled: false
+  enabled: true
   premium: true
 - name: channel_tiktok
   display_name: TikTok Channel
   enabled: true
 - name: csat_review_notes
   display_name: CSAT Review Notes
-  enabled: false
+  enabled: true
   premium: true
 - name: captain_tasks
   display_name: Captain Tasks
   enabled: true
 - name: conversation_required_attributes
   display_name: Required Conversation Attributes
-  enabled: false
+  enabled: true
   premium: true
 - name: advanced_assignment
   display_name: Advanced Assignment
-  enabled: false
+  enabled: true
   premium: true
 - name: whatsapp_manual_transfer
   display_name: WhatsApp Manual Transfer
@@ -254,7 +254,7 @@
   column: feature_flags_ext_1
 - name: data_import
   display_name: Data Import
-  enabled: false
+  enabled: true
   column: feature_flags_ext_1
 - name: api_and_webhooks
   display_name: API and Webhooks

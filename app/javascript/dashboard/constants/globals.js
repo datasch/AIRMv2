@@ -38,11 +38,10 @@ export default {
     CONDENSED: 'condensed',
     EXPANDED: 'expanded',
   },
-  DOCS_URL: 'https://www.chatwoot.com/docs/product/',
-  HELP_CENTER_DOCS_URL:
-    'https://www.chatwoot.com/docs/product/others/help-center',
+  DOCS_URL: 'https://giantucchi.com/docs',
+  HELP_CENTER_DOCS_URL: 'https://giantucchi.com/help',
   TESTIMONIAL_URL:
-    'https://testimonials.cdn.chatwoot.com/testimonial-content.json',
+    'https://giantucchi.com/testimonials.json',
   WHATSAPP_EMBEDDED_SIGNUP_DOCS_URL:
     'https://developers.facebook.com/docs/whatsapp/embedded-signup/custom-flows/onboarding-business-app-users#limitations',
   SMALL_SCREEN_BREAKPOINT: 768,
@@ -56,8 +55,8 @@ export default {
     UNTIL_NEXT_MONTH: 'until_next_month',
     UNTIL_CUSTOM_TIME: 'until_custom_time',
   },
-  EXAMPLE_URL: 'example.com',
-  EXAMPLE_WEBHOOK_URL: 'https://example/api/webhook',
+  EXAMPLE_URL: 'giantucchi.com',
+  EXAMPLE_WEBHOOK_URL: 'https://giantucchi.com/api/webhook',
   INBOX_SORT_BY: {
     NEWEST: 'desc',
     OLDEST: 'asc',
@@ -79,4 +78,4 @@ export default {
 };
 export const DEFAULT_REDIRECT_URL = '/app/';
 export const META_RESTRICTION_STATUS_URL =
-  'https://status.chatwoot.com/incidents';
+  'https://giantucchi.com/status';

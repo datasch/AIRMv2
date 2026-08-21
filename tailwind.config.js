@@ -44,6 +44,13 @@ const tailwindConfig = {
         inter: ['Inter', ...defaultSansFonts],
         interDisplay: ['InterDisplay', ...defaultSansFonts],
       },
+      backgroundImage: {
+        'brand-gradient':
+          'linear-gradient(135deg, #06b6d4 0%, #3b82f6 20%, #a855f7 40%, #ec4899 60%, #f97316 80%, #eab308 100%)',
+        'brand-gradient-reverse':
+          'linear-gradient(135deg, #eab308 0%, #f97316 20%, #ec4899 40%, #a855f7 60%, #3b82f6 80%, #06b6d4 100%)',
+        'dark-gradient': 'linear-gradient(180deg, #0a0a0f 0%, #141420 100%)',
+      },
       fontWeight: {
         420: '420',
         440: '440',

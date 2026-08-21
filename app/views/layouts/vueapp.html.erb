@@ -6,10 +6,10 @@
     </title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=0"/>
     <% if @global_config['DISPLAY_MANIFEST'] %>
-      <meta name="msapplication-TileColor" content="#2781F6">
+      <meta name="msapplication-TileColor" content="#06b6d4">
       <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-      <meta name="theme-color" content="#2781F6">
-      <meta name="description" content="<%= @global_config['INSTALLATION_NAME'] %> is a customer support solution that helps companies engage customers over Messenger, Twitter, Telegram, WeChat, Whatsapp. Simply connect your channels and converse with your customers from a single place. Easily add new agents to your system and have them own and resolve conversations with customers. <%= @global_config['INSTALLATION_NAME'] %> also gives you real-time reports to measure your team's performance, canned responses to easily respond to frequently asked questions and private notes for agents to collaborate among themselves.">
+      <meta name="theme-color" content="#06b6d4">
+      <meta name="description" content="<%= @global_config['INSTALLATION_NAME'] %> by Giantucchi is an AI Relationship Management (AIRM) platform for omnichannel customer engagement, automated workflows, and intelligent CRM.">
       <% if ENV['IOS_APP_IDENTIFIER'].present? %>
         <meta name="apple-itunes-app" content='app-id=<%= ENV['IOS_APP_IDENTIFIER'] %>'>
       <% end %>
@@ -26,9 +26,13 @@
       <link class="favicon" rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
       <link class="favicon" rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
       <link class="favicon" rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+      <link rel="icon" type="image/x-icon" href="/favicon.ico">
+      <link rel="shortcut icon" href="/favicon.ico">
       <link rel="manifest" href="/manifest.json">
     <% end %>
     <link rel="icon" type="image/png" sizes="512x512" href="<%= @global_config['LOGO_THUMBNAIL'] %>">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" href="/favicon.ico">
     <%= csrf_meta_tags %>
     <script>
       window.chatwootConfig = {

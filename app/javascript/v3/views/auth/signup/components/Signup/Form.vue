@@ -59,6 +59,11 @@ const termsLink = computed(() =>
       'https://www.chatwoot.com/privacy-policy',
       globalConfig.value.privacyURL
     )
+    .replace('https://giantucchi.com/terms', globalConfig.value.termsURL)
+    .replace(
+      'https://giantucchi.com/privacy',
+      globalConfig.value.privacyURL
+    )
 );
 
 const allowedLoginMethods = computed(

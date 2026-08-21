@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class SuperAdmin::Devise::SessionsController < Devise::SessionsController
+  include SwitchLocale
+
+  around_action :switch_locale
+
   def new
     self.resource = resource_class.new(sign_in_params)
   end
@@ -28,7 +32,7 @@ class SuperAdmin::Devise::SessionsController < Devise::SessionsController
     true
   rescue StandardError => e
     Rails.logger.error e.message
-    @error_message = 'Invalid credentials. Please try again.'
+    @error_message = 'Credenciales inválidas. Por favor, intente de nuevo.'
     false
   end
 end

@@ -18,14 +18,14 @@ unless Rails.env.production?
   GlobalConfig.clear_cache
 
   account = Account.create!(
-    name: 'Acme Inc'
+    name: 'Giantucchi Enterprise'
   )
 
   secondary_account = Account.create!(
-    name: 'Acme Org'
+    name: 'AIRM Innovation Lab'
   )
 
-  user = User.new(name: 'John', email: 'john@acme.inc', password: 'Password1!', type: 'SuperAdmin')
+  user = User.new(name: 'Giantucchi Admin', email: 'admin@giantucchi.com', password: 'Password1!', type: 'SuperAdmin')
   user.skip_confirmation!
   user.save!
 
@@ -41,16 +41,36 @@ unless Rails.env.production?
     role: :administrator
   )
 
-  web_widget = Channel::WebWidget.create!(account: account, website_url: 'https://acme.inc')
+  # Seed AIRM CRM Custom Attributes
+  [
+    { attribute_display_name: 'Deal Stage', attribute_key: 'deal_stage', attribute_model: 'conversation_attribute', attribute_display_type: 'list', attribute_values: ['Lead In', 'Contacted', 'Qualified', 'Proposal', 'Negotiation', 'Won', 'Lost'], attribute_description: 'Sales Pipeline Stage' },
+    { attribute_display_name: 'Deal Value', attribute_key: 'deal_value', attribute_model: 'conversation_attribute', attribute_display_type: 'currency', attribute_description: 'Estimated Deal Value' },
+    { attribute_display_name: 'Lead Priority', attribute_key: 'lead_priority', attribute_model: 'contact_attribute', attribute_display_type: 'list', attribute_values: ['Urgent', 'High', 'Medium', 'Low'], attribute_description: 'Priority score of the lead' }
+  ].each do |attr|
+    CustomAttributeDefinition.find_or_create_by!(account_id: account.id, attribute_key: attr[:attribute_key]) do |cad|
+      cad.attribute_display_name = attr[:attribute_display_name]
+      cad.attribute_model = attr[:attribute_model]
+      cad.attribute_display_type = attr[:attribute_display_type]
+      cad.attribute_values = attr[:attribute_values] if attr[:attribute_values]
+      cad.attribute_description = attr[:attribute_description]
+    end
+  end
 
-  inbox = Inbox.create!(channel: web_widget, account: account, name: 'Acme Support')
+  # Seed AIRM Default Labels
+  ['Lead', 'Qualified', 'Proposal', 'Won', 'VIP', 'WhatsApp', 'Support'].each do |label_title|
+    Label.find_or_create_by!(account_id: account.id, title: label_title)
+  end
+
+  web_widget = Channel::WebWidget.create!(account: account, website_url: 'https://giantucchi.com')
+
+  inbox = Inbox.create!(channel: web_widget, account: account, name: 'AIRM Live Support')
   InboxMember.create!(user: user, inbox: inbox)
 
   contact_inbox = ContactInboxWithContactBuilder.new(
     source_id: user.id,
     inbox: inbox,
     hmac_verified: true,
-    contact_attributes: { name: 'jane', email: 'jane@example.com', phone_number: '+2320000' }
+    contact_attributes: { name: 'Demo Contact', email: 'contact@giantucchi.com', phone_number: '+51999999999' }
   ).perform
 
   conversation = Conversation.create!(
@@ -60,25 +80,24 @@ unless Rails.env.production?
     assignee: user,
     contact: contact_inbox.contact,
     contact_inbox: contact_inbox,
-    additional_attributes: {}
+    additional_attributes: { 'deal_stage' => 'Qualified', 'deal_value' => '5000' }
   )
 
   # sample email collect
   Seeders::MessageSeeder.create_sample_email_collect_message conversation
 
-  Message.create!(content: 'Hello', account: account, inbox: inbox, conversation: conversation, sender: contact_inbox.contact,
+  Message.create!(content: '¡Hola! Bienvenido a AIRM by Giantucchi.', account: account, inbox: inbox, conversation: conversation, sender: contact_inbox.contact,
                   message_type: :incoming)
 
   # sample location message
-  #
   location_message = Message.new(content: 'location', account: account, inbox: inbox, sender: contact_inbox.contact, conversation: conversation,
                                  message_type: :incoming)
   location_message.attachments.new(
     account_id: account.id,
     file_type: 'location',
-    coordinates_lat: 37.7893768,
-    coordinates_long: -122.3895553,
-    fallback_title: 'Bay Bridge, San Francisco, CA, USA'
+    coordinates_lat: -12.046374,
+    coordinates_long: -77.042793,
+    fallback_title: 'Lima, Perú'
   )
   location_message.save!
 
@@ -93,5 +112,5 @@ unless Rails.env.production?
   # csat
   Seeders::MessageSeeder.create_sample_csat_collect_message conversation
 
-  CannedResponse.create!(account: account, short_code: 'start', content: 'Hello welcome to chatwoot.')
+  CannedResponse.create!(account: account, short_code: 'start', content: 'Hola, bienvenido a AIRM by Giantucchi. ¿En qué podemos ayudarte hoy?')
 end

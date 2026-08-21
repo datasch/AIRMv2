@@ -5,10 +5,10 @@
 
   <div class="form-actions">
     <div class="pb-3">
-      <p>Click the button to generate seed data into this account for demos.</p>
-      <p class="text-color-red">Note: This will clear all the existing data in this account.</p>
+      <p><%= t('super_admin.accounts.seed_data_hint', default: 'Haga clic en el botón para generar datos de prueba en esta cuenta para demostraciones.') %></p>
+      <p class="text-color-red"><%= t('super_admin.accounts.seed_data_warning', default: 'Nota: Esto borrará todos los datos existentes en esta cuenta.') %></p>
     </div>
-  <%= f.submit 'Generate Seed Data' %>
+  <%= f.submit t('super_admin.actions.generate_seed', default: 'Generar Datos de Prueba') %>
   </div>
   <% end %>
 </section>

@@ -253,6 +253,8 @@
           "WHATSAPP_CLOUD": "WhatsApp Cloud",
           "WHATSAPP_CLOUD_DESC": "Quick setup through Meta",
           "WHATSAPP_CLOUD_MANUAL_SETUP_DESC": "Manual setup with Cloud API credentials",
+          "GOWA": "WhatsApp Web (QR Code / GOWA)",
+          "GOWA_DESC": "Connect your WhatsApp number by scanning a QR code without Meta API.",
           "TWILIO_DESC": "Connect via Twilio credentials",
           "360_DIALOG": "360Dialog"
         },
@@ -467,6 +469,30 @@
           "ERROR_MESSAGE": "We were not able to save the telegram channel"
         }
       },
+      "GOWA": {
+        "TITLE": "Connect WhatsApp (GOWA / QR Code)",
+        "DESC": "Connect any WhatsApp account by scanning a QR code using the high-performance GOWA multi-device gateway.",
+        "CHANNEL_NAME": {
+          "LABEL": "Inbox Name",
+          "PLACEHOLDER": "e.g. WhatsApp Sales or Support",
+          "SUBTITLE": "An identifying name for this WhatsApp channel in AIRM."
+        },
+        "INFO_TITLE": "Direct Multi-Device Pairing",
+        "INFO_DESC": "No Meta developer account or template approval required. Clicking Generate QR Code will generate a code that you can scan directly using WhatsApp on your mobile phone (Linked Devices).",
+        "PROCEED_BUTTON": "Generate QR Code",
+        "SCAN_TITLE": "Scan the QR Code with WhatsApp",
+        "SCAN_INSTRUCTION": "Open WhatsApp on your phone > Settings / Menu > Linked Devices > Link a Device, and point your camera at the QR code below.",
+        "NO_QR": "Waiting for QR code...",
+        "QR_EXPIRES_IN": "Expires in:",
+        "QR_EXPIRED": "QR code expired",
+        "REFRESH_QR": "Refresh QR Code",
+        "CONNECTED": "Device connected successfully! Completing setup...",
+        "CONNECTED_SUCCESS": "WhatsApp connected successfully!",
+        "BACK": "Back",
+        "FINISH_BUTTON": "Create Inbox & Assign Agents",
+        "QR_ERROR": "Failed to generate QR code. Ensure GOWA gateway is running.",
+        "CREATE_ERROR": "Error creating WhatsApp inbox."
+      },
       "AUTH": {
         "TITLE": "Choose a channel",
         "DESC": "Chatwoot supports live-chat widgets, Facebook Messenger, WhatsApp, Emails, etc., as channels. If you want to build a custom channel, you can create it using the API channel. To get started, choose one of the channels below.",
@@ -484,6 +510,10 @@
           "WHATSAPP": {
             "TITLE": "WhatsApp",
             "DESCRIPTION": "Support your customers on WhatsApp"
+          },
+          "GOWA": {
+            "TITLE": "WhatsApp (QR Code / GOWA)",
+            "DESCRIPTION": "Connect any WhatsApp by scanning a QR code without official Meta API"
           },
           "WHATSAPP_CALL": {
             "TITLE": "WhatsApp Call",
@@ -1344,7 +1374,7 @@
         "USER_MESSAGE": "Hi",
         "AGENT_MESSAGE": "Hello"
       },
-      "BRANDING_TEXT": "Powered by Chatwoot",
+      "BRANDING_TEXT": "Powered by AIRM",
       "SCRIPT_SETTINGS": "\n      window.chatwootSettings = {options};"
     },
     "EMAIL_PROVIDERS": {

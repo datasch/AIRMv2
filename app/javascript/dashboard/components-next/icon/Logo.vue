@@ -16,28 +16,28 @@ const globalConfig = useMapGetter('globalConfig/get');
     v-else
     v-once
     v-bind="attrs"
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
+    width="20"
+    height="20"
+    viewBox="0 0 512 512"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <g clip-path="url(#woot-logo-clip-2342424e23u32098)">
-      <path
-        d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16Z"
-        fill="#2781F6"
-      />
-      <path
-        d="M11.4172 11.4172H7.70831C5.66383 11.4172 4 9.75328 4 7.70828C4 5.66394 5.66383 4 7.70835 4C9.75339 4 11.4172 5.66394 11.4172 7.70828V11.4172Z"
-        fill="white"
-        stroke="white"
-        stroke-width="0.1875"
-      />
-    </g>
     <defs>
-      <clipPath id="woot-logo-clip-2342424e23u32098">
-        <rect width="16" height="16" fill="white" />
-      </clipPath>
+      <linearGradient id="airm-vue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#06b6d4" />
+        <stop offset="35%" stop-color="#3b82f6" />
+        <stop offset="70%" stop-color="#a855f7" />
+        <stop offset="100%" stop-color="#ec4899" />
+      </linearGradient>
     </defs>
+    <rect width="512" height="512" rx="128" fill="#0a0a0f" />
+    <g transform="translate(106, 116)">
+      <path d="M150 20 L260 250 H205 L150 130 L95 250 H40 L150 20 Z" fill="url(#airm-vue-grad)" />
+      <circle cx="150" cy="180" r="28" fill="#0a0a0f" stroke="url(#airm-vue-grad)" stroke-width="12" />
+      <circle cx="150" cy="180" r="10" fill="#06b6d4" />
+      <circle cx="40" cy="250" r="12" fill="#06b6d4" />
+      <circle cx="260" cy="250" r="12" fill="#ec4899" />
+      <circle cx="150" cy="20" r="14" fill="#3b82f6" />
+    </g>
   </svg>
 </template>

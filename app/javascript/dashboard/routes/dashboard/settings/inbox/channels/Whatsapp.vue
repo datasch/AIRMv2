@@ -6,6 +6,7 @@ import Twilio from './Twilio.vue';
 import ThreeSixtyDialogWhatsapp from './360DialogWhatsapp.vue';
 import CloudWhatsapp from './CloudWhatsapp.vue';
 import WhatsappEmbeddedSignup from './WhatsappEmbeddedSignup.vue';
+import Gowa from './Gowa.vue';
 import ChannelSelector from 'dashboard/components/ChannelSelector.vue';
 import Banner from 'dashboard/components-next/banner/Banner.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
@@ -26,6 +27,7 @@ const {
 const PROVIDER_TYPES = {
   WHATSAPP: 'whatsapp',
   TWILIO: 'twilio',
+  GOWA: 'gowa',
   WHATSAPP_CLOUD: 'whatsapp_cloud',
   WHATSAPP_EMBEDDED: 'whatsapp_embedded',
   WHATSAPP_MANUAL: 'whatsapp_manual',
@@ -79,6 +81,15 @@ const availableProviders = computed(() => [
     description: isWhatsappEmbeddedSignupDisabled.value
       ? t('INBOX_MGMT.ADD.WHATSAPP.PROVIDERS.WHATSAPP_CLOUD_MANUAL_SETUP_DESC')
       : t('INBOX_MGMT.ADD.WHATSAPP.PROVIDERS.WHATSAPP_CLOUD_DESC'),
+    icon: 'i-woot-whatsapp',
+  },
+  {
+    key: PROVIDER_TYPES.GOWA,
+    title: t('INBOX_MGMT.ADD.WHATSAPP.PROVIDERS.GOWA', 'WhatsApp Web (Código QR / GOWA)'),
+    description: t(
+      'INBOX_MGMT.ADD.WHATSAPP.PROVIDERS.GOWA_DESC',
+      'Conecte su número de WhatsApp escaneando un código QR sin API de Meta.'
+    ),
     icon: 'i-woot-whatsapp',
   },
   {
@@ -262,6 +273,7 @@ const requestEmbeddedSignupAccess = () => {
         </div>
 
         <!-- Other providers -->
+        <Gowa v-else-if="selectedProvider === PROVIDER_TYPES.GOWA" />
         <Twilio
           v-else-if="selectedProvider === PROVIDER_TYPES.TWILIO"
           type="whatsapp"

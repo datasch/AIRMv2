@@ -15,8 +15,14 @@ const hasError = ref(false);
 const errorStateMessage = ref('');
 const errorStateDescription = ref('');
 const isRequestingAuthorization = ref(false);
+const hasInstagramAppId = computed(
+  () =>
+    Boolean(
+      window.chatwootConfig?.instagramAppId || window.chatwootConfig?.fbAppId
+    )
+);
 const isInstagramConnectionDisabled = computed(
-  () => isMetaInboxCreationDisabled.value
+  () => isMetaInboxCreationDisabled.value || !hasInstagramAppId.value
 );
 
 onMounted(() => {
@@ -69,6 +75,21 @@ const requestAuthorization = async () => {
         class="flex flex-col items-center justify-center w-full px-8 py-10 text-center rounded-2xl outline outline-1 outline-n-weak"
       >
         <div class="flex flex-col items-center w-full max-w-2xl">
+          <Banner
+            v-if="!hasInstagramAppId"
+            color="amber"
+            class="w-full mb-6"
+          >
+            <div class="flex items-start gap-3 text-start">
+              <Icon
+                icon="i-lucide-triangle-alert"
+                class="flex-shrink-0 size-4 mt-0.5"
+              />
+              <span>
+                Para conectar Instagram, configure <code>FB_APP_ID</code>, <code>FB_APP_SECRET</code> e <code>IG_VERIFY_TOKEN</code> en su archivo <code>.env</code> o desde el panel de Super Administrador (/super_admin).
+              </span>
+            </div>
+          </Banner>
           <h6 class="text-2xl font-medium">
             {{ $t('INBOX_MGMT.ADD.INSTAGRAM.CONNECT_YOUR_INSTAGRAM_PROFILE') }}
           </h6>
@@ -87,7 +108,7 @@ const requestAuthorization = async () => {
             @click="requestAuthorization()"
           />
           <Banner
-            v-if="isInstagramConnectionDisabled"
+            v-if="isInstagramConnectionDisabled && hasInstagramAppId"
             color="amber"
             class="w-full mt-6"
           >

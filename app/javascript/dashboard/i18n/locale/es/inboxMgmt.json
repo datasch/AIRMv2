@@ -253,6 +253,8 @@
           "WHATSAPP_CLOUD": "Nube de WhatsApp",
           "WHATSAPP_CLOUD_DESC": "Quick setup through Meta",
           "WHATSAPP_CLOUD_MANUAL_SETUP_DESC": "Configuración manual con credenciales de la API de Cloud",
+          "GOWA": "WhatsApp Web (Código QR / GOWA)",
+          "GOWA_DESC": "Conecte su número escaneando un código QR sin API de Meta.",
           "TWILIO_DESC": "Connect via Twilio credentials",
           "360_DIALOG": "360dialog"
         },
@@ -467,6 +469,30 @@
           "ERROR_MESSAGE": "No pudimos guardar el canal de telegram"
         }
       },
+      "GOWA": {
+        "TITLE": "Conectar WhatsApp (GOWA / Código QR)",
+        "DESC": "Vincule cualquier cuenta de WhatsApp escaneando un código QR utilizando la pasarela multidispositivo de alto rendimiento GOWA.",
+        "CHANNEL_NAME": {
+          "LABEL": "Nombre de la Bandeja",
+          "PLACEHOLDER": "ej. WhatsApp Ventas o Atención al Cliente",
+          "SUBTITLE": "Un nombre identificativo para esta línea de WhatsApp dentro de AIRM."
+        },
+        "INFO_TITLE": "Conexión Directa Multidispositivo",
+        "INFO_DESC": "No requiere cuenta de desarrollador de Meta ni aprobación de plantillas. Al hacer clic en Generar Código QR, se creará un código QR que podrá escanear directamente con la cámara de WhatsApp en su teléfono (Dispositivos Vinculados).",
+        "PROCEED_BUTTON": "Generar Código QR",
+        "SCAN_TITLE": "Escanee el Código QR con WhatsApp",
+        "SCAN_INSTRUCTION": "Abra WhatsApp en su teléfono > Ajustes o Menú (tres puntos) > Dispositivos Vinculados > Vincular un dispositivo, y apunte la cámara al siguiente código.",
+        "NO_QR": "Esperando código...",
+        "QR_EXPIRES_IN": "Expira en:",
+        "QR_EXPIRED": "Código expirado",
+        "REFRESH_QR": "Actualizar Código",
+        "CONNECTED": "¡Dispositivo conectado con éxito! Finalizando configuración...",
+        "CONNECTED_SUCCESS": "¡WhatsApp conectado exitosamente!",
+        "BACK": "Volver",
+        "FINISH_BUTTON": "Crear Bandeja y Asignar Agentes",
+        "QR_ERROR": "No se pudo generar el código QR. Verifique que la pasarela GOWA esté activa.",
+        "CREATE_ERROR": "Error al crear la bandeja de WhatsApp."
+      },
       "AUTH": {
         "TITLE": "Elija un canal",
         "DESC": "Chatwoot soporta widgets de Live Chat, Facebook Messenger, perfiles de Twitter, WhatsApp, correos electrónicos, etc., como canales. Si quieres construir un canal personalizado, puedes crearlo usando el canal API. Para empezar, elige uno de los canales a continuación.",
@@ -484,6 +510,10 @@
           "WHATSAPP": {
             "TITLE": "WhatsApp",
             "DESCRIPTION": "Support your customers on WhatsApp"
+          },
+          "GOWA": {
+            "TITLE": "WhatsApp (Código QR / GOWA)",
+            "DESCRIPTION": "Conecte cualquier WhatsApp escaneando un código QR sin API oficial"
           },
           "WHATSAPP_CALL": {
             "TITLE": "Llamada de WhatsApp",
@@ -1343,7 +1373,7 @@
         "USER_MESSAGE": "Hola",
         "AGENT_MESSAGE": "Hola"
       },
-      "BRANDING_TEXT": "Desarrollado por Chatwoot",
+      "BRANDING_TEXT": "Desarrollado por AIRM",
       "SCRIPT_SETTINGS": "\n      window.chatwootSettings = {options};"
     },
     "EMAIL_PROVIDERS": {

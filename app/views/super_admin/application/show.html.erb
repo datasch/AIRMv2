@@ -25,7 +25,7 @@ as well as a link to its edit page.
 
   <div>
     <%= link_to(
-      "Edit",
+      t("administrate.actions.edit", default: "Editar"),
       [:edit, namespace, page.resource],
       class: "button",
     ) if accessible_action?(page.resource, :edit) %>

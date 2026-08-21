@@ -26,7 +26,7 @@ as well as a link to its edit page.
 
     <div>
       <%= if accessible_action?(page.resource, :edit)
-        link_to("Edit", [:edit, namespace, page.resource], class: "button")
+        link_to(t("administrate.actions.edit", default: "Editar"), [:edit, namespace, page.resource], class: "button")
       end %>
     </div>
   </header>

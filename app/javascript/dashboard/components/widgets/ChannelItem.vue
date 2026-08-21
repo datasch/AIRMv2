@@ -36,20 +36,18 @@ const isActive = computed(() => {
     return props.enabledFeatures.channel_website;
   }
   if (key === 'facebook') {
-    return props.enabledFeatures.channel_facebook && hasFbConfigured.value;
+    return props.enabledFeatures.channel_facebook;
   }
   if (key === 'email') {
     return props.enabledFeatures.channel_email;
   }
 
   if (key === 'instagram') {
-    return (
-      props.enabledFeatures.channel_instagram && hasInstagramConfigured.value
-    );
+    return props.enabledFeatures.channel_instagram;
   }
 
   if (key === 'tiktok') {
-    return props.enabledFeatures.channel_tiktok && hasTiktokConfigured.value;
+    return props.enabledFeatures.channel_tiktok;
   }
 
   if (key === 'voice' || key === 'whatsapp_call') {
@@ -58,9 +56,13 @@ const isActive = computed(() => {
 
   return [
     'website',
+    'facebook',
     'twilio',
     'api',
     'whatsapp',
+    'gowa',
+    'whatsapp_gowa',
+    'whatsapp_qr',
     'sms',
     'telegram',
     'line',
