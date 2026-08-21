@@ -1,139 +1,153 @@
-<img src="./.github/screenshots/header.png#gh-light-mode-only" width="100%" alt="Header light mode"/>
-<img src="./.github/screenshots/header-dark.png#gh-dark-mode-only" width="100%" alt="Header dark mode"/>
+# 🚀 AIRM by Giantucchi
 
-___
-
-# Chatwoot
-
-The modern customer support platform, an open-source alternative to Intercom, Zendesk, Salesforce Service Cloud etc.
-
-<p>
-  <img src="https://img.shields.io/circleci/build/github/chatwoot/chatwoot" alt="CircleCI Badge">
-    <a href="https://hub.docker.com/r/chatwoot/chatwoot/"><img src="https://img.shields.io/docker/pulls/chatwoot/chatwoot" alt="Docker Pull Badge"></a>
-  <a href="https://hub.docker.com/r/chatwoot/chatwoot/"><img src="https://img.shields.io/docker/cloud/build/chatwoot/chatwoot" alt="Docker Build Badge"></a>
-  <img src="https://img.shields.io/github/commit-activity/m/chatwoot/chatwoot" alt="Commits-per-month">
-  <a title="Crowdin" target="_self" href="https://chatwoot.crowdin.com/chatwoot"><img src="https://badges.crowdin.net/e/37ced7eba411064bd792feb3b7a28b16/localized.svg"></a>
-  <a href="https://discord.gg/cJXdrwS"><img src="https://img.shields.io/discord/647412545203994635" alt="Discord"></a>
-  <a href="https://status.chatwoot.com"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchatwoot%2Fstatus%2Fmaster%2Fapi%2Fchatwoot%2Fuptime.json" alt="uptime"></a>
-  <a href="https://status.chatwoot.com"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fchatwoot%2Fstatus%2Fmaster%2Fapi%2Fchatwoot%2Fresponse-time.json" alt="response time"></a>
-  <a href="https://artifacthub.io/packages/helm/chatwoot/chatwoot"><img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/artifact-hub" alt="Artifact HUB"></a>
+<p align="center">
+  <img src="public/brand-assets/logo.svg" width="450" alt="AIRM by Giantucchi Logo"/>
 </p>
 
-
-<p>
-  <a href="https://heroku.com/deploy?template=https://github.com/chatwoot/chatwoot/tree/master" alt="Deploy to Heroku">
-     <img width="150" alt="Deploy" src="https://www.herokucdn.com/deploy/button.svg"/>
-  </a>
-  <a href="https://marketplace.digitalocean.com/apps/chatwoot?refcode=f2238426a2a8" alt="Deploy to DigitalOcean">
-     <img width="200" alt="Deploy to DO" src="https://www.deploytodo.com/do-btn-blue.svg"/>
-  </a>
+<p align="center">
+  <strong>Plataforma Integral de AI Relationship Management (AIRM), CRM Conversacional y Automatizaciones Omnicanal</strong>
 </p>
 
-<img src="./.github/screenshots/dashboard.png#gh-light-mode-only" width="100%" alt="Chat dashboard dark mode"/>
-<img src="./.github/screenshots/dashboard-dark.png#gh-dark-mode-only" width="100%" alt="Chat dashboard"/>
+<p align="center">
+  <img src="https://img.shields.io/badge/Version-2.0.0--Enterprise-06b6d4?style=for-the-badge&logo=shield" alt="Version 2.0.0 Enterprise">
+  <img src="https://img.shields.io/badge/Ruby_on_Rails-7.1-cc0000?style=for-the-badge&logo=rubyonrails" alt="Rails 7.1">
+  <img src="https://img.shields.io/badge/Vue.js-3.5-4FC08D?style=for-the-badge&logo=vuedotjs" alt="Vue 3">
+  <img src="https://img.shields.io/badge/PostgreSQL-16_+_pgvector-336791?style=for-the-badge&logo=postgresql" alt="PostgreSQL pgvector">
+  <img src="https://img.shields.io/badge/WhatsApp-GOWA_QR_+_Meta_API-25D366?style=for-the-badge&logo=whatsapp" alt="WhatsApp GOWA">
+  <img src="https://img.shields.io/badge/Despliegue-Coolify_/_Docker-2496ED?style=for-the-badge&logo=docker" alt="Coolify Ready">
+</p>
 
 ---
 
-Chatwoot is the modern, open-source, and self-hosted customer support platform designed to help businesses deliver exceptional customer support experience. Built for scale and flexibility, Chatwoot gives you full control over your customer data while providing powerful tools to manage conversations across channels.
+## 🌟 Descripción General
 
-### ✨ Captain – AI Agent for Support
+**AIRM by Giantucchi** es una plataforma soberana de gestión de relaciones con clientes (CRM) y atención omnicanal potenciada por Inteligencia Artificial. Diseñada para equipos de ventas, marketing y soporte técnico que buscan centralizar todas sus conversaciones en una única bandeja colaborativa, calificar prospectos en automático y cerrar más tratos sin fricción.
 
-Supercharge your support with Captain, Chatwoot’s AI agent. Captain helps automate responses, handle common queries, and reduce agent workload—ensuring customers get instant, accurate answers. With Captain, your team can focus on complex conversations while routine questions are resolved automatically. Read more about Captain [here](https://chwt.app/captain-docs).
+Cuenta con la edición **Enterprise totalmente desbloqueada**, integración nativa con **WhatsApp No Oficial vía código QR (GOWA)**, pasarela oficial **Meta Cloud API**, **Landing Page de presentación** y configuración lista para producción en **Coolify**.
 
-### 💬 Omnichannel Support Desk
+---
 
-Chatwoot centralizes all customer conversations into one powerful inbox, no matter where your customers reach out from. It supports live chat on your website, email, Facebook, Instagram, Twitter, WhatsApp, Telegram, Line, SMS etc.
+## ✨ Características Principales
 
-### 📚 Help center portal
+### 📱 1. Omnicanalidad Completa y WhatsApp Multidispositivo
+* **WhatsApp No Oficial (GOWA QR)**: Vinculación instantánea escaneando un código QR desde WhatsApp en tu teléfono, sin trámites ni aprobaciones complejas.
+* **WhatsApp Business Oficial (Meta Cloud API)**: Para envíos masivos oficiales y plantillas verificadas.
+* **Instagram Direct Messages**: Recepción y respuesta a mensajes directos y menciones en historias.
+* **Facebook Messenger**: Gestión unificada de páginas comerciales.
+* **Telegram Bot API**: Canales y grupos de atención directa.
+* **Live Chat WebWidget**: Widget personalizable para sitios web y aplicaciones móviles con soporte en tiempo real.
+* **Correo Electrónico**: Bandejas de entrada bidireccionales con soporte SMTP/IMAP y enrutamiento inteligente.
 
-Publish help articles, FAQs, and guides through the built-in Help Center Portal. Enable customers to find answers on their own, reduce repetitive queries, and keep your support team focused on more complex issues.
+### 🤖 2. Agentes de IA & Automatizaciones Autónomas
+* **Copilotos de IA 24/7**: Respuestas contextuales basadas en base de conocimientos, catálogos o manuales de soporte.
+* **Calificación Automática de Leads**: Detección en tiempo real de intención de compra, sentimiento y presupuesto del cliente.
+* **Macros y Reglas de Automatización**: Asignación automática por Round-Robin, etiquetado inteligente y alertas por eventos.
 
-### 🗂️ Other features
+### 📊 3. Pipeline CRM y Gestión Comercial Kanban
+* **Tableros Visuales**: Seguimiento del estado de los prospectos (Nuevos, En Proceso, Calificados, Negociación, Cerrados).
+* **Campos Personalizados**: Atributos personalizados para clientes y empresas.
+* **Reportes y Analíticas**: Tiempos de primera respuesta (FRT), volumen de conversaciones y rendimiento por agente.
 
-#### Collaboration & Productivity
+### 🏢 4. Capacidades Enterprise Desbloqueadas
+* Multi-agentes y multi-cuentas sin límites de cuota artificiales.
+* Registro de auditoría y reportes avanzados.
+* Módulos de videollamadas integradas (Cloudflare RealtimeKit).
+* Asignación de roles y permisos personalizados por equipo (Ventas, Soporte, Finanzas).
 
-- Private Notes and @mentions for internal team discussions.
-- Labels to organize and categorize conversations.
-- Keyboard Shortcuts and a Command Bar for quick navigation.
-- Canned Responses to reply faster to frequently asked questions.
-- Auto-Assignment to route conversations based on agent availability.
-- Multi-lingual Support to serve customers in multiple languages.
-- Custom Views and Filters for better inbox organization.
-- Business Hours and Auto-Responders to manage response expectations.
-- Teams and Automation tools for scaling support workflows.
-- Agent Capacity Management to balance workload across the team.
+### 🌐 5. Landing Page de Presentación
+* Página web de inicio moderna en la raíz (`/`) con estética oscura, gradientes de neón y simulación interactiva en tiempo real.
+* Acceso directo para usuarios registrados en `/app/login` y panel de administración en `/app`.
 
-#### Customer Data & Segmentation
-- Contact Management with profiles and interaction history.
-- Contact Segments and Notes for targeted communication.
-- Campaigns to proactively engage customers.
-- Custom Attributes for storing additional customer data.
-- Pre-Chat Forms to collect user information before starting conversations.
+---
 
-#### Integrations
-- Slack Integration to manage conversations directly from Slack.
-- Dialogflow Integration for chatbot automation.
-- Dashboard Apps to embed internal tools within Chatwoot.
-- Shopify Integration to view and manage customer orders right within Chatwoot.
-- Use Google Translate to translate messages from your customers in realtime.
-- Create and manage Linear tickets within Chatwoot.
+## 🏗️ Arquitectura de Servicios
 
-#### Reports & Insights
-- Live View of ongoing conversations for real-time monitoring.
-- Conversation, Agent, Inbox, Label, and Team Reports for operational visibility.
-- CSAT Reports to measure customer satisfaction.
-- Downloadable Reports for offline analysis and reporting.
+El sistema se compone de 5 microservicios orquestados:
 
+```mermaid
+graph TD
+    Client[Clientes Web & Móviles] -->|HTTPS / WSS| Web[Puma / Rails Web & API :3000]
+    Web -->|Lectura / Escritura| DB[(PostgreSQL 16 + pgvector)]
+    Web -->|Cache & WebSockets| Redis[(Redis 7)]
+    Web -->|QR & Mensajería No Oficial| GOWA[GOWA WhatsApp Service :3030]
+    GOWA -->|Webhooks| Web
+    Workers[Sidekiq Background Workers] --> DB
+    Workers --> Redis
+```
 
-## Documentation
+---
 
-Detailed documentation is available at [chatwoot.com/help-center](https://www.chatwoot.com/help-center).
+## 🚀 Despliegue Rápido
 
-## Translation process
+### Opción A: Despliegue en Producción con Coolify (Recomendado)
 
-The translation process for Chatwoot web and mobile app is managed at [https://translate.chatwoot.com](https://translate.chatwoot.com) using Crowdin. Please read the [translation guide](https://www.chatwoot.com/docs/contributing/translating-chatwoot-to-your-language) for contributing to Chatwoot.
+1. En tu panel de **Coolify**, crea un nuevo recurso tipo **Docker Compose**.
+2. Copia y pega el contenido del archivo [`docker-compose.prod.yaml`](docker-compose.prod.yaml).
+3. En la pestaña **Environment Variables**, configura las variables según el archivo [`.env.production.example`](.env.production.example):
+   ```env
+   SECRET_KEY_BASE=tu_clave_secreta_64_caracteres
+   FRONTEND_URL=https://app.tu-dominio.com
+   GOWA_PUBLIC_URL=https://gowa.tu-dominio.com
+   POSTGRES_PASSWORD=tu_password_postgres
+   REDIS_PASSWORD=tu_password_redis
+   ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=tu_clave_hex_32_bytes
+   ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=tu_clave_hex_32_bytes
+   ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=tu_clave_hex_32_bytes
+   ```
+4. Asigna tu dominio en Coolify y presiona **Deploy**.
 
-## Branching model
+---
 
-We use the [git-flow](https://nvie.com/posts/a-successful-git-branching-model/) branching model. The base branch is `develop`.
-If you are looking for a stable version, please use the `master` or tags labelled as `v1.x.x`.
+### Opción B: Ejecución Local en Desarrollo
 
-## Deployment
+1. **Clonar el repositorio**:
+   ```bash
+   git clone https://github.com/datasch/AIRMv2.git
+   cd AIRMv2
+   ```
 
-### Heroku one-click deploy
+2. **Levantar los servicios con Docker Compose**:
+   ```bash
+   docker compose up -d
+   ```
 
-Deploying Chatwoot to Heroku is a breeze. It's as simple as clicking this button:
+3. **Ejecutar migraciones y datos iniciales**:
+   ```bash
+   docker exec -it chatwoot-rails-1 bundle exec rails db:chatwoot_prepare
+   ```
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/chatwoot/chatwoot/tree/master)
+4. **Acceder a la plataforma**:
+   * Landing de presentación: `http://localhost:3000/`
+   * Inicio de sesión: `http://localhost:3000/app/login`
+   * Super Administrador: `http://localhost:3000/super_admin`
+   * Microservicio WhatsApp (GOWA): `http://localhost:3030`
 
-Follow this [link](https://www.chatwoot.com/docs/environment-variables) to understand setting the correct environment variables for the app to work with all the features. There might be breakages if you do not set the relevant environment variables.
+---
 
+## 🔒 Variables de Entorno Clave
 
-### DigitalOcean 1-Click Kubernetes deployment
+| Variable | Descripción | Valor por Defecto / Ejemplo |
+| :--- | :--- | :--- |
+| `FRONTEND_URL` | URL pública de la aplicación | `https://app.giantucchi.com` |
+| `GOWA_URL` | URL interna del servicio GOWA | `http://gowa:3000` |
+| `GOWA_PUBLIC_URL` | URL pública para la pasarela de WhatsApp | `https://gowa.giantucchi.com` |
+| `INSTALLATION_NAME`| Nombre de la plataforma | `AIRM by Giantucchi` |
+| `BRAND_NAME` | Nombre de marca | `AIRM` |
+| `BRAND_URL` | Sitio web oficial | `https://giantucchi.com` |
 
-Chatwoot now supports 1-Click deployment to DigitalOcean as a kubernetes app.
+---
 
-<a href="https://marketplace.digitalocean.com/apps/chatwoot?refcode=f2238426a2a8" alt="Deploy to DigitalOcean">
-  <img width="200" alt="Deploy to DO" src="https://www.deploytodo.com/do-btn-blue.svg"/>
-</a>
+## 🛠️ Stack Tecnológico
 
-### Other deployment options
+* **Backend**: Ruby on Rails 7.1, Puma, Sidekiq, Devise Token Auth.
+* **Frontend**: Vue.js 3, Vite, Tailwind CSS, Pinia / Vuex.
+* **WhatsApp Gateway**: Go (GOWA Multi-device WhatsApp Web).
+* **Bases de Datos**: PostgreSQL 16 con extensión `pgvector` y Redis 7 Alpine.
+* **Contenedores**: Docker multi-stage builds optimizados para producción.
 
-For other supported options, checkout our [deployment page](https://chatwoot.com/deploy).
+---
 
-## Security
+## 📄 Licencia y Créditos
 
-Looking to report a vulnerability? Please refer our [SECURITY.md](./SECURITY.md) file.
-
-## Community
-
-If you need help or just want to hang out, come, say hi on our [Discord](https://discord.gg/cJXdrwS) server.
-
-## Contributors
-
-Thanks goes to all these [wonderful people](https://www.chatwoot.com/docs/contributors):
-
-<a href="https://github.com/chatwoot/chatwoot/graphs/contributors"><img src="https://opencollective.com/chatwoot/contributors.svg?width=890&button=false" /></a>
-
-
-*Chatwoot* &copy; 2017-2026, Chatwoot Inc - Released under the MIT License.
+Desarrollado y mantenido por **[Giantucchi](https://giantucchi.com)**.
+© 2026 Giantucchi. Todos los derechos reservados.
