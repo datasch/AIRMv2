@@ -8,7 +8,7 @@ rm -rf /app/tmp/cache/*
 
 echo "Waiting for postgres to become ready...."
 
-# Let DATABASE_URL env take presedence over individual connection params.
+# Let DATABASE_URL env take precedence over individual connection params.
 # This is done to avoid printing the DATABASE_URL in the logs
 $(docker/entrypoints/helpers/pg_database_url.rb)
 PG_READY="pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USERNAME"
@@ -29,6 +29,12 @@ until $BUNDLE
 do
   sleep 2;
 done
+
+# Auto-prepare / migrate database on startup if production
+if [ "$RAILS_ENV" = "production" ]; then
+  echo "Checking database and running migrations..."
+  bundle exec rails db:chatwoot_prepare || bundle exec rails db:migrate || true
+fi
 
 # Execute the main process of the container
 exec "$@"
