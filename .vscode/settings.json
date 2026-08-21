@@ -20,6 +20,10 @@
         "realtimekit",
         "multidispositivo",
         "omnicanal",
-        "omnicanalidad"
+        "omnicanalidad",
+        "pids",
+        "isready",
+        "entrypoint",
+        "entrypoints"
     ]
 }
