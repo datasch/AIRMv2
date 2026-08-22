@@ -7,17 +7,33 @@ class Campaigns::SendGowaMessageJob < ApplicationJob
     campaign = Campaign.find_by(id: campaign_id)
     contact = Contact.find_by(id: contact_id)
 
-    return if campaign.blank? || contact.blank? || contact.phone_number.blank?
-    return if campaign.inbox.blank?
+    if campaign.blank? || contact.blank? || contact.phone_number.blank?
+      Rails.logger.warn "[GOWA Campaign #{campaign_id}] Skipping send: campaign or contact missing / no phone number"
+      return
+    end
+
+    if campaign.inbox.blank?
+      Rails.logger.warn "[GOWA Campaign #{campaign_id}] Skipping send: inbox not found"
+      return
+    end
 
     content = Liquid::CampaignTemplateService.new(campaign: campaign, contact: contact).call(campaign.message)
-    return if content.blank?
+    if content.blank?
+      Rails.logger.warn "[GOWA Campaign #{campaign_id}] Skipping contact #{contact.id}: message content is blank after Liquid rendering"
+      return
+    end
 
     contact_inbox = find_or_create_contact_inbox(campaign.inbox, contact)
-    return if contact_inbox.blank?
+    if contact_inbox.blank?
+      Rails.logger.warn "[GOWA Campaign #{campaign_id}] Failed to find or create contact_inbox for contact #{contact.id}"
+      return
+    end
 
     conversation = find_or_create_conversation(campaign, contact, contact_inbox)
-    return if conversation.blank?
+    if conversation.blank?
+      Rails.logger.warn "[GOWA Campaign #{campaign_id}] Failed to find or create conversation for contact #{contact.id}"
+      return
+    end
 
     message_params = ActionController::Parameters.new({
       content: content,
@@ -28,6 +44,8 @@ class Campaigns::SendGowaMessageJob < ApplicationJob
 
     sender = campaign.sender || campaign.account.administrators.first
     message = Messages::MessageBuilder.new(sender, conversation, message_params).perform
+
+    Rails.logger.info "[GOWA Campaign #{campaign_id}] Successfully dispatched message #{message&.id} to #{contact.phone_number} (Conversation #{conversation.id})"
 
     if defined?(CampaignRecipient)
       recipient = campaign.campaign_recipients.find_by(contact: contact)
@@ -46,16 +64,16 @@ class Campaigns::SendGowaMessageJob < ApplicationJob
   private
 
   def find_or_create_contact_inbox(inbox, contact)
+    clean_phone = contact.phone_number.to_s.gsub(/\D/, '')
     contact.contact_inboxes.find_by(inbox: inbox) ||
       ContactInboxBuilder.new(
         contact: contact,
         inbox: inbox,
-        source_id: contact.phone_number.delete('+')
+        source_id: clean_phone.presence || contact.phone_number.delete('+')
       ).perform
   end
 
   def find_or_create_conversation(campaign, contact, contact_inbox)
-    # Prefer existing open conversation, or create a new one for this campaign
     conversation = contact_inbox.conversations.where(status: [:open, :pending]).last
 
     if conversation.blank?

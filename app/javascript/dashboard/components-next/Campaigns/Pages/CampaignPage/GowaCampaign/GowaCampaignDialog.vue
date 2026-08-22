@@ -38,11 +38,22 @@ const handleClose = () => emit('close');
 
 <template>
   <div
-    class="w-[28rem] z-50 min-w-0 absolute top-10 ltr:right-0 rtl:left-0 bg-n-alpha-3 backdrop-blur-[100px] p-6 rounded-xl border border-n-weak shadow-md flex flex-col gap-6"
+    class="w-[30rem] max-w-[95vw] max-h-[calc(100vh-5rem)] overflow-y-auto z-50 min-w-0 absolute top-10 ltr:right-0 rtl:left-0 bg-n-solid-2 dark:bg-n-solid-1 p-6 rounded-xl border border-n-weak shadow-2xl flex flex-col gap-6"
   >
-    <h3 class="text-base font-medium text-n-slate-12">
-      {{ t('CAMPAIGN.GOWA.CREATE.TITLE') }}
-    </h3>
+    <div
+      class="flex items-center justify-between sticky -top-6 -mx-6 px-6 py-4 bg-n-solid-2 dark:bg-n-solid-1 border-b border-n-weak z-10"
+    >
+      <h3 class="text-base font-medium text-n-slate-12">
+        {{ t('CAMPAIGN.GOWA.CREATE.TITLE') }}
+      </h3>
+      <button
+        type="button"
+        class="text-n-slate-10 hover:text-n-slate-12 p-1 rounded-md transition-colors"
+        @click="handleClose"
+      >
+        <span class="i-lucide-x w-5 h-5 block" />
+      </button>
+    </div>
     <GowaCampaignForm @submit="handleSubmit" @cancel="handleClose" />
   </div>
 </template>

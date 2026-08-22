@@ -9,10 +9,17 @@ class Whatsapp::GowaOneoffCampaignService
   def perform
     validate_campaign!
 
-    audience_labels = extract_audience_labels
-    contacts = campaign.account.contacts.tagged_with(audience_labels, any: true).where.not(phone_number: [nil, ''])
+    contacts = audience_contacts
+    contact_count = contacts.count
+    labels = extract_audience_labels
 
-    Rails.logger.info "[GOWA Campaign #{campaign.id}] Processing #{contacts.count} audience contacts"
+    Rails.logger.info "[GOWA Campaign #{campaign.id}] Processing #{contact_count} audience contacts for labels: #{labels.inspect}"
+
+    if contact_count.zero?
+      Rails.logger.warn "[GOWA Campaign #{campaign.id}] No audience contacts with valid phone numbers found for labels: #{labels.inspect}. Marking completed."
+      campaign.completed!
+      return
+    end
 
     delay_counter = 0
 
@@ -45,7 +52,7 @@ class Whatsapp::GowaOneoffCampaignService
       campaign.completed!
     end
 
-    Rails.logger.info "[GOWA Campaign #{campaign.id}] All messages enqueued successfully with anti-ban delays"
+    Rails.logger.info "[GOWA Campaign #{campaign.id}] All #{contact_count} messages enqueued successfully with anti-ban delays"
   end
 
   private
@@ -63,7 +70,30 @@ class Whatsapp::GowaOneoffCampaignService
   end
 
   def extract_audience_labels
-    audience_label_ids = campaign.audience.select { |audience| audience['type'] == 'Label' }.pluck('id')
+    return [] if campaign.audience.blank?
+
+    audience_label_ids = campaign.audience.map do |aud|
+      aud = aud.with_indifferent_access if aud.is_a?(Hash)
+      aud[:id] if aud.is_a?(Hash) && (aud[:type].to_s == 'Label' || aud['type'].to_s == 'Label')
+    end.compact
+
     campaign.account.labels.where(id: audience_label_ids).pluck(:title)
+  end
+
+  def audience_contacts
+    labels = extract_audience_labels
+    return campaign.account.contacts.none if labels.blank?
+
+    # Find contacts directly tagged with the audience labels
+    tagged_contact_ids = campaign.account.contacts.tagged_with(labels, any: true).pluck(:id)
+
+    # Also find contacts whose conversations are tagged with the audience labels
+    conversation_contact_ids = campaign.account.conversations.tagged_with(labels, any: true).pluck(:contact_id)
+
+    all_contact_ids = (tagged_contact_ids + conversation_contact_ids).compact.uniq
+
+    campaign.account.contacts
+            .where(id: all_contact_ids)
+            .where.not(phone_number: [nil, ''])
   end
 end
