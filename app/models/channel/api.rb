@@ -31,11 +31,29 @@ class Channel::Api < ApplicationRecord
   validate :ensure_valid_agent_reply_time_window
   validates :webhook_url, length: { maximum: Limits::URL_LENGTH_LIMIT }
 
+  after_destroy_commit :logout_gowa_device
+
   def name
     'API'
   end
 
   private
+
+  def logout_gowa_device
+    return unless webhook_url.to_s.include?('chatwoot/webhook') && webhook_url.to_s.include?('device_id=')
+
+    uri = URI.parse(webhook_url)
+    return unless uri.query
+
+    params = CGI.parse(uri.query)
+    device_id = params['device_id']&.first
+
+    return if device_id.blank?
+
+    GowaLogoutJob.perform_later(device_id)
+  rescue StandardError => e
+    Rails.logger.error "[GOWA] Failed to enqueue logout job: #{e.message}"
+  end
 
   def ensure_valid_agent_reply_time_window
     return if additional_attributes['agent_reply_time_window'].blank?
