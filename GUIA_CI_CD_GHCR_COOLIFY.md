@@ -76,21 +76,31 @@ services:
     environment:
       - RAILS_ENV=production
       - NODE_ENV=production
+      - INSTALLATION_ENV=docker
+      - BUNDLE_FORCE_RUBY_PLATFORM=1
+      - EXECJS_RUNTIME=Disabled
       - RAILS_SERVE_STATIC_FILES=true
-      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
-      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE:-f89b0c8ca72e50112353e8fc153b43a24fc1656cf2492266a5de8ae5374e29d93709bd07ab5fee72bb364f41f00af21967656a66d88341bf9abd9138c40e332d}
+      - FRONTEND_URL=${FRONTEND_URL:-https://airm.giantucchi.com}
       - HELPCENTER_URL=${HELPCENTER_URL:-}
       - POSTGRES_DATABASE=${POSTGRES_DATABASE:-chatwoot_production}
       - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
       - POSTGRES_USERNAME=${POSTGRES_USERNAME:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - REDIS_URL=redis://default:${REDIS_PASSWORD:-redispassword}@redis:6379/0
       - GOWA_URL=http://gowa:3000
       - GOWA_PUBLIC_URL=${GOWA_PUBLIC_URL:-http://localhost:3030}
-      - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY}
-      - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=${ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY}
-      - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=${ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT}
+      - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY:-d0fbefd4b17eac815e2ac70cf26b4dea}
+      - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=${ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY:-bd6f095c423938798a37f03f010d48f9}
+      - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=${ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT:-9d9aeb46b718bb12080d942bba86db81}
       - MAILER_SENDER_EMAIL=${MAILER_SENDER_EMAIL:-AIRM <soporte@giantucchi.com>}
+      - SMTP_ADDRESS=${SMTP_ADDRESS:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USERNAME=${SMTP_USERNAME:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-plain}
+      - SMTP_ENABLE_STARTTLS_AUTO=${SMTP_ENABLE_STARTTLS_AUTO:-true}
     volumes:
       - storage_data:/app/storage
     depends_on:
@@ -98,13 +108,14 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    ports:
-      - "${PORT:-3000}:3000"
+    expose:
+      - "3000"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/health_check || exit 1"]
-      interval: 30s
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/health || exit 1"]
+      interval: 20s
       timeout: 10s
-      retries: 3
+      retries: 5
+      start_period: 60s
 
   sidekiq:
     image: ghcr.io/datasch/airm:latest
@@ -113,17 +124,21 @@ services:
     environment:
       - RAILS_ENV=production
       - NODE_ENV=production
-      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
-      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - INSTALLATION_ENV=docker
+      - BUNDLE_FORCE_RUBY_PLATFORM=1
+      - EXECJS_RUNTIME=Disabled
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE:-f89b0c8ca72e50112353e8fc153b43a24fc1656cf2492266a5de8ae5374e29d93709bd07ab5fee72bb364f41f00af21967656a66d88341bf9abd9138c40e332d}
+      - FRONTEND_URL=${FRONTEND_URL:-https://airm.giantucchi.com}
       - POSTGRES_DATABASE=${POSTGRES_DATABASE:-chatwoot_production}
       - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
       - POSTGRES_USERNAME=${POSTGRES_USERNAME:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - REDIS_URL=redis://default:${REDIS_PASSWORD:-redispassword}@redis:6379/0
       - GOWA_URL=http://gowa:3000
-      - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY}
-      - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=${ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY}
-      - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=${ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT}
+      - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY:-d0fbefd4b17eac815e2ac70cf26b4dea}
+      - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=${ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY:-bd6f095c423938798a37f03f010d48f9}
+      - ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=${ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT:-9d9aeb46b718bb12080d942bba86db81}
     volumes:
       - storage_data:/app/storage
     depends_on:
@@ -141,8 +156,8 @@ services:
       - CHATWOOT_URL=http://rails:3000
     volumes:
       - gowa_data:/app/storages
-    ports:
-      - "${GOWA_PORT:-3030}:3000"
+    expose:
+      - "3000"
 
   postgres:
     image: pgvector/pgvector:pg16
@@ -154,7 +169,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME:-postgres} -d ${POSTGRES_DATABASE:-chatwoot_production}"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U ${POSTGRES_USERNAME:-postgres} -d ${POSTGRES_DATABASE:-chatwoot_production}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -177,6 +192,10 @@ volumes:
   storage_data:
   gowa_data:
 ```
+
+2. En la interfaz de Coolify:
+   - En el servicio **`rails`**, en el campo **Domains (FQDN)** asegúrate de colocar: `https://airm.giantucchi.com`.
+   - Haz clic en **Save** y luego en **Deploy**.
 
 ---
 

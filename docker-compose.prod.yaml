@@ -7,6 +7,7 @@ services:
     environment:
       - RAILS_ENV=production
       - NODE_ENV=production
+      - INSTALLATION_ENV=docker
       - BUNDLE_FORCE_RUBY_PLATFORM=1
       - EXECJS_RUNTIME=Disabled
       - RAILS_SERVE_STATIC_FILES=true
@@ -38,26 +39,14 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    ports:
-      - "3000:3000"
-    labels:
-      - "coolify.managed=true"
-      - "traefik.enable=true"
-      - "traefik.docker.network=coolify"
-      - "traefik.http.routers.rails.rule=Host(`airm.giantucchi.com`)"
-      - "traefik.http.routers.rails.entrypoints=web,websecure"
-      - "traefik.http.routers.rails.tls=true"
-      - "traefik.http.routers.rails.tls.certresolver=letsencrypt"
-      - "traefik.http.services.rails.loadbalancer.server.port=3000"
-    networks:
-      - default
-      - coolify
+    expose:
+      - "3000"
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/health || exit 1"]
-      interval: 30s
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/health || exit 1"]
+      interval: 20s
       timeout: 10s
-      retries: 3
-      start_period: 45s
+      retries: 5
+      start_period: 60s
 
   sidekiq:
     image: ghcr.io/datasch/airm:latest
@@ -66,6 +55,7 @@ services:
     environment:
       - RAILS_ENV=production
       - NODE_ENV=production
+      - INSTALLATION_ENV=docker
       - BUNDLE_FORCE_RUBY_PLATFORM=1
       - EXECJS_RUNTIME=Disabled
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-f89b0c8ca72e50112353e8fc153b43a24fc1656cf2492266a5de8ae5374e29d93709bd07ab5fee72bb364f41f00af21967656a66d88341bf9abd9138c40e332d}
@@ -97,8 +87,8 @@ services:
       - CHATWOOT_URL=http://rails:3000
     volumes:
       - gowa_data:/app/storages
-    ports:
-      - "3030:3000"
+    expose:
+      - "3000"
 
   postgres:
     image: pgvector/pgvector:pg16
@@ -110,7 +100,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME:-postgres} -d ${POSTGRES_DATABASE:-chatwoot_production}"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U ${POSTGRES_USERNAME:-postgres} -d ${POSTGRES_DATABASE:-chatwoot_production}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -132,8 +122,3 @@ volumes:
   redis_data:
   storage_data:
   gowa_data:
-
-networks:
-  default:
-  coolify:
-    external: true
