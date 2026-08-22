@@ -6,48 +6,48 @@
   account_name = account_user&.account&.name
   invited_user = inviter.present? && @resource.unconfirmed_email.blank?
 
-  eyebrow = 'Welcome'
-  heading = 'Confirm your email to get started'
+  eyebrow = 'Bienvenido'
+  heading = 'Confirma tu correo para comenzar'
   intro_text =
-    "Welcome to #{brand_name}. We just need to verify your email address before you can start using your account."
-  supporting_text = 'This only takes a moment.'
-  action_text = 'Confirm my account'
+    "Te damos la bienvenida a #{brand_name}. Solo necesitamos verificar tu correo electrónico antes de que puedas empezar a usar tu cuenta."
+  supporting_text = 'Esto solo tomará un momento.'
+  action_text = 'Confirmar mi cuenta'
   action_url = frontend_url('auth/confirmation', confirmation_token: @token)
   info_title = nil
   info_text = nil
   detail_rows = []
-  detail_rows << ['New email', @resource.unconfirmed_email] if @resource.unconfirmed_email.present?
+  detail_rows << ['Nuevo correo', @resource.unconfirmed_email] if @resource.unconfirmed_email.present?
 
   if @resource.unconfirmed_email.present?
-    eyebrow = 'Email update'
-    heading = 'Confirm your new email address'
-    intro_text = "We received a request to update the email address on your #{brand_name} account."
-    supporting_text = 'Confirm the new address below to finish the change.'
-    action_text = 'Confirm email address'
+    eyebrow = 'Actualización de correo'
+    heading = 'Confirma tu nueva dirección de correo'
+    intro_text = "Recibimos una solicitud para actualizar el correo electrónico en tu cuenta de #{brand_name}."
+    supporting_text = 'Confirma la nueva dirección abajo para completar el cambio.'
+    action_text = 'Confirmar dirección de correo'
   elsif @resource.confirmed?
-    eyebrow = 'Account ready'
-    heading = 'Your account is ready'
-    intro_text = "Your #{brand_name} account is already active."
-    supporting_text = 'Use the button below to sign in and continue where you left off.'
-    action_text = 'Open my account'
+    eyebrow = 'Cuenta lista'
+    heading = 'Tu cuenta está lista'
+    intro_text = "Tu cuenta de #{brand_name} ya se encuentra activa."
+    supporting_text = 'Usa el botón de abajo para iniciar sesión y continuar donde lo dejaste.'
+    action_text = 'Abrir mi cuenta'
     action_url = frontend_url('auth/sign_in')
     detail_rows = []
   elsif invited_user
-    eyebrow = 'Workspace invitation'
-    heading = account_name.present? ? "You're invited to join #{account_name}" : "You're invited to try #{brand_name}"
+    eyebrow = 'Invitación al espacio de trabajo'
+    heading = account_name.present? ? "Has sido invitado a unirte a #{account_name}" : "Has sido invitado a unirte a #{brand_name}"
     intro_text = if account_name.present?
-      "#{inviter.name} invited you to join the #{account_name} workspace on #{brand_name}."
+      "#{inviter.name} te ha invitado a unirte al espacio de trabajo #{account_name} en #{brand_name}."
     else
-      "#{inviter.name} invited you to try #{brand_name}."
+      "#{inviter.name} te ha invitado a colaborar en #{brand_name}."
     end
-    supporting_text = 'Create your account to start collaborating with your team.'
-    action_text = 'Accept invitation'
+    supporting_text = 'Crea tu cuenta para empezar a colaborar con tu equipo.'
+    action_text = 'Aceptar invitación'
     action_url = frontend_url(
       'auth/password/edit',
       reset_password_token: @resource.send(:set_reset_password_token)
     )
-    detail_rows = [['Invited by', inviter.name]]
-    detail_rows << ['Workspace', account_name] if account_name.present?
+    detail_rows = [['Invitado por', inviter.name]]
+    detail_rows << ['Espacio de trabajo', account_name] if account_name.present?
   end
 %>
 
