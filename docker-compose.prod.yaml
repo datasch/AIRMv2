@@ -23,7 +23,7 @@ services:
       - POSTGRES_PORT=5432
       - POSTGRES_USERNAME=${POSTGRES_USERNAME:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - REDIS_URL=redis://default:${REDIS_PASSWORD:-redispassword}@redis:6379/0
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redispassword}@redis:6379/0
       - GOWA_URL=http://gowa:3000
       - GOWA_PUBLIC_URL=${GOWA_PUBLIC_URL:-http://localhost:3030}
       - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY:-d0fbefd4b17eac815e2ac70cf26b4dea}
@@ -72,7 +72,7 @@ services:
       - POSTGRES_PORT=5432
       - POSTGRES_USERNAME=${POSTGRES_USERNAME:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - REDIS_URL=redis://default:${REDIS_PASSWORD:-redispassword}@redis:6379/0
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redispassword}@redis:6379/0
       - GOWA_URL=http://gowa:3000
       - ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY:-d0fbefd4b17eac815e2ac70cf26b4dea}
       - ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=${ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY:-bd6f095c423938798a37f03f010d48f9}
