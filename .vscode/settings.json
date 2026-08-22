@@ -1,6 +1,7 @@
 {
     "cSpell.enabled": true,
     "cSpell.language": "en,es",
+    "cSpell.diagnosticLevel": "Hint",
     "cSpell.ignorePaths": [
         "README.md",
         "**/*.md",
@@ -10,6 +11,9 @@
         "**/locales/**",
         "**/i18n/**",
         "**/*.erb",
+        "**/*.vue",
+        "**/*.js",
+        "**/*.rb",
         "config/initializers/languages.rb",
         "Dockerfile*"
     ],
