@@ -1055,50 +1055,50 @@
     },
     "ASSIGNMENT": {
       "TITLE": "Asignación de conversación",
-      "DESCRIPTION": "Automatically assign incoming conversations to available agents based on assignment policies",
-      "ENABLE_AUTO_ASSIGNMENT": "Enable automatic conversation assignment",
-      "DEFAULT_RULES_TITLE": "Default assignment rules",
-      "DEFAULT_RULES_DESCRIPTION": "Using the default assignment behavior for all conversations",
-      "DEFAULT_RULE_1": "Earliest created conversations first",
-      "DEFAULT_RULE_2": "Round robin distribution",
-      "CUSTOMIZE_WITH_POLICY": "Customize with assignment policy",
-      "USING_POLICY": "Using custom assignment policy for this inbox",
-      "CUSTOMIZE_POLICY": "Customize with assignment policy",
-      "DELETE_POLICY": "Delete policy",
-      "POLICY_LABEL": "Assignment policy",
-      "ASSIGNMENT_ORDER_LABEL": "Assignment Order",
-      "ASSIGNMENT_METHOD_LABEL": "Assignment Method",
+      "DESCRIPTION": "Asignar automáticamente conversaciones entrantes a agentes disponibles según las políticas de asignación",
+      "ENABLE_AUTO_ASSIGNMENT": "Habilitar asignación automática de conversaciones",
+      "DEFAULT_RULES_TITLE": "Reglas de asignación predeterminadas",
+      "DEFAULT_RULES_DESCRIPTION": "Usando el comportamiento de asignación predeterminado para todas las conversaciones",
+      "DEFAULT_RULE_1": "Conversaciones creadas primero primero",
+      "DEFAULT_RULE_2": "Distribución Round Robin (rotativa)",
+      "CUSTOMIZE_WITH_POLICY": "Personalizar con política de asignación",
+      "USING_POLICY": "Usando política de asignación personalizada para esta bandeja",
+      "CUSTOMIZE_POLICY": "Personalizar con política de asignación",
+      "DELETE_POLICY": "Eliminar política",
+      "POLICY_LABEL": "Política de asignación",
+      "ASSIGNMENT_ORDER_LABEL": "Orden de asignación",
+      "ASSIGNMENT_METHOD_LABEL": "Método de asignación",
       "POLICY_STATUS": {
         "ACTIVE": "Activo",
-        "INACTIVE": "Inactive"
+        "INACTIVE": "Inactivo"
       },
       "PRIORITY": {
-        "EARLIEST_CREATED": "Earliest created",
-        "LONGEST_WAITING": "Longest waiting"
+        "EARLIEST_CREATED": "Creado más temprano",
+        "LONGEST_WAITING": "Mayor tiempo de espera"
       },
       "METHOD": {
-        "ROUND_ROBIN": "Round robin",
-        "BALANCED": "Balanced assignment"
+        "ROUND_ROBIN": "Round robin (Rotativo)",
+        "BALANCED": "Asignación balanceada"
       },
-      "UPGRADE_PROMPT": "Custom assignment policies are available on the Business plan",
-      "UPGRADE_TO_BUSINESS": "Upgrade to Business",
-      "DEFAULT_POLICY_LINKED": "Default policy linked",
-      "DEFAULT_POLICY_DESCRIPTION": "Link a custom assignment policy to customize how conversations are assigned to agents in this inbox.",
-      "LINK_EXISTING_POLICY": "Link existing policy",
-      "CREATE_NEW_POLICY": "Create new policy",
-      "NO_POLICIES": "No assignment policies found",
-      "VIEW_ALL_POLICIES": "View all policies",
-      "CURRENT_BEHAVIOR": "Currently using default assignment behavior:",
-      "LINK_SUCCESS": "Assignment policy linked successfully",
-      "LINK_ERROR": "Failed to link assignment policy"
+      "UPGRADE_PROMPT": "Las políticas de asignación personalizadas están disponibles en el plan Business",
+      "UPGRADE_TO_BUSINESS": "Actualizar a Business",
+      "DEFAULT_POLICY_LINKED": "Política predeterminada vinculada",
+      "DEFAULT_POLICY_DESCRIPTION": "Vincule una política de asignación personalizada para definir cómo se asignan las conversaciones a los agentes en esta bandeja.",
+      "LINK_EXISTING_POLICY": "Vincular política existente",
+      "CREATE_NEW_POLICY": "Crear nueva política",
+      "NO_POLICIES": "No se encontraron políticas de asignación",
+      "VIEW_ALL_POLICIES": "Ver todas las políticas",
+      "CURRENT_BEHAVIOR": "Actualmente usando el comportamiento predeterminado de asignación:",
+      "LINK_SUCCESS": "Política de asignación vinculada con éxito",
+      "LINK_ERROR": "No se pudo vincular la política de asignación"
     },
     "ASSIGNMENT_POLICY": {
-      "DELETE_CONFIRM_TITLE": "Delete assignment policy?",
-      "DELETE_CONFIRM_MESSAGE": "Are you sure you want to remove this assignment policy from this inbox? The inbox will revert to default assignment rules.",
+      "DELETE_CONFIRM_TITLE": "¿Eliminar política de asignación?",
+      "DELETE_CONFIRM_MESSAGE": "¿Está seguro de eliminar esta política de asignación de esta bandeja? La bandeja volverá a las reglas de asignación predeterminadas.",
       "CANCEL": "Cancelar",
       "CONFIRM_DELETE": "Eliminar",
-      "DELETE_SUCCESS": "Assignment policy removed successfully",
-      "DELETE_ERROR": "Failed to remove assignment policy"
+      "DELETE_SUCCESS": "Política de asignación eliminada con éxito",
+      "DELETE_ERROR": "No se pudo eliminar la política de asignación"
     },
     "FACEBOOK_REAUTHORIZE": {
       "TITLE": "Reautorizar",

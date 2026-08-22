@@ -2,40 +2,40 @@
   "CUSTOM_ROLE": {
     "HEADER": "Roles personalizados",
     "LEARN_MORE": "Obtenga más información sobre los roles personalizados",
-    "DESCRIPTION": "Custom roles are roles that are created by the account owner or admin. These roles can be assigned to agents to define their access and permissions within the account. Custom roles can be created with specific permissions and access levels to suit the requirements of the organization.",
-    "COUNT": "{n} custom role | {n} custom roles",
-    "HEADER_BTN_TXT": "Add custom role",
-    "LOADING": "Fetching custom roles...",
-    "SEARCH_PLACEHOLDER": "Search custom roles...",
-    "NO_RESULTS": "No custom roles found matching your search",
+    "DESCRIPTION": "Los roles personalizados son creados por el administrador para definir el acceso y permisos de los agentes. Permiten ajustar los niveles de acceso a las necesidades específicas de la organización.",
+    "COUNT": "{n} rol personalizado | {n} roles personalizados",
+    "HEADER_BTN_TXT": "Añadir rol personalizado",
+    "LOADING": "Cargando roles personalizados...",
+    "SEARCH_PLACEHOLDER": "Buscar roles personalizados...",
+    "NO_RESULTS": "No se encontraron roles personalizados que coincidan con la búsqueda",
     "SEARCH_404": "No hay elementos que coincidan con esta consulta.",
     "PAYWALL": {
-      "TITLE": "Upgrade to create custom roles",
-      "AVAILABLE_ON": "The custom role feature is only available in the Business and Enterprise plans.",
+      "TITLE": "Actualiza para crear roles personalizados",
+      "AVAILABLE_ON": "La función de roles personalizados solo está disponible en los planes Business y Enterprise.",
       "UPGRADE_PROMPT": "Actualiza tu plan para tener acceso a funciones avanzadas como gestión de equipos, automatizaciones, atributos personalizados y más.",
       "UPGRADE_NOW": "Actualizar ahora",
       "CANCEL_ANYTIME": "Puede cambiar o cancelar su plan en cualquier momento"
     },
     "ENTERPRISE_PAYWALL": {
-      "AVAILABLE_ON": "The custom role feature is only available in the paid plans.",
-      "UPGRADE_PROMPT": "Actualice a un plan pago para acceder a funciones avanzadas como registros de auditoría, capacidad de agente y más.",
+      "AVAILABLE_ON": "La función de roles personalizados solo está disponible en planes de pago.",
+      "UPGRADE_PROMPT": "Actualice a un plan de pago para acceder a funciones avanzadas como registros de auditoría, capacidad de agentes y más.",
       "ASK_ADMIN": "Por favor, comuníquese con su administrador para la actualización."
     },
     "LIST": {
-      "404": "There are no custom roles available in this account.",
-      "TITLE": "Manage custom roles",
-      "DESC": "Custom roles are roles that are created by the account owner or admin. These roles can be assigned to agents to define their access and permissions within the account. Custom roles can be created with specific permissions and access levels to suit the requirements of the organization.",
+      "404": "No hay roles personalizados disponibles en esta cuenta.",
+      "TITLE": "Administrar roles personalizados",
+      "DESC": "Los roles personalizados son creados por el administrador para definir el acceso y permisos de los agentes dentro de la cuenta según los requerimientos de la organización.",
       "TABLE_HEADER": {
         "NAME": "Nombre",
         "DESCRIPTION": "Descripción",
-        "PERMISSIONS": "Permissions",
+        "PERMISSIONS": "Permisos",
         "ACTIONS": "Acciones"
       }
     },
     "PERMISSIONS": {
-      "CONVERSATION_MANAGE": "Manage all conversations",
-      "CONVERSATION_UNASSIGNED_MANAGE": "Manage unassigned conversations and those assigned to them",
-      "CONVERSATION_PARTICIPATING_MANAGE": "Manage participating conversations and those assigned to them",
+      "CONVERSATION_MANAGE": "Administrar todas las conversaciones",
+      "CONVERSATION_UNASSIGNED_MANAGE": "Administrar conversaciones no asignadas y asignadas a ellos",
+      "CONVERSATION_PARTICIPATING_MANAGE": "Administrar conversaciones participantes y asignadas a ellos",
       "CONTACT_MANAGE": "Administrar contactos",
       "REPORT_MANAGE": "Administrar informes",
       "KNOWLEDGE_BASE_MANAGE": "Administrar base de conocimiento"
@@ -57,13 +57,13 @@
       },
       "CANCEL_BUTTON_TEXT": "Cancelar",
       "API": {
-        "ERROR_MESSAGE": "No se pudo conectar al servidor Woot, por favor inténtalo de nuevo más tarde"
+        "ERROR_MESSAGE": "No se pudo conectar al servidor de AIRM, por favor inténtalo de nuevo más tarde"
       }
     },
     "ADD": {
       "TITLE": "Añadir rol personalizado",
-      "DESC": " Los roles personalizados le permiten crear roles con permisos específicos y niveles de acceso para adaptarse a los requerimientos de la organización.",
-      "SUBMIT": "Enviar",
+      "DESC": "Los roles personalizados le permiten crear roles con permisos específicos y niveles de acceso para adaptarse a los requerimientos de la organización.",
+      "SUBMIT": "Guardar",
       "API": {
         "SUCCESS_MESSAGE": "Rol personalizado añadido con éxito."
       }
@@ -71,7 +71,7 @@
     "EDIT": {
       "BUTTON_TEXT": "Editar",
       "TITLE": "Editar rol personalizado",
-      "DESC": " Los roles personalizados le permiten crear roles con permisos específicos y niveles de acceso para adaptarse a los requerimientos de la organización.",
+      "DESC": "Los roles personalizados le permiten crear roles con permisos específicos y niveles de acceso para adaptarse a los requerimientos de la organización.",
       "SUBMIT": "Actualizar",
       "API": {
         "SUCCESS_MESSAGE": "Rol personalizado actualizado con éxito."
@@ -81,13 +81,13 @@
       "BUTTON_TEXT": "Eliminar",
       "API": {
         "SUCCESS_MESSAGE": "Rol personalizado eliminado con éxito.",
-        "ERROR_MESSAGE": "No se pudo conectar al servidor Woot, por favor inténtalo de nuevo más tarde"
+        "ERROR_MESSAGE": "No se pudo conectar al servidor de AIRM, por favor inténtalo de nuevo más tarde"
       },
       "CONFIRM": {
-        "TITLE": "Confirme eliminación",
-        "MESSAGE": "¿Está seguro de eliminar ",
+        "TITLE": "Confirmar eliminación",
+        "MESSAGE": "¿Está seguro de que desea eliminar ",
         "YES": "Sí, eliminar ",
-        "NO": "No, mantenerlo "
+        "NO": "No, mantener "
       }
     }
   }
