@@ -9,6 +9,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/airm
+  COOLIFY_WEBHOOK_URL: ${{ secrets.COOLIFY_WEBHOOK_URL }}
 
 jobs:
   build-and-push:
@@ -53,9 +54,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Trigger Coolify Deployment (Optional Webhook)
-        if: ${{ secrets.COOLIFY_WEBHOOK_URL != '' }}
-        env:
-          COOLIFY_WEBHOOK_URL: ${{ secrets.COOLIFY_WEBHOOK_URL }}
+        if: env.COOLIFY_WEBHOOK_URL != ''
         run: |
           echo "Triggering deployment in Coolify..."
           curl -X GET "${COOLIFY_WEBHOOK_URL}" || true
