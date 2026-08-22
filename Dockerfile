@@ -72,6 +72,7 @@ ENV BUNDLER_VERSION=2.5.16
 ENV RAILS_SERVE_STATIC_FILES=true
 ENV RAILS_ENV=production
 ENV BUNDLE_PATH="/gems"
+ENV BUNDLE_WITHOUT="development:test"
 ENV BUNDLE_FORCE_RUBY_PLATFORM=1
 ENV EXECJS_RUNTIME="Disabled"
 ENV VIPS_BLOCK_UNTRUSTED=1
@@ -86,7 +87,8 @@ RUN apk update && apk add --no-cache \
   vips \
   curl \
   nodejs \
-  && gem install bundler -v "$BUNDLER_VERSION"
+  && gem install bundler -v "$BUNDLER_VERSION" \
+  && bundle config set --global without 'development test'
 
 COPY --from=pre-builder /gems/ /gems/
 COPY --from=pre-builder /app /app
@@ -97,5 +99,5 @@ RUN chmod -R +x /app/docker/entrypoints
 
 EXPOSE 3000
 
-ENTRYPOINT ["docker/entrypoints/rails.sh"]
-CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+ENTRYPOINT ["/bin/sh", "/app/docker/entrypoints/rails.sh"]
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb", "-b", "tcp://0.0.0.0:3000"]

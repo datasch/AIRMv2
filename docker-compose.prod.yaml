@@ -5,11 +5,13 @@ services:
     image: ghcr.io/datasch/airm:latest
     restart: always
     entrypoint: ["sh", "docker/entrypoints/rails.sh"]
-    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+    command: ["bundle", "exec", "puma", "-C", "config/puma.rb", "-b", "tcp://0.0.0.0:3000"]
     environment:
       - RAILS_ENV=production
       - NODE_ENV=production
       - INSTALLATION_ENV=docker
+      - BUNDLE_WITHOUT=development:test
+      - BUNDLE_PATH=/gems
       - BUNDLE_FORCE_RUBY_PLATFORM=1
       - EXECJS_RUNTIME=Disabled
       - RAILS_SERVE_STATIC_FILES=true
@@ -59,6 +61,8 @@ services:
       - RAILS_ENV=production
       - NODE_ENV=production
       - INSTALLATION_ENV=docker
+      - BUNDLE_WITHOUT=development:test
+      - BUNDLE_PATH=/gems
       - BUNDLE_FORCE_RUBY_PLATFORM=1
       - EXECJS_RUNTIME=Disabled
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-f89b0c8ca72e50112353e8fc153b43a24fc1656cf2492266a5de8ae5374e29d93709bd07ab5fee72bb364f41f00af21967656a66d88341bf9abd9138c40e332d}
