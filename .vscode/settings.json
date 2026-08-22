@@ -4,6 +4,9 @@
     "cSpell.ignorePaths": [
         "README.md",
         "**/*.md",
+        "**/*.yaml",
+        "**/*.yml",
+        ".github/**",
         "**/locales/**",
         "**/i18n/**"
     ],
@@ -24,6 +27,16 @@
         "pids",
         "isready",
         "entrypoint",
-        "entrypoints"
+        "entrypoints",
+        "datasch",
+        "Buildx",
+        "buildx",
+        "redispassword",
+        "STARTTLS",
+        "HELPCENTER",
+        "healthcheck",
+        "aldinokemal",
+        "multidevice",
+        "requirepass"
     ]
 }
