@@ -28,6 +28,7 @@ case "$*" in
     if [ "$RAILS_ENV" = "production" ]; then
       echo "Running database setup and migrations..."
       bundle exec rails db:chatwoot_prepare || bundle exec rails db:migrate || true
+      bundle exec rails runner "ConfigLoader.new.process(reconcile_only_new: false)" || true
     fi
     ;;
 esac

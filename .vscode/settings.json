@@ -48,6 +48,9 @@
         "topup",
         "firecrawl",
         "twiml",
-        "assetlinks"
+        "assetlinks",
+        "hmac",
+        "Channelable",
+        "Secretable"
     ]
 }
