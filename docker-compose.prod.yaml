@@ -15,6 +15,7 @@ services:
       - HELPCENTER_URL=${HELPCENTER_URL:-}
       - POSTGRES_DATABASE=${POSTGRES_DATABASE:-chatwoot_production}
       - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
       - POSTGRES_USERNAME=${POSTGRES_USERNAME:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - REDIS_URL=redis://default:${REDIS_PASSWORD:-redispassword}@redis:6379/0
@@ -46,15 +47,17 @@ services:
       - "traefik.http.routers.rails.rule=Host(`airm.giantucchi.com`)"
       - "traefik.http.routers.rails.entrypoints=web,websecure"
       - "traefik.http.routers.rails.tls=true"
+      - "traefik.http.routers.rails.tls.certresolver=letsencrypt"
       - "traefik.http.services.rails.loadbalancer.server.port=3000"
     networks:
       - default
       - coolify
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/health_check || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 45s
 
   sidekiq:
     image: ghcr.io/datasch/airm:latest
@@ -69,6 +72,7 @@ services:
       - FRONTEND_URL=${FRONTEND_URL:-https://airm.giantucchi.com}
       - POSTGRES_DATABASE=${POSTGRES_DATABASE:-chatwoot_production}
       - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
       - POSTGRES_USERNAME=${POSTGRES_USERNAME:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - REDIS_URL=redis://default:${REDIS_PASSWORD:-redispassword}@redis:6379/0

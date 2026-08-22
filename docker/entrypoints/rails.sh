@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -x
+set -e
 
 # Remove a potentially pre-existing server.pid for Rails.
 rm -rf /app/tmp/pids/server.pid
@@ -10,25 +10,20 @@ echo "Waiting for postgres to become ready...."
 
 # Let DATABASE_URL env take precedence over individual connection params.
 # This is done to avoid printing the DATABASE_URL in the logs
-$(docker/entrypoints/helpers/pg_database_url.rb)
+eval "$(docker/entrypoints/helpers/pg_database_url.rb)"
+POSTGRES_PORT=${POSTGRES_PORT:-5432}
 PG_READY="pg_isready -h $POSTGRES_HOST -p $POSTGRES_PORT -U $POSTGRES_USERNAME"
 
 until $PG_READY
 do
-  sleep 2;
+  echo "Postgres is unavailable - sleeping 2s..."
+  sleep 2
 done
 
 echo "Database ready to accept connections."
 
-#install missing gems for local dev as we are using base image compiled for production
-bundle install
-
-BUNDLE="bundle check"
-
-until $BUNDLE
-do
-  sleep 2;
-done
+# Check bundle first; only run bundle install if gems are missing (e.g. in local dev volume mounts)
+bundle check || bundle install
 
 # Auto-prepare / migrate database on startup if production
 if [ "$RAILS_ENV" = "production" ]; then
