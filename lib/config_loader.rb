@@ -40,6 +40,13 @@ class ConfigLoader
   def reconcile_general_config
     general_configs.each do |config|
       new_config = config.with_indifferent_access
+      env_val = ENV.fetch(new_config[:name], nil)
+      if env_val.present?
+        new_config[:value] = env_val
+        save_as_new_config(new_config)
+        next
+      end
+
       existing_config = InstallationConfig.find_by(name: new_config[:name])
       save_general_config(existing_config, new_config)
     end
@@ -47,6 +54,9 @@ class ConfigLoader
 
   def save_general_config(existing, latest)
     if existing
+      # Do not overwrite a custom configured value with nil default from YAML
+      return if existing.value.present? && latest[:value].blank?
+
       # save config only if reconcile flag is false and existing configs value does not match default value
       save_as_new_config(latest) if !@reconcile_only_new && compare_values(existing, latest)
     else
