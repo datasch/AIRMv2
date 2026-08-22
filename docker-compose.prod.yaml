@@ -7,6 +7,8 @@ services:
     environment:
       - RAILS_ENV=production
       - NODE_ENV=production
+      - BUNDLE_FORCE_RUBY_PLATFORM=1
+      - EXECJS_RUNTIME=Disabled
       - RAILS_SERVE_STATIC_FILES=true
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-f89b0c8ca72e50112353e8fc153b43a24fc1656cf2492266a5de8ae5374e29d93709bd07ab5fee72bb364f41f00af21967656a66d88341bf9abd9138c40e332d}
       - FRONTEND_URL=${FRONTEND_URL:-https://airm.giantucchi.com}
@@ -60,6 +62,8 @@ services:
     environment:
       - RAILS_ENV=production
       - NODE_ENV=production
+      - BUNDLE_FORCE_RUBY_PLATFORM=1
+      - EXECJS_RUNTIME=Disabled
       - SECRET_KEY_BASE=${SECRET_KEY_BASE:-f89b0c8ca72e50112353e8fc153b43a24fc1656cf2492266a5de8ae5374e29d93709bd07ab5fee72bb364f41f00af21967656a66d88341bf9abd9138c40e332d}
       - FRONTEND_URL=${FRONTEND_URL:-https://airm.giantucchi.com}
       - POSTGRES_DATABASE=${POSTGRES_DATABASE:-chatwoot_production}
