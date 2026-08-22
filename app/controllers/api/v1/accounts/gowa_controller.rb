@@ -29,7 +29,7 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
   def create_inbox
     name = params[:name].presence || 'WhatsApp Web (GOWA)'
     device_id = params[:device_id].presence || "acc_#{Current.account.id}_default"
-    webhook_url = "#{ENV.fetch('GOWA_URL', 'http://gowa:3000')}/chatwoot/webhook"
+    webhook_url = "#{ENV.fetch('GOWA_URL', 'http://gowa:3000')}/chatwoot/webhook?device_id=#{CGI.escape(device_id)}"
 
     ActiveRecord::Base.transaction do
       channel = Channel::Api.create!(
