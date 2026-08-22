@@ -2,9 +2,6 @@ version: '3.8'
 
 services:
   rails:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: ghcr.io/datasch/airm:latest
     restart: always
     entrypoint: ["sh", "docker/entrypoints/rails.sh"]
@@ -54,9 +51,6 @@ services:
       start_period: 60s
 
   sidekiq:
-    build:
-      context: .
-      dockerfile: Dockerfile
     image: ghcr.io/datasch/airm:latest
     restart: always
     entrypoint: ["sh", "docker/entrypoints/rails.sh"]
