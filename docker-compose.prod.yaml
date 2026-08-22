@@ -90,8 +90,6 @@ services:
       - CHATWOOT_URL=http://rails:3000
     volumes:
       - gowa_data:/app/storages
-    expose:
-      - "3000"
 
   postgres:
     image: pgvector/pgvector:pg16
