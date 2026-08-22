@@ -73,6 +73,8 @@ services:
   rails:
     image: ghcr.io/datasch/airm:latest
     restart: always
+    entrypoint: ["sh", "docker/entrypoints/rails.sh"]
+    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
     environment:
       - RAILS_ENV=production
       - NODE_ENV=production
@@ -120,6 +122,7 @@ services:
   sidekiq:
     image: ghcr.io/datasch/airm:latest
     restart: always
+    entrypoint: ["sh", "docker/entrypoints/rails.sh"]
     command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
     environment:
       - RAILS_ENV=production
