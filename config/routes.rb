@@ -295,6 +295,7 @@ Rails.application.routes.draw do
             post :pair
             post :create_inbox
             post :disconnect
+            match :webhook, via: [:get, :post]
           end
           resources :inboxes, only: [:index, :show, :create, :update, :destroy] do
             get :assignable_agents, on: :member
@@ -637,6 +638,7 @@ Rails.application.routes.draw do
         end
 
         resources :csat_survey, only: [:show, :update]
+        match 'gowa/webhook', to: '/api/v1/accounts/gowa#webhook', via: [:get, :post]
       end
     end
   end

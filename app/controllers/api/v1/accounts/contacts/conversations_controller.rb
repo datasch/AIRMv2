@@ -5,6 +5,8 @@ class Api::V1::Accounts::Contacts::ConversationsController < Api::V1::Accounts::
       :assignee, :contact, :inbox, :taggings
     ).where(contact_id: @contact.id)
 
+    conversations = conversations.where(inbox_id: params[:inbox_id]) if params[:inbox_id].present?
+
     # Apply permission-based filtering using the existing service
     conversations = Conversations::PermissionFilterService.new(
       conversations,

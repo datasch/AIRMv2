@@ -1,4 +1,8 @@
+# frozen_string_literal: true
+
 class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
+  skip_before_action :authenticate_user!, :authenticate_access_token!, :validate_bot_access_token!, only: [:webhook]
+  skip_before_action :check_subscription, only: [:webhook], raise: false
   before_action :check_administrator_authorization, only: [:pair, :create_inbox, :disconnect]
 
   def status
@@ -47,9 +51,16 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
         inbox.inbox_members.create!(user: Current.user)
       end
 
-      # Automatically configure GOWA per-device routing for multi-tenant / multi-inbox
+      # Automatically configure GOWA per-device webhook for deterministic multi-device & multi-inbox routing
+      service = Whatsapp::GowaService.new
+      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/api/v1/accounts/#{Current.account.id}/gowa/webhook?device_id=#{CGI.escape(device_id)}"
+      service.configure_device_webhook(
+        device_id: device_id,
+        webhook_url: gowa_webhook_target
+      )
+
+      # Configure legacy chatwoot settings if available
       if Current.user&.access_token.present?
-        service = Whatsapp::GowaService.new
         service.configure_chatwoot(
           device_id: device_id,
           account_id: Current.account.id,
@@ -80,7 +91,156 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     render json: result
   end
 
+  def webhook
+    event = params[:event] || params[:type]
+    device_id = params[:device_id] || params.dig(:payload, :device_id)
+
+    # Healthcheck / ping response
+    return render json: { success: true, message: 'GOWA webhook active' } if event == 'ping' || request.get?
+
+    case event
+    when 'message'
+      handle_incoming_message(device_id)
+    when 'message.ack'
+      handle_message_ack(device_id)
+    end
+
+    render json: { success: true }
+  rescue StandardError => e
+    Rails.logger.error "[GOWA Webhook] Processing error: #{e.message}"
+    Rails.logger.error e.backtrace.first(5).join("\n")
+    render json: { success: false, error: e.message }, status: :ok
+  end
+
   private
+
+  def handle_incoming_message(device_id)
+    payload = params[:payload] || params
+    is_from_me = ActiveModel::Type::Boolean.new.cast(payload[:is_from_me])
+
+    # Avoid processing our own outgoing messages sent via WhatsApp
+    return if is_from_me
+
+    account = Account.find_by(id: params[:account_id]) || Current.account || Account.first
+    return if account.blank?
+
+    inbox = find_inbox_by_device(account, device_id)
+    if inbox.blank?
+      Rails.logger.warn "[GOWA Webhook] No matching inbox found for device #{device_id} in account #{account.id}"
+      return
+    end
+
+    sender_jid = (payload[:from] || payload[:chat_id] || payload[:sender]).to_s
+    return if sender_jid.blank? || sender_jid.include?('status@broadcast')
+
+    clean_phone = sender_jid.split('@').first.gsub(/\D/, '')
+    return if clean_phone.blank?
+
+    sender_name = payload[:from_name].presence || payload[:push_name].presence || "+#{clean_phone}"
+
+    # Find or create Contact
+    contact = account.contacts.find_by(phone_number: "+#{clean_phone}") ||
+              account.contacts.find_by(phone_number: clean_phone)
+
+    if contact.blank?
+      contact = account.contacts.create!(
+        name: sender_name,
+        phone_number: "+#{clean_phone}"
+      )
+    elsif contact.name.blank? || contact.name == "+#{clean_phone}"
+      contact.update(name: sender_name) if sender_name.present? && sender_name != "+#{clean_phone}"
+    end
+
+    # Find or create ContactInbox for this specific inbox
+    contact_inbox = contact.contact_inboxes.find_by(inbox: inbox) ||
+                    ContactInboxBuilder.new(
+                      contact: contact,
+                      inbox: inbox,
+                      source_id: clean_phone
+                    ).perform
+
+    # Find or create active Conversation in this inbox
+    conversation = contact_inbox.conversations.where(status: [:open, :pending]).last
+    if conversation.blank?
+      conversation = ::Conversation.create!(
+        account: account,
+        inbox: inbox,
+        contact: contact,
+        contact_inbox: contact_inbox,
+        status: :pending
+      )
+    end
+
+    message_content = payload[:body].presence || payload[:text].presence || payload[:caption].presence || ''
+    source_id = payload[:id].present? ? "WAID:#{payload[:id]}" : nil
+
+    # Prevent duplicate message ingestion by source_id
+    if source_id.present? && conversation.messages.exists?(source_id: source_id)
+      Rails.logger.info "[GOWA Webhook] Skipping duplicate message #{source_id}"
+      return
+    end
+
+    message_params = ActionController::Parameters.new({
+      content: message_content,
+      message_type: :incoming,
+      source_id: source_id
+    })
+
+    message = Messages::MessageBuilder.new(contact, conversation, message_params).perform
+    attach_media_to_message(message, payload) if message.present?
+
+    Rails.logger.info "[GOWA Webhook] Synced incoming message #{message&.id} in Inbox #{inbox.id} (#{inbox.name}) from #{contact.phone_number}"
+  end
+
+  def handle_message_ack(device_id)
+    # Optional status acknowledgment handling
+  end
+
+  def find_inbox_by_device(account, device_id)
+    return nil if device_id.blank?
+
+    account.inboxes.where(channel_type: 'Channel::Api').find do |inb|
+      inb.channel.webhook_url.to_s.include?(device_id)
+    end || account.inboxes.where(channel_type: 'Channel::Api').first
+  end
+
+  def attach_media_to_message(message, payload)
+    media_url = payload[:media_url] || payload[:url]
+    return if media_url.blank?
+
+    base_gowa_url = (ENV['GOWA_URL'] || 'http://gowa:3000').chomp('/')
+    full_media_url = media_url.start_with?('http') ? media_url : "#{base_gowa_url}/#{media_url.delete_prefix('/')}"
+
+    response = HTTParty.get(full_media_url, timeout: 15)
+    return unless response.success?
+
+    filename = payload[:filename].presence || "whatsapp_media_#{Time.current.to_i}"
+    content_type = payload[:mime_type] || response.headers['content-type'] || 'application/octet-stream'
+
+    attachment = message.attachments.build(
+      account_id: message.account_id,
+      file_type: determine_file_type(content_type)
+    )
+
+    attachment.file.attach(
+      io: StringIO.new(response.body),
+      filename: filename,
+      content_type: content_type
+    )
+
+    attachment.save!
+  rescue StandardError => e
+    Rails.logger.warn "[GOWA Webhook] Failed to attach media: #{e.message}"
+  end
+
+  def determine_file_type(content_type)
+    case content_type
+    when %r{^image/} then :image
+    when %r{^audio/} then :audio
+    when %r{^video/} then :video
+    else :file
+    end
+  end
 
   def check_administrator_authorization
     authorize :inbox, :create?

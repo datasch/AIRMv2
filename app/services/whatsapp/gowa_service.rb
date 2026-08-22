@@ -113,6 +113,38 @@ class Whatsapp::GowaService
     { success: false, error: e.message }
   end
 
+  def configure_device_webhook(device_id:, webhook_url:, events: ['message', 'message.ack', 'message.reaction', 'message.edited', 'message.revoked'])
+    payload = {
+      webhook_url: webhook_url,
+      webhook_events: events
+    }
+
+    response = HTTParty.patch(
+      "#{base_url}/devices/#{CGI.escape(device_id)}/webhook",
+      headers: { 'Content-Type' => 'application/json' },
+      body: payload.to_json,
+      timeout: 10
+    )
+
+    if response.success?
+      Rails.logger.info "[GOWA] Successfully configured per-device webhook for #{device_id} -> #{webhook_url}"
+      return { success: true }
+    end
+
+    # Fallback to POST /devices/:id/webhook if PATCH is not supported
+    alt_response = HTTParty.post(
+      "#{base_url}/devices/#{CGI.escape(device_id)}/webhook",
+      headers: { 'Content-Type' => 'application/json' },
+      body: payload.to_json,
+      timeout: 10
+    )
+
+    { success: alt_response.success? }
+  rescue StandardError => e
+    Rails.logger.warn "[GOWA] Failed to configure webhook for device #{device_id}: #{e.message}"
+    { success: false, error: e.message }
+  end
+
   def configure_chatwoot(device_id:, account_id:, inbox_id:, api_token:)
     payload = {
       chatwoot_url: 'http://rails:3000',
