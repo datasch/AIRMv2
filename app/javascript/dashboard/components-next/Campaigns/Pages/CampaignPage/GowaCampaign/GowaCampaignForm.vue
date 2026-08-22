@@ -139,21 +139,21 @@ const handleSubmit = async () => {
           class="px-2 py-0.5 rounded bg-n-alpha-2 hover:bg-n-alpha-3 text-n-iris-11 transition-colors"
           @click="insertVariable('contact.name')"
         >
-          {{ '{{ contact.name }}' }}
+          &#123;&#123; contact.name &#125;&#125;
         </button>
         <button
           type="button"
           class="px-2 py-0.5 rounded bg-n-alpha-2 hover:bg-n-alpha-3 text-n-iris-11 transition-colors"
           @click="insertVariable('contact.phone_number')"
         >
-          {{ '{{ contact.phone_number }}' }}
+          &#123;&#123; contact.phone_number &#125;&#125;
         </button>
         <button
           type="button"
           class="px-2 py-0.5 rounded bg-n-alpha-2 hover:bg-n-alpha-3 text-n-iris-11 transition-colors"
           @click="insertVariable('contact.email')"
         >
-          {{ '{{ contact.email }}' }}
+          &#123;&#123; contact.email &#125;&#125;
         </button>
       </div>
     </div>
