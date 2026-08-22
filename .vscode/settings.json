@@ -39,6 +39,15 @@
         "aldinokemal",
         "multidevice",
         "requirepass",
-        "tzdata"
+        "tzdata",
+        "omniauth",
+        "drilldown",
+        "unmute",
+        "slas",
+        "dyte",
+        "topup",
+        "firecrawl",
+        "twiml",
+        "assetlinks"
     ]
 }
