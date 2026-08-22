@@ -57,6 +57,17 @@
         "pattr",
         "vite",
         "superadmin",
-        "woot"
+        "woot",
+        "Vuelidate",
+        "vuelidate",
+        "vuex",
+        "vueuse",
+        "Enabledon",
+        "lucide",
+        "livechat",
+        "auditlogs",
+        "Oneoff",
+        "nextval",
+        "dpid"
     ]
 }
