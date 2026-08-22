@@ -93,6 +93,8 @@ COPY --from=pre-builder /app /app
 
 WORKDIR /app
 
+RUN chmod -R +x /app/docker/entrypoints
+
 EXPOSE 3000
 
 ENTRYPOINT ["docker/entrypoints/rails.sh"]
