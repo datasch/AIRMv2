@@ -150,5 +150,7 @@ graph TD
 
 ## 📄 Licencia y Créditos
 
-Desarrollado y mantenido por **[Giantucchi](https://giantucchi.com)**.
+Desarrollado y mantenido por **[Giantucchi](https://giantucchi.com)** sobre la base de código abierto bajo licencia MIT.
+*El único requisito de la licencia MIT es mantener el aviso de copyright original dentro del archivo LICENSE del repositorio.*
+
 © 2026 Giantucchi. Todos los derechos reservados.
