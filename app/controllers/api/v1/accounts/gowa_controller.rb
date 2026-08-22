@@ -47,6 +47,17 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
         inbox.inbox_members.create!(user: Current.user)
       end
 
+      # Automatically configure GOWA per-device routing for multi-tenant / multi-inbox
+      if Current.user&.access_token.present?
+        service = Whatsapp::GowaService.new
+        service.configure_chatwoot(
+          device_id: device_id,
+          account_id: Current.account.id,
+          inbox_id: inbox.id,
+          api_token: Current.user.access_token.token
+        )
+      end
+
       render json: {
         success: true,
         inbox_id: inbox.id,

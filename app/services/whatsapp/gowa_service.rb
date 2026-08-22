@@ -113,6 +113,39 @@ class Whatsapp::GowaService
     { success: false, error: e.message }
   end
 
+  def configure_chatwoot(device_id:, account_id:, inbox_id:, api_token:)
+    payload = {
+      chatwoot_url: 'http://rails:3000',
+      account_id: account_id.to_i,
+      inbox_id: inbox_id.to_i,
+      api_token: api_token
+    }
+
+    # Attempt PUT to per-device chatwoot config endpoint
+    response = HTTParty.put(
+      "#{base_url}/devices/#{CGI.escape(device_id)}/chatwoot/config",
+      headers: { 'Content-Type' => 'application/json' },
+      body: payload.to_json,
+      timeout: 10
+    )
+
+    return { success: true } if response.success?
+
+    # Fallback to POST /chatwoot/configs if available
+    alt_payload = payload.merge(device_id: device_id)
+    alt_response = HTTParty.post(
+      "#{base_url}/chatwoot/configs",
+      headers: { 'Content-Type' => 'application/json' },
+      body: alt_payload.to_json,
+      timeout: 10
+    )
+
+    { success: alt_response.success? }
+  rescue StandardError => e
+    Rails.logger.warn "[GOWA] Failed to configure chatwoot for device #{device_id}: #{e.message}"
+    { success: false, error: e.message }
+  end
+
   private
 
   def parse_json(body)
