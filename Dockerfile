@@ -83,6 +83,7 @@ RUN apk update && apk add --no-cache \
   git \
   vips \
   curl \
+  nodejs \
   && gem install bundler -v "$BUNDLER_VERSION"
 
 COPY --from=pre-builder /gems/ /gems/
