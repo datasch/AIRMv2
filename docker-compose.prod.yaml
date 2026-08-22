@@ -103,10 +103,10 @@ services:
     environment:
       - CHATWOOT_ENABLED=true
       - 'CHATWOOT_URL=http://rails:3000'
-      - 'CHATWOOT_ACCOUNT_ID=${CHATWOOT_ACCOUNT_ID:-1}'
-      - 'CHATWOOT_INBOX_ID=${CHATWOOT_INBOX_ID:-1}'
-      - 'CHATWOOT_API_TOKEN=${CHATWOOT_API_TOKEN:-}'
-      - 'CHATWOOT_DEVICE_ID=${CHATWOOT_DEVICE_ID:-}'
+      - 'CHATWOOT_ACCOUNT_ID=${CHATWOOT_ACCOUNT_ID}'
+      - 'CHATWOOT_INBOX_ID=${CHATWOOT_INBOX_ID}'
+      - 'CHATWOOT_API_TOKEN=${CHATWOOT_API_TOKEN}'
+      - 'CHATWOOT_DEVICE_ID=${CHATWOOT_DEVICE_ID}'
     volumes:
       - 'gowa_data:/app/storages'
   airm_postgres:
