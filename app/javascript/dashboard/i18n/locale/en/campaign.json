@@ -168,7 +168,7 @@
           },
           "MESSAGE": {
             "LABEL": "Personalized message",
-            "PLACEHOLDER": "Write your message... e.g. Hello {{ contact.name }}! We have a special discount for you.",
+            "PLACEHOLDER": "Write your message here... e.g. Hello! We have a special discount for you.",
             "ERROR": "Message is required"
           },
           "VARIABLES_LABEL": "Insert dynamic variable",

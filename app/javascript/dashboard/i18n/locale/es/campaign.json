@@ -168,7 +168,7 @@
           },
           "MESSAGE": {
             "LABEL": "Mensaje personalizado",
-            "PLACEHOLDER": "Escribe tu mensaje... Ej: ¡Hola {{ contact.name }}! Tenemos una oferta especial para ti.",
+            "PLACEHOLDER": "Escribe tu mensaje aquí... Ej: ¡Hola! Tenemos una oferta especial para ti.",
             "ERROR": "El mensaje es obligatorio"
           },
           "VARIABLES_LABEL": "Insertar variable dinámica",
