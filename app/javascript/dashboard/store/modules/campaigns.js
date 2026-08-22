@@ -40,6 +40,10 @@ export const getters = {
     const smsChannelTypes = [INBOX_TYPES.SMS, INBOX_TYPES.TWILIO];
     return _getters.getCampaigns(CAMPAIGN_TYPES.ONE_OFF, smsChannelTypes);
   },
+  getGOWACampaigns: (_state, _getters) => {
+    const gowaChannelTypes = [INBOX_TYPES.API];
+    return _getters.getCampaigns(CAMPAIGN_TYPES.ONE_OFF, gowaChannelTypes);
+  },
   getWhatsAppCampaigns: (_state, _getters) => {
     const whatsappChannelTypes = [INBOX_TYPES.WHATSAPP];
     return _getters.getCampaigns(CAMPAIGN_TYPES.ONE_OFF, whatsappChannelTypes);

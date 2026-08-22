@@ -138,8 +138,68 @@
         }
       }
     },
+    "GOWA": {
+      "HEADER_TITLE": "WhatsApp Web Broadcasts (GOWA)",
+      "NEW_CAMPAIGN": "Create broadcast",
+      "EMPTY_STATE": {
+        "TITLE": "No WhatsApp Web broadcasts available",
+        "SUBTITLE": "Launch a mass WhatsApp broadcast campaign using your connected GOWA lines. Send personalized messages, promotional offers, and updates to your segmented contact lists. Click 'Create broadcast' to get started."
+      },
+      "CARD": {
+        "STATUS": {
+          "PROCESSING": "Processing",
+          "COMPLETED": "Completed",
+          "SCHEDULED": "Scheduled"
+        },
+        "CAMPAIGN_DETAILS": {
+          "SENT_FROM": "Sent from",
+          "ON": "on"
+        }
+      },
+      "CREATE": {
+        "TITLE": "Create WhatsApp Web Broadcast (GOWA)",
+        "CANCEL_BUTTON_TEXT": "Cancel",
+        "CREATE_BUTTON_TEXT": "Launch broadcast",
+        "FORM": {
+          "TITLE": {
+            "LABEL": "Broadcast title",
+            "PLACEHOLDER": "e.g. Special Weekend Promotion",
+            "ERROR": "Title is required"
+          },
+          "MESSAGE": {
+            "LABEL": "Personalized message",
+            "PLACEHOLDER": "Write your message... e.g. Hello {{ contact.name }}! We have a special discount for you.",
+            "ERROR": "Message is required"
+          },
+          "VARIABLES_LABEL": "Insert dynamic variable",
+          "INBOX": {
+            "LABEL": "Outgoing WhatsApp line",
+            "PLACEHOLDER": "Select WhatsApp (GOWA) line",
+            "ERROR": "WhatsApp line is required"
+          },
+          "AUDIENCE": {
+            "LABEL": "Audience (Contact labels)",
+            "PLACEHOLDER": "Select contact labels for targeted delivery",
+            "ERROR": "At least one audience label is required"
+          },
+          "SCHEDULED_AT": {
+            "LABEL": "Scheduled send time",
+            "PLACEHOLDER": "Select date and time",
+            "ERROR": "Scheduled time is required"
+          },
+          "BUTTONS": {
+            "CREATE": "Launch broadcast",
+            "CANCEL": "Cancel"
+          },
+          "API": {
+            "SUCCESS_MESSAGE": "WhatsApp broadcast scheduled successfully",
+            "ERROR_MESSAGE": "There was an error creating the broadcast. Please try again."
+          }
+        }
+      }
+    },
     "WHATSAPP": {
-      "HEADER_TITLE": "WhatsApp campaigns",
+      "HEADER_TITLE": "WhatsApp campaigns (Official Meta)",
       "NEW_CAMPAIGN": "Create campaign",
       "EMPTY_STATE": {
         "TITLE": "No WhatsApp campaigns are available",

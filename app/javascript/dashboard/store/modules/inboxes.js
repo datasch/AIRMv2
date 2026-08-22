@@ -118,6 +118,11 @@ export const getters = {
       item => item.channel_type === INBOX_TYPES.WHATSAPP
     );
   },
+  getGOWAInboxes($state) {
+    return $state.records.filter(
+      item => item.channel_type === INBOX_TYPES.API
+    );
+  },
   dialogFlowEnabledInboxes($state) {
     return $state.records.filter(
       item => item.channel_type !== INBOX_TYPES.EMAIL

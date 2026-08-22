@@ -138,11 +138,71 @@
         }
       }
     },
+    "GOWA": {
+      "HEADER_TITLE": "Difusiones de WhatsApp Web (GOWA)",
+      "NEW_CAMPAIGN": "Crear difusión",
+      "EMPTY_STATE": {
+        "TITLE": "No hay difusiones de WhatsApp Web disponibles",
+        "SUBTITLE": "Inicie una campaña o difusión comercial masiva por WhatsApp con sus líneas de GOWA. Envíe promociones, mensajes personalizados y avisos a sus listas de contactos. Haga clic en \"Crear difusión\" para empezar."
+      },
+      "CARD": {
+        "STATUS": {
+          "PROCESSING": "En proceso",
+          "COMPLETED": "Completada",
+          "SCHEDULED": "Programada"
+        },
+        "CAMPAIGN_DETAILS": {
+          "SENT_FROM": "Enviado desde",
+          "ON": "el"
+        }
+      },
+      "CREATE": {
+        "TITLE": "Crear difusión de WhatsApp Web (GOWA)",
+        "CANCEL_BUTTON_TEXT": "Cancelar",
+        "CREATE_BUTTON_TEXT": "Crear difusión",
+        "FORM": {
+          "TITLE": {
+            "LABEL": "Título de la difusión",
+            "PLACEHOLDER": "Ej: Promoción Lanzamiento Agosto",
+            "ERROR": "El título es obligatorio"
+          },
+          "MESSAGE": {
+            "LABEL": "Mensaje personalizado",
+            "PLACEHOLDER": "Escribe tu mensaje... Ej: ¡Hola {{ contact.name }}! Tenemos una oferta especial para ti.",
+            "ERROR": "El mensaje es obligatorio"
+          },
+          "VARIABLES_LABEL": "Insertar variable dinámica",
+          "INBOX": {
+            "LABEL": "Línea de WhatsApp de salida",
+            "PLACEHOLDER": "Seleccione la línea de WhatsApp (GOWA)",
+            "ERROR": "Debe seleccionar una línea de WhatsApp"
+          },
+          "AUDIENCE": {
+            "LABEL": "Audiencia (Etiquetas de contactos)",
+            "PLACEHOLDER": "Seleccione las etiquetas de los contactos a enviar",
+            "ERROR": "Debe seleccionar al menos una etiqueta de audiencia"
+          },
+          "SCHEDULED_AT": {
+            "LABEL": "Fecha y hora de envío",
+            "PLACEHOLDER": "Seleccione la fecha y hora",
+            "ERROR": "La fecha y hora son obligatorias"
+          },
+          "BUTTONS": {
+            "CREATE": "Lanzar difusión",
+            "CANCEL": "Cancelar"
+          },
+          "API": {
+            "SUCCESS_MESSAGE": "Difusión de WhatsApp programada con éxito",
+            "ERROR_MESSAGE": "Ocurrió un error al crear la difusión. Por favor intente nuevamente."
+          }
+        }
+      }
+    },
     "WHATSAPP": {
-      "HEADER_TITLE": "WhatsApp campaigns",
+      "HEADER_TITLE": "Campañas de WhatsApp (Oficial Meta)",
       "NEW_CAMPAIGN": "Crear campaña",
       "EMPTY_STATE": {
-        "TITLE": "No WhatsApp campaigns are available",
+        "TITLE": "No hay campañas de WhatsApp disponibles",
         "SUBTITLE": "Lanza una campaña de WhatsApp para conectar con tus clientes directamente. Envía ofertas o has anuncios fácilmente. Haz clic en 'Crear campaña' para comenzar."
       },
       "CARD": {
