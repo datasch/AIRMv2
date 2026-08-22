@@ -40,11 +40,7 @@ class Whatsapp::GowaOneoffCampaignService
     # Schedule campaign completion mark after all jobs have been scheduled
     if delay_counter > 0
       campaign.update!(campaign_status: :processing, started_at: Time.current)
-      # Auto-complete after total wait time plus 10 seconds buffer
-      campaign.class.delay_for((delay_counter + 10).seconds).where(id: campaign.id).update_all(
-        campaign_status: Campaign.campaign_statuses[:completed],
-        completed_at: Time.current
-      )
+      Campaigns::CompleteGowaCampaignJob.set(wait: (delay_counter + 10).seconds).perform_later(campaign.id)
     else
       campaign.completed!
     end
