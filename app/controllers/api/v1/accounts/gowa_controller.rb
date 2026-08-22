@@ -9,6 +9,8 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     service = Whatsapp::GowaService.new
     device_id = params[:device_id]
 
+    sync_all_device_webhooks if Current.account.present?
+
     if device_id.present?
       result = service.device_status(device_id)
       render json: result
@@ -24,6 +26,12 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     result = service.login_qr(device_id)
 
     if result[:success]
+      # Proactively configure the webhook for this device on GOWA gateway
+      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?device_id=#{CGI.escape(device_id)}"
+      service.configure_device_webhook(
+        device_id: device_id,
+        webhook_url: gowa_webhook_target
+      )
       render json: result
     else
       render json: result, status: :unprocessable_entity
@@ -53,7 +61,7 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
 
       # Automatically configure GOWA per-device webhook for deterministic multi-device & multi-inbox routing
       service = Whatsapp::GowaService.new
-      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/api/v1/accounts/#{Current.account.id}/gowa/webhook?device_id=#{CGI.escape(device_id)}"
+      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?device_id=#{CGI.escape(device_id)}"
       service.configure_device_webhook(
         device_id: device_id,
         webhook_url: gowa_webhook_target
@@ -240,6 +248,26 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     when %r{^video/} then :video
     else :file
     end
+  end
+
+  def sync_all_device_webhooks
+    account = Current.account || Account.first
+    return if account.blank?
+
+    service = Whatsapp::GowaService.new
+    account.inboxes.where(channel_type: 'Channel::Api').each do |inbox|
+      next unless inbox.channel.webhook_url.to_s.include?('device_id=')
+
+      uri = URI.parse(inbox.channel.webhook_url)
+      query_params = CGI.parse(uri.query || '')
+      dev_id = query_params['device_id']&.first
+      next if dev_id.blank?
+
+      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?device_id=#{CGI.escape(dev_id)}"
+      service.configure_device_webhook(device_id: dev_id, webhook_url: gowa_webhook_target)
+    end
+  rescue StandardError => e
+    Rails.logger.warn "[GOWA] sync_all_device_webhooks error: #{e.message}"
   end
 
   def check_administrator_authorization
