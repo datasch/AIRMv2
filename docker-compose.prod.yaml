@@ -42,8 +42,9 @@ services:
     labels:
       - "coolify.managed=true"
       - "traefik.enable=true"
+      - "traefik.docker.network=coolify"
       - "traefik.http.routers.rails.rule=Host(`airm.giantucchi.com`)"
-      - "traefik.http.routers.rails.entrypoints=websecure"
+      - "traefik.http.routers.rails.entrypoints=web,websecure"
       - "traefik.http.routers.rails.tls=true"
       - "traefik.http.services.rails.loadbalancer.server.port=3000"
     networks:
