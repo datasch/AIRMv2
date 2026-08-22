@@ -82,6 +82,7 @@ RUN apk update && apk add --no-cache \
   imagemagick \
   git \
   vips \
+  curl \
   && gem install bundler -v "$BUNDLER_VERSION"
 
 COPY --from=pre-builder /gems/ /gems/

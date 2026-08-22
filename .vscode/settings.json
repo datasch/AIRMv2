@@ -8,7 +8,8 @@
         "**/*.yml",
         ".github/**",
         "**/locales/**",
-        "**/i18n/**"
+        "**/i18n/**",
+        "Dockerfile*"
     ],
     "cSpell.words": [
         "AIRM",
@@ -37,6 +38,7 @@
         "healthcheck",
         "aldinokemal",
         "multidevice",
-        "requirepass"
+        "requirepass",
+        "tzdata"
     ]
 }
