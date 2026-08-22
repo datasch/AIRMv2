@@ -9,6 +9,7 @@
         ".github/**",
         "**/locales/**",
         "**/i18n/**",
+        "**/*.erb",
         "Dockerfile*"
     ],
     "cSpell.words": [
@@ -51,6 +52,10 @@
         "assetlinks",
         "hmac",
         "Channelable",
-        "Secretable"
+        "Secretable",
+        "pattr",
+        "vite",
+        "superadmin",
+        "woot"
     ]
 }
