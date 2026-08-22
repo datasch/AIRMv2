@@ -10,6 +10,7 @@
         "**/locales/**",
         "**/i18n/**",
         "**/*.erb",
+        "config/initializers/languages.rb",
         "Dockerfile*"
     ],
     "cSpell.words": [
