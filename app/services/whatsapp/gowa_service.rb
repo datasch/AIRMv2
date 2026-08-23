@@ -115,31 +115,59 @@ class Whatsapp::GowaService
 
   def configure_device_webhook(device_id:, webhook_url:, events: ['message', 'message.ack', 'message.reaction', 'message.edited', 'message.revoked'])
     payload = {
+      device_id: device_id,
       webhook_url: webhook_url,
       webhook_events: events
     }
 
+    # 1. Try PATCH /devices/:device_id
     response = HTTParty.patch(
-      "#{base_url}/devices/#{CGI.escape(device_id)}/webhook",
+      "#{base_url}/devices/#{CGI.escape(device_id)}",
       headers: { 'Content-Type' => 'application/json' },
       body: payload.to_json,
       timeout: 10
     )
 
     if response.success?
-      Rails.logger.info "[GOWA] Successfully configured per-device webhook for #{device_id} -> #{webhook_url}"
+      Rails.logger.info "[GOWA] Successfully configured device #{device_id} -> #{webhook_url} (via PATCH /devices/:id)"
       return { success: true }
     end
 
-    # Fallback to POST /devices/:id/webhook if PATCH is not supported
-    alt_response = HTTParty.post(
+    # 2. Try PATCH /devices/:device_id/webhook
+    alt_response = HTTParty.patch(
       "#{base_url}/devices/#{CGI.escape(device_id)}/webhook",
       headers: { 'Content-Type' => 'application/json' },
       body: payload.to_json,
       timeout: 10
     )
 
-    { success: alt_response.success? }
+    if alt_response.success?
+      Rails.logger.info "[GOWA] Successfully configured device #{device_id} -> #{webhook_url} (via PATCH /devices/:id/webhook)"
+      return { success: true }
+    end
+
+    # 3. Try POST /devices/:device_id/webhook
+    post_response = HTTParty.post(
+      "#{base_url}/devices/#{CGI.escape(device_id)}/webhook",
+      headers: { 'Content-Type' => 'application/json' },
+      body: payload.to_json,
+      timeout: 10
+    )
+
+    if post_response.success?
+      Rails.logger.info "[GOWA] Successfully configured device #{device_id} -> #{webhook_url} (via POST /devices/:id/webhook)"
+      return { success: true }
+    end
+
+    # 4. Try POST /devices
+    dev_response = HTTParty.post(
+      "#{base_url}/devices",
+      headers: { 'Content-Type' => 'application/json' },
+      body: payload.to_json,
+      timeout: 10
+    )
+
+    { success: dev_response.success? }
   rescue StandardError => e
     Rails.logger.warn "[GOWA] Failed to configure webhook for device #{device_id}: #{e.message}"
     { success: false, error: e.message }

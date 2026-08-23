@@ -103,6 +103,8 @@ services:
       - '--webhook=http://rails:3000/public/api/v1/gowa/webhook'
       - '--webhook-events=message,message.ack,message.reaction,message.edited,message.revoked'
     environment:
+      - 'WHATSAPP_WEBHOOK=http://rails:3000/public/api/v1/gowa/webhook'
+      - 'WHATSAPP_WEBHOOK_EVENTS=message,message.ack,message.reaction,message.edited,message.revoked'
       - CHATWOOT_ENABLED=true
       - 'CHATWOOT_URL=http://rails:3000'
       - 'CHATWOOT_ACCOUNT_ID=${CHATWOOT_ACCOUNT_ID:-1}'
