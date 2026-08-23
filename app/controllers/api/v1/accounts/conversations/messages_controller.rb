@@ -6,6 +6,15 @@ class Api::V1::Accounts::Conversations::MessagesController < Api::V1::Accounts::
   end
 
   def create
+    # Deduplicate incoming message if it has a source_id and was already ingested into the correct conversation
+    if params[:source_id].present? && params[:message_type].to_s == 'incoming'
+      existing = Current.account.messages.find_by(source_id: params[:source_id])
+      if existing.present?
+        @message = existing
+        return
+      end
+    end
+
     user = Current.user || @resource
     mb = Messages::MessageBuilder.new(user, @conversation, params)
     @message = mb.perform

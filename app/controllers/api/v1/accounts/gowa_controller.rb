@@ -9,7 +9,7 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     service = Whatsapp::GowaService.new
     device_id = params[:device_id]
 
-    sync_all_device_webhooks if Current.account.present?
+    sync_all_device_webhooks
 
     if device_id.present?
       result = service.device_status(device_id)
@@ -40,7 +40,7 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
 
   def create_inbox
     name = params[:name].presence || 'WhatsApp Web (GOWA)'
-    device_id = params[:device_id].presence || "acc_#{Current.account.id}_default"
+    device_id = params[:device_id].presence || "acc_#{Current.account.id}_#{SecureRandom.hex(4)}"
     webhook_url = "#{ENV.fetch('GOWA_URL', 'http://gowa:3000')}/chatwoot/webhook?device_id=#{CGI.escape(device_id)}"
 
     ActiveRecord::Base.transaction do
@@ -66,16 +66,6 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
         device_id: device_id,
         webhook_url: gowa_webhook_target
       )
-
-      # Configure legacy chatwoot settings if available
-      if Current.user&.access_token.present?
-        service.configure_chatwoot(
-          device_id: device_id,
-          account_id: Current.account.id,
-          inbox_id: inbox.id,
-          api_token: Current.user.access_token.token
-        )
-      end
 
       render json: {
         success: true,
@@ -129,14 +119,14 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     # Avoid processing our own outgoing messages sent via WhatsApp
     return if is_from_me
 
-    account = Account.find_by(id: params[:account_id]) || Current.account || Account.first
-    return if account.blank?
-
-    inbox = find_inbox_by_device(account, device_id)
+    inbox = find_inbox_by_device(device_id)
     if inbox.blank?
-      Rails.logger.warn "[GOWA Webhook] No matching inbox found for device #{device_id} in account #{account.id}"
+      Rails.logger.warn "[GOWA Webhook] No matching inbox found for device #{device_id}"
       return
     end
+
+    account = inbox.account
+    return if account.blank?
 
     sender_jid = (payload[:from] || payload[:chat_id] || payload[:sender]).to_s
     return if sender_jid.blank? || sender_jid.include?('status@broadcast')
@@ -146,7 +136,7 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
 
     sender_name = payload[:from_name].presence || payload[:push_name].presence || "+#{clean_phone}"
 
-    # Find or create Contact
+    # Find or create Contact in the account that owns this inbox
     contact = account.contacts.find_by(phone_number: "+#{clean_phone}") ||
               account.contacts.find_by(phone_number: clean_phone)
 
@@ -167,7 +157,7 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
                       source_id: clean_phone
                     ).perform
 
-    # Find or create active Conversation in this inbox
+    # Find or create active Conversation in this specific inbox
     conversation = contact_inbox.conversations.where(status: [:open, :pending]).last
     if conversation.blank?
       conversation = ::Conversation.create!(
@@ -182,9 +172,9 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     message_content = payload[:body].presence || payload[:text].presence || payload[:caption].presence || ''
     source_id = payload[:id].present? ? "WAID:#{payload[:id]}" : nil
 
-    # Prevent duplicate message ingestion by source_id
+    # Prevent duplicate message ingestion by source_id in this conversation
     if source_id.present? && conversation.messages.exists?(source_id: source_id)
-      Rails.logger.info "[GOWA Webhook] Skipping duplicate message #{source_id}"
+      Rails.logger.info "[GOWA Webhook] Skipping duplicate message #{source_id} in Inbox #{inbox.id}"
       return
     end
 
@@ -197,19 +187,32 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     message = Messages::MessageBuilder.new(contact, conversation, message_params).perform
     attach_media_to_message(message, payload) if message.present?
 
-    Rails.logger.info "[GOWA Webhook] Synced incoming message #{message&.id} in Inbox #{inbox.id} (#{inbox.name}) from #{contact.phone_number}"
+    Rails.logger.info "[GOWA Webhook] Synced incoming message #{message&.id} in Account #{account.id} -> Inbox #{inbox.id} (#{inbox.name}) from #{contact.phone_number}"
   end
 
   def handle_message_ack(device_id)
     # Optional status acknowledgment handling
   end
 
-  def find_inbox_by_device(account, device_id)
+  def find_inbox_by_device(device_id)
     return nil if device_id.blank?
 
-    account.inboxes.where(channel_type: 'Channel::Api').find do |inb|
-      inb.channel.webhook_url.to_s.include?(device_id)
-    end || account.inboxes.where(channel_type: 'Channel::Api').first
+    # 1. Search in all Channel::Api where webhook_url contains the device_id across all accounts
+    channel = Channel::Api.all.find do |ch|
+      ch.webhook_url.to_s.include?(device_id)
+    end
+
+    return channel.inbox if channel.present? && channel.inbox.present?
+
+    # 2. Fallback to account scope if account_id or Current.account is present
+    account = Account.find_by(id: params[:account_id]) || Current.account
+    if account.present?
+      account.inboxes.where(channel_type: 'Channel::Api').find do |inb|
+        inb.channel.webhook_url.to_s.include?(device_id)
+      end || account.inboxes.where(channel_type: 'Channel::Api').first
+    else
+      Inbox.where(channel_type: 'Channel::Api').first
+    end
   end
 
   def attach_media_to_message(message, payload)
@@ -251,14 +254,11 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
   end
 
   def sync_all_device_webhooks
-    account = Current.account || Account.first
-    return if account.blank?
-
     service = Whatsapp::GowaService.new
-    account.inboxes.where(channel_type: 'Channel::Api').each do |inbox|
-      next unless inbox.channel.webhook_url.to_s.include?('device_id=')
+    Channel::Api.find_each do |channel|
+      next unless channel.webhook_url.to_s.include?('device_id=')
 
-      uri = URI.parse(inbox.channel.webhook_url)
+      uri = URI.parse(channel.webhook_url)
       query_params = CGI.parse(uri.query || '')
       dev_id = query_params['device_id']&.first
       next if dev_id.blank?

@@ -638,7 +638,7 @@ Rails.application.routes.draw do
         end
 
         resources :csat_survey, only: [:show, :update]
-        match 'gowa/webhook', to: '/api/v1/accounts/gowa#webhook', via: [:get, :post]
+        match 'gowa/webhook', to: '/api/v1/accounts/gowa#webhook', via: [:get, :post, :patch, :put]
       end
     end
   end
