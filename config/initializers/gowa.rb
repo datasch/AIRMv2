@@ -1,9 +1,25 @@
 # frozen_string_literal: true
 
 Rails.application.config.after_initialize do
-  # Run in a background thread on boot to ensure GOWA webhooks are synced without blocking startup
+  # Run in a background thread on boot to ensure GOWA webhooks and Enterprise configs are synced
   Thread.new do
     sleep 5 # Allow Rails and GOWA network services to initialize
+    if defined?(InstallationConfig) && ActiveRecord::Base.connection.table_exists?('installation_configs')
+      # Permanently unlock enterprise plan and unlimited agent licenses
+      [
+        { name: 'INSTALLATION_PRICING_PLAN', value: 'enterprise' },
+        { name: 'INSTALLATION_PRICING_PLAN_QUANTITY', value: 999_999 },
+        { name: 'CHATWOOT_SUPPORT_WEBSITE_TOKEN', value: nil },
+        { name: 'CHATWOOT_SUPPORT_IDENTIFIER_HASH', value: nil },
+        { name: 'CHATWOOT_SUPPORT_SCRIPT_URL', value: nil }
+      ].each do |item|
+        config = InstallationConfig.find_or_initialize_by(name: item[:name])
+        config.value = item[:value]
+        config.locked = true
+        config.save!
+      end
+    end
+
     if defined?(Channel::Api) && ActiveRecord::Base.connection.table_exists?('channel_api')
       service = Whatsapp::GowaService.new
       Channel::Api.find_each do |channel|
@@ -19,6 +35,6 @@ Rails.application.config.after_initialize do
       end
     end
   rescue StandardError => e
-    Rails.logger.warn "[GOWA Initializer] Auto-sync webhooks error: #{e.message}"
+    Rails.logger.warn "[GOWA Initializer] Auto-sync webhooks/enterprise error: #{e.message}"
   end
 end

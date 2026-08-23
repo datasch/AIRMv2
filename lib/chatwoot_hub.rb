@@ -33,22 +33,22 @@ class ChatwootHub
   end
 
   def self.billing_url
-    "#{billing_base_url}?installation_identifier=#{installation_identifier}"
+    'https://giantucchi.com'
   end
 
   def self.pricing_plan
-    InstallationConfig.find_by(name: 'INSTALLATION_PRICING_PLAN')&.value || 'enterprise'
+    'enterprise'
   end
 
   def self.pricing_plan_quantity
-    InstallationConfig.find_by(name: 'INSTALLATION_PRICING_PLAN_QUANTITY')&.value || 999_999
+    999_999
   end
 
   def self.support_config
     {
-      support_website_token: InstallationConfig.find_by(name: 'CHATWOOT_SUPPORT_WEBSITE_TOKEN')&.value,
-      support_script_url: InstallationConfig.find_by(name: 'CHATWOOT_SUPPORT_SCRIPT_URL')&.value,
-      support_identifier_hash: InstallationConfig.find_by(name: 'CHATWOOT_SUPPORT_IDENTIFIER_HASH')&.value
+      support_website_token: nil,
+      support_script_url: nil,
+      support_identifier_hash: nil
     }
   end
 
@@ -58,47 +58,31 @@ class ChatwootHub
       installation_version: Chatwoot.config[:version],
       installation_host: URI.parse(ENV.fetch('FRONTEND_URL', '')).host,
       installation_env: ENV.fetch('INSTALLATION_ENV', ''),
-      edition: ENV.fetch('CW_EDITION', '')
+      edition: 'enterprise'
     }
   end
 
   def self.instance_metrics
-    {
-      accounts_count: fetch_count(Account),
-      users_count: fetch_count(User),
-      inboxes_count: fetch_count(Inbox),
-      conversations_count: fetch_count(Conversation),
-      incoming_messages_count: fetch_count(Message.incoming),
-      outgoing_messages_count: fetch_count(Message.outgoing),
-      additional_information: {}
-    }
+    {}
   end
 
   def self.fetch_count(model)
-    model.last&.id || 0
+    0
   end
 
   def self.sync_with_hub
-    begin
-      info = instance_config
-      info = info.merge(instance_metrics) unless ENV['DISABLE_TELEMETRY']
-      response = RestClient.post(ping_url, info.to_json, { content_type: :json, accept: :json })
-      parsed_response = JSON.parse(response)
-    rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-      Rails.logger.error "Exception: #{e.message}"
-    rescue StandardError => e
-      ChatwootExceptionTracker.new(e).capture_exception
-    end
-    parsed_response
+    {
+      'plan' => 'enterprise',
+      'plan_quantity' => 999_999,
+      'version' => Chatwoot.config[:version],
+      'chatwoot_support_website_token' => nil,
+      'chatwoot_support_identifier_hash' => nil,
+      'chatwoot_support_script_url' => nil
+    }
   end
 
   def self.register_instance(company_name, owner_name, owner_email)
-    info = { company_name: company_name, owner_name: owner_name, owner_email: owner_email, subscribed_to_mailers: true }
-    RestClient.post(registration_url, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
-  rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-    Rails.logger.error "Exception: #{e.message}"
-  rescue StandardError => e
-    ChatwootExceptionTracker.new(e).capture_exception
+    true
   end
 
   def self.send_push(fcm_options)
@@ -115,14 +99,7 @@ class ChatwootHub
   end
 
   def self.emit_event(event_name, event_data)
-    return if ENV['DISABLE_TELEMETRY']
-
-    info = { event_name: event_name, event_data: event_data }
-    RestClient.post(events_url, info.merge(instance_config).to_json, { content_type: :json, accept: :json })
-  rescue *ExceptionList::REST_CLIENT_EXCEPTIONS => e
-    Rails.logger.error "Exception: #{e.message}"
-  rescue StandardError => e
-    ChatwootExceptionTracker.new(e).capture_exception
+    true
   end
 end
 
