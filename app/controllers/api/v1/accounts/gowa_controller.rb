@@ -2,6 +2,8 @@
 
 class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
   skip_before_action :authenticate_user!, :authenticate_access_token!, :validate_bot_access_token!, only: [:webhook]
+  skip_before_action :current_account, :validate_token_api_access, only: [:webhook], raise: false
+  skip_around_action :switch_locale_using_account_locale, only: [:webhook], raise: false
   skip_before_action :check_subscription, only: [:webhook], raise: false
   before_action :check_administrator_authorization, only: [:pair, :create_inbox, :disconnect]
 
