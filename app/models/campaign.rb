@@ -66,6 +66,17 @@ class Campaign < ApplicationRecord
     execute_campaign
   end
 
+  def target_team
+    # 1. Look for explicit team_id configured in trigger_rules or template_params
+    if trigger_rules.is_a?(Hash) && trigger_rules['team_id'].present?
+      team = account.teams.find_by(id: trigger_rules['team_id'])
+      return team if team.present?
+    end
+
+    # 2. Dynamic lookup for "ventas" / "sales" team within the account
+    account.teams.where('LOWER(name) IN (?)', ['ventas', 'sales', 'equipo ventas', 'sales team', 'comercial']).first
+  end
+
   private
 
   def feature_enabled?

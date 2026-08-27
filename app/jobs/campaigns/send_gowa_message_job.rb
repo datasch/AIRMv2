@@ -75,6 +75,7 @@ class Campaigns::SendGowaMessageJob < ApplicationJob
 
   def find_or_create_conversation(campaign, contact, contact_inbox)
     conversation = contact_inbox.conversations.where(status: [:open, :pending]).last
+    target_team = campaign.target_team
 
     if conversation.blank?
       conversation = ::Conversation.create!(
@@ -83,8 +84,11 @@ class Campaigns::SendGowaMessageJob < ApplicationJob
         contact: contact,
         contact_inbox: contact_inbox,
         campaign_id: campaign.id,
+        team_id: target_team&.id,
         status: :open
       )
+    elsif target_team.present? && conversation.team_id.blank?
+      conversation.update!(team_id: target_team.id)
     end
 
     conversation

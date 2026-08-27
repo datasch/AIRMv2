@@ -13,20 +13,22 @@ class Whatsapp::GowaOneoffCampaignService
     contact_count = contacts.count
     labels = extract_audience_labels
 
-    Rails.logger.info "[GOWA Campaign #{campaign.id}] Processing #{contact_count} audience contacts for labels: #{labels.inspect}"
+    Rails.logger.info "[GOWA Campaign #{campaign.id}] Processing #{contact_count} audience contacts"
 
     if contact_count.zero?
-      Rails.logger.warn "[GOWA Campaign #{campaign.id}] No audience contacts with valid phone numbers found for labels: #{labels.inspect}. Marking completed."
+      Rails.logger.warn "[GOWA Campaign #{campaign.id}] No audience contacts with valid phone numbers found. Marking completed."
       campaign.completed!
       return
     end
 
     delay_counter = 0
+    base_interval = campaign.trigger_rules&.dig('delay_interval').to_i
+    base_interval = DEFAULT_DELAY_INTERVAL if base_interval <= 0
 
     contacts.find_each.with_index do |contact, index|
-      # Progressive anti-ban jitter delay: base 5s + random 1..3s between messages
-      jitter = rand(1..3)
-      send_delay = (index * DEFAULT_DELAY_INTERVAL) + jitter
+      # Progressive anti-ban jitter delay: base interval + random 1..4s between messages
+      jitter = rand(1..4)
+      send_delay = (index * base_interval) + jitter
 
       if defined?(CampaignRecipient)
         campaign.campaign_recipients.find_or_create_by!(contact: contact) do |recipient|
@@ -81,6 +83,11 @@ class Whatsapp::GowaOneoffCampaignService
   end
 
   def audience_contacts
+    # 1. Check if direct file/CSV audience was provided
+    direct_contacts = extract_direct_audience_contacts
+    return direct_contacts if direct_contacts.present?
+
+    # 2. Fallback to existing label-based audience
     labels = extract_audience_labels
     return campaign.account.contacts.none if labels.blank?
 
@@ -95,5 +102,70 @@ class Whatsapp::GowaOneoffCampaignService
     campaign.account.contacts
             .where(id: all_contact_ids)
             .where.not(phone_number: [nil, ''])
+  end
+
+  def extract_direct_audience_contacts
+    direct_entries = []
+
+    if campaign.audience.is_a?(Array)
+      campaign.audience.each do |aud|
+        entry = aud.is_a?(Hash) ? aud.with_indifferent_access : {}
+        if entry[:phone_number].present? || %w[Contact Direct File].include?(entry[:type].to_s)
+          direct_entries << entry if entry[:phone_number].present?
+        end
+      end
+    end
+
+    if direct_entries.blank? && campaign.trigger_rules.is_a?(Hash) && campaign.trigger_rules['file_contacts'].is_a?(Array)
+      direct_entries = campaign.trigger_rules['file_contacts'].map { |c| c.is_a?(Hash) ? c.with_indifferent_access : nil }.compact
+    end
+
+    return [] if direct_entries.blank?
+
+    contact_ids = []
+
+    direct_entries.each do |entry|
+      raw_phone = entry[:phone_number].to_s.strip
+      next if raw_phone.blank?
+
+      clean_digits = raw_phone.gsub(/\D/, '')
+      next if clean_digits.length < 7
+
+      clean_phone = raw_phone.start_with?('+') ? "+#{clean_digits}" : "+#{clean_digits}"
+
+      contact = campaign.account.contacts.find_by(phone_number: clean_phone) ||
+                campaign.account.contacts.find_by(phone_number: clean_digits)
+
+      name = entry[:name].presence || "Lead #{clean_digits.last(4)}"
+      email = entry[:email].presence
+      company = entry[:company_name].presence
+
+      custom_attributes = (entry[:custom_attributes] || {}).with_indifferent_access
+      custom_attributes['custom_attribute_1'] = entry[:custom_attribute_1] if entry[:custom_attribute_1].present?
+      custom_attributes['custom_attribute_2'] = entry[:custom_attribute_2] if entry[:custom_attribute_2].present?
+
+      if contact.blank?
+        contact = campaign.account.contacts.create!(
+          name: name,
+          phone_number: clean_phone,
+          email: email,
+          company_name: company,
+          custom_attributes: custom_attributes.presence || {}
+        )
+      else
+        updates = {}
+        updates[:name] = name if (contact.name.blank? || contact.name.start_with?('Lead ')) && name.present?
+        updates[:email] = email if contact.email.blank? && email.present?
+        updates[:company_name] = company if contact.company_name.blank? && company.present?
+        updates[:custom_attributes] = contact.custom_attributes.merge(custom_attributes) if custom_attributes.present?
+        contact.update!(updates) if updates.present?
+      end
+
+      contact_ids << contact.id if contact.present?
+    rescue StandardError => e
+      Rails.logger.error "[GOWA Campaign #{campaign.id}] Error registering contact for phone #{entry[:phone_number]}: #{e.message}"
+    end
+
+    campaign.account.contacts.where(id: contact_ids.uniq)
   end
 end

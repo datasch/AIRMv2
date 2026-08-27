@@ -172,6 +172,33 @@
             "ERROR": "Message is required"
           },
           "VARIABLES_LABEL": "Insert dynamic variable",
+          "AUDIENCE_TYPE": {
+            "LABEL": "Audience source",
+            "LABELS": "Existing contact labels",
+            "FILE": "Upload CSV / Excel file"
+          },
+          "FILE_UPLOAD": {
+            "LABEL": "Contacts file (CSV or Excel)",
+            "CHOOSE_FILE": "Choose file",
+            "CHANGE_FILE": "Change file",
+            "DOWNLOAD_TEMPLATE": "Download CSV / Excel template",
+            "VALID_CONTACTS_COUNT": "{count} valid contact(s) detected",
+            "INVALID_FILE_ERROR": "Error reading file. Please ensure it is a valid CSV or Excel file.",
+            "NO_VALID_CONTACTS_ERROR": "No valid phone numbers found in the file.",
+            "HELP_TEXT": "The file must contain at least a 'phone_number' column. Optional: 'name', 'email', 'company_name'."
+          },
+          "TEAM": {
+            "LABEL": "Assigned team for conversations",
+            "PLACEHOLDER": "Select team",
+            "AUTO_VENTAS": "Sales / Ventas (Auto-detected)",
+            "INFO": "Created conversations will be assigned to this team (app/accounts/:account_id/team/:team_id)"
+          },
+          "ANTIBAN": {
+            "LABEL": "Anti-ban Protection Mechanism",
+            "INTERVAL_LABEL": "Base dispatch interval (seconds)",
+            "INFO": "Anti-ban active: messages are spaced out with random jitter to protect your WhatsApp account from being blocked.",
+            "SAFE_BADGE": "Anti-ban Protection Active"
+          },
           "INBOX": {
             "LABEL": "Outgoing WhatsApp line",
             "PLACEHOLDER": "Select WhatsApp (GOWA) line",

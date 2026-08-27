@@ -172,6 +172,33 @@
             "ERROR": "El mensaje es obligatorio"
           },
           "VARIABLES_LABEL": "Insertar variable dinámica",
+          "AUDIENCE_TYPE": {
+            "LABEL": "Origen de los destinatarios",
+            "LABELS": "Etiquetas de contactos existentes",
+            "FILE": "Subir archivo CSV / Excel"
+          },
+          "FILE_UPLOAD": {
+            "LABEL": "Archivo de contactos (CSV o Excel)",
+            "CHOOSE_FILE": "Seleccionar archivo",
+            "CHANGE_FILE": "Cambiar archivo",
+            "DOWNLOAD_TEMPLATE": "Descargar plantilla CSV / Excel",
+            "VALID_CONTACTS_COUNT": "{count} contacto(s) válido(s) detectado(s)",
+            "INVALID_FILE_ERROR": "Error al leer el archivo. Asegúrese de que tenga formato CSV o Excel válido.",
+            "NO_VALID_CONTACTS_ERROR": "No se encontraron números de teléfono válidos en el archivo.",
+            "HELP_TEXT": "El archivo debe contener al menos la columna 'phone_number'. Opcionales: 'name', 'email', 'company_name'."
+          },
+          "TEAM": {
+            "LABEL": "Equipo asignado para las conversaciones",
+            "PLACEHOLDER": "Seleccionar equipo",
+            "AUTO_VENTAS": "Ventas (Auto-detectado)",
+            "INFO": "Las conversaciones creadas se asignarán a este equipo (app/accounts/:account_id/team/:team_id)"
+          },
+          "ANTIBAN": {
+            "LABEL": "Mecanismo Anti-bloqueo (Antiban)",
+            "INTERVAL_LABEL": "Intervalo base de envío (segundos)",
+            "INFO": "Mecanismo antiban activo: los mensajes se enviarán espaciados con jitter aleatorio para proteger tu línea de WhatsApp.",
+            "SAFE_BADGE": "Protección Antiban Activa"
+          },
           "INBOX": {
             "LABEL": "Línea de WhatsApp de salida",
             "PLACEHOLDER": "Seleccione la línea de WhatsApp (GOWA)",
