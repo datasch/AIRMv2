@@ -185,7 +185,8 @@
             "VALID_CONTACTS_COUNT": "{count} valid contact(s) detected",
             "INVALID_FILE_ERROR": "Error reading file. Please ensure it is a valid CSV or Excel file.",
             "NO_VALID_CONTACTS_ERROR": "No valid phone numbers found in the file.",
-            "HELP_TEXT": "The file must contain at least a 'phone_number' column. Optional: 'name', 'email', 'company_name'."
+            "HELP_TEXT": "The file must contain at least a 'phone_number' column. Optional: 'name', 'email', 'company_name'.",
+            "SUPPORTED_FORMATS": "CSV, XLSX (.csv, .xlsx, .xls)"
           },
           "TEAM": {
             "LABEL": "Assigned team for conversations",

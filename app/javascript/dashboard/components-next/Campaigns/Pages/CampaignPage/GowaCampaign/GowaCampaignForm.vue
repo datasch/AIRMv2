@@ -26,6 +26,17 @@ const formState = {
 
 const fileInputRef = ref(null);
 
+const dynamicVariables = [
+  { label: '{{ contact.name }}', value: 'contact.name' },
+  { label: '{{ contact.phone_number }}', value: 'contact.phone_number' },
+  { label: '{{ contact.email }}', value: 'contact.email' },
+  { label: '{{ contact.company_name }}', value: 'contact.company_name' },
+  {
+    label: '{{ contact.custom_attribute_1 }}',
+    value: 'contact.custom_attribute_1',
+  },
+];
+
 const initialState = {
   title: '',
   message: '',
@@ -54,9 +65,13 @@ watch(
   newTeams => {
     if (newTeams?.length && state.teamId === null) {
       const salesTeam = newTeams.find(team =>
-        ['ventas', 'sales', 'equipo ventas', 'sales team', 'comercial'].includes(
-          team.name?.trim().toLowerCase()
-        )
+        [
+          'ventas',
+          'sales',
+          'equipo ventas',
+          'sales team',
+          'comercial',
+        ].includes(team.name?.trim().toLowerCase())
       );
       if (salesTeam) {
         state.teamId = salesTeam.id;
@@ -98,30 +113,35 @@ const inboxOptions = computed(() =>
 );
 
 const teamOptions = computed(() => {
-  const teamsList = formState.teams.value?.map(team => ({
-    value: team.id,
-    label: team.name,
-  })) || [];
+  const teamsList =
+    formState.teams.value?.map(team => ({
+      value: team.id,
+      label: team.name,
+    })) || [];
   return teamsList;
 });
 
-const getErrorMessage = (field, errorKey) => {
-  const baseKey = 'CAMPAIGN.GOWA.CREATE.FORM';
-  return v$.value[field].$error ? t(`${baseKey}.${errorKey}.ERROR`) : '';
-};
-
 const formErrors = computed(() => ({
-  title: getErrorMessage('title', 'TITLE'),
-  message: getErrorMessage('message', 'MESSAGE'),
-  inbox: getErrorMessage('inboxId', 'INBOX'),
-  scheduledAt: getErrorMessage('scheduledAt', 'SCHEDULED_AT'),
+  title: v$.value.title.$error
+    ? t('CAMPAIGN.GOWA.CREATE.FORM.TITLE.ERROR')
+    : '',
+  message: v$.value.message.$error
+    ? t('CAMPAIGN.GOWA.CREATE.FORM.MESSAGE.ERROR')
+    : '',
+  inbox: v$.value.inboxId.$error
+    ? t('CAMPAIGN.GOWA.CREATE.FORM.INBOX.ERROR')
+    : '',
+  scheduledAt: v$.value.scheduledAt.$error
+    ? t('CAMPAIGN.GOWA.CREATE.FORM.SCHEDULED_AT.ERROR')
+    : '',
   audience:
     state.audienceType === 'labels' && state.selectedAudience.length === 0
       ? t('CAMPAIGN.GOWA.CREATE.FORM.AUDIENCE.ERROR')
       : '',
   file:
     state.audienceType === 'file' && state.parsedContacts.length === 0
-      ? state.fileError || t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.NO_VALID_CONTACTS_ERROR')
+      ? state.fileError ||
+        t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.NO_VALID_CONTACTS_ERROR')
       : '',
 }));
 
@@ -186,15 +206,23 @@ const handleFileUpload = async event => {
     const workbook = XLSX.read(buffer, { type: 'array' });
     const firstSheetName = workbook.SheetNames[0];
     if (!firstSheetName) {
-      state.fileError = t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.INVALID_FILE_ERROR');
+      state.fileError = t(
+        'CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.INVALID_FILE_ERROR'
+      );
       return;
     }
 
     const worksheet = workbook.Sheets[firstSheetName];
-    const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '', raw: false });
+    const rows = XLSX.utils.sheet_to_json(worksheet, {
+      header: 1,
+      defval: '',
+      raw: false,
+    });
 
     if (!rows || rows.length < 1) {
-      state.fileError = t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.INVALID_FILE_ERROR');
+      state.fileError = t(
+        'CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.INVALID_FILE_ERROR'
+      );
       return;
     }
 
@@ -202,35 +230,45 @@ const handleFileUpload = async event => {
     const normalizedHeaders = row0.map(normalizeHeader);
 
     let phoneIdx = normalizedHeaders.findIndex(h =>
-      /phone|tel|cel|movil|numero|number|ws|wa|whatsapp|fono|tlf|num|lead|destinatario|recipient/i.test(h)
+      /phone|tel|cel|movil|numero|number|ws|wa|whatsapp|fono|tlf|num|lead|destinatario|recipient/i.test(
+        h
+      )
     );
-    let nameIdx = normalizedHeaders.findIndex(h =>
+    const nameIdx = normalizedHeaders.findIndex(h =>
       /name|nom|cliente|contacto|lead|persona|usuario|fullname/i.test(h)
     );
-    let emailIdx = normalizedHeaders.findIndex(h =>
+    const emailIdx = normalizedHeaders.findIndex(h =>
       /email|correo|mail|emailaddress/i.test(h)
     );
-    let companyIdx = normalizedHeaders.findIndex(h =>
+    const companyIdx = normalizedHeaders.findIndex(h =>
       /company|empresa|org|negocio|razon|social|compania/i.test(h)
     );
-    let custom1Idx = normalizedHeaders.findIndex(h =>
-      /customattribute1|atributo1|var1|variable1|campo1|nota1|extra1|custom1/i.test(h)
+    const custom1Idx = normalizedHeaders.findIndex(h =>
+      /customattribute1|atributo1|var1|variable1|campo1|nota1|extra1|custom1/i.test(
+        h
+      )
     );
-    let custom2Idx = normalizedHeaders.findIndex(h =>
-      /customattribute2|atributo2|var2|variable2|campo2|nota2|extra2|custom2/i.test(h)
+    const custom2Idx = normalizedHeaders.findIndex(h =>
+      /customattribute2|atributo2|var2|variable2|campo2|nota2|extra2|custom2/i.test(
+        h
+      )
     );
 
     let startRow = 1;
 
     // If no header matched phoneIdx, inspect values in row 0 and row 1 to detect phone column automatically
     if (phoneIdx === -1) {
-      const colWithPhone0 = row0.findIndex(val => String(val).replace(/\D/g, '').length >= 7);
+      const colWithPhone0 = row0.findIndex(
+        val => String(val).replace(/\D/g, '').length >= 7
+      );
       if (colWithPhone0 !== -1) {
         phoneIdx = colWithPhone0;
         startRow = 0; // Row 0 was directly a data row
       } else if (rows.length > 1) {
         const row1 = rows[1] || [];
-        const colWithPhone1 = row1.findIndex(val => String(val).replace(/\D/g, '').length >= 7);
+        const colWithPhone1 = row1.findIndex(
+          val => String(val).replace(/\D/g, '').length >= 7
+        );
         if (colWithPhone1 !== -1) {
           phoneIdx = colWithPhone1;
           startRow = 1;
@@ -239,45 +277,54 @@ const handleFileUpload = async event => {
     }
 
     if (phoneIdx === -1) {
-      state.fileError = t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.NO_VALID_CONTACTS_ERROR');
+      state.fileError = t(
+        'CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.NO_VALID_CONTACTS_ERROR'
+      );
       return;
     }
 
     const contactsList = [];
 
-    for (let r = startRow; r < rows.length; r += 1) {
-      const row = rows[r];
-      if (!row || row.length === 0) continue;
+    rows.slice(startRow).forEach(row => {
+      if (row && row.length > 0) {
+        const rawPhone = String(row[phoneIdx] || '').trim();
+        const cleanDigits = rawPhone.replace(/\D/g, '');
 
-      const rawPhone = String(row[phoneIdx] || '').trim();
-      const cleanDigits = rawPhone.replace(/\D/g, '');
+        if (cleanDigits.length >= 7) {
+          const formattedPhone = `+${cleanDigits}`;
+          const name = nameIdx !== -1 ? String(row[nameIdx] || '').trim() : '';
+          const email =
+            emailIdx !== -1 ? String(row[emailIdx] || '').trim() : '';
+          const company =
+            companyIdx !== -1 ? String(row[companyIdx] || '').trim() : '';
+          const custom1 =
+            custom1Idx !== -1 ? String(row[custom1Idx] || '').trim() : '';
+          const custom2 =
+            custom2Idx !== -1 ? String(row[custom2Idx] || '').trim() : '';
 
-      if (cleanDigits.length >= 7) {
-        const formattedPhone = `+${cleanDigits}`;
-        const name = nameIdx !== -1 ? String(row[nameIdx] || '').trim() : '';
-        const email = emailIdx !== -1 ? String(row[emailIdx] || '').trim() : '';
-        const company = companyIdx !== -1 ? String(row[companyIdx] || '').trim() : '';
-        const custom1 = custom1Idx !== -1 ? String(row[custom1Idx] || '').trim() : '';
-        const custom2 = custom2Idx !== -1 ? String(row[custom2Idx] || '').trim() : '';
-
-        contactsList.push({
-          phone_number: formattedPhone,
-          name: name || '',
-          email: email || '',
-          company_name: company || '',
-          custom_attribute_1: custom1 || '',
-          custom_attribute_2: custom2 || '',
-        });
+          contactsList.push({
+            phone_number: formattedPhone,
+            name: name || '',
+            email: email || '',
+            company_name: company || '',
+            custom_attribute_1: custom1 || '',
+            custom_attribute_2: custom2 || '',
+          });
+        }
       }
-    }
+    });
 
     if (contactsList.length === 0) {
-      state.fileError = t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.NO_VALID_CONTACTS_ERROR');
+      state.fileError = t(
+        'CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.NO_VALID_CONTACTS_ERROR'
+      );
     } else {
       state.parsedContacts = contactsList;
     }
   } catch (error) {
-    state.fileError = t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.INVALID_FILE_ERROR');
+    state.fileError = t(
+      'CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.INVALID_FILE_ERROR'
+    );
   }
 };
 
@@ -346,37 +393,18 @@ const handleSubmit = async () => {
       />
       <!-- Dynamic variables helper chips -->
       <div class="flex flex-wrap items-center gap-1.5 mt-1 text-xs">
-        <span class="text-n-slate-10 font-medium mr-1">{{ t('CAMPAIGN.GOWA.CREATE.FORM.VARIABLES_LABEL') }}:</span>
+        <span class="text-n-slate-10 font-medium mr-1">
+          {{ t('CAMPAIGN.GOWA.CREATE.FORM.VARIABLES_LABEL') }}
+        </span>
         <button
+          v-for="variable in dynamicVariables"
+          :key="variable.value"
           type="button"
           class="px-2 py-0.5 rounded bg-n-alpha-2 hover:bg-n-alpha-3 text-n-iris-11 transition-colors"
-          @click="insertVariable('contact.name')"
-          v-text="'{{ contact.name }}'"
-        />
-        <button
-          type="button"
-          class="px-2 py-0.5 rounded bg-n-alpha-2 hover:bg-n-alpha-3 text-n-iris-11 transition-colors"
-          @click="insertVariable('contact.phone_number')"
-          v-text="'{{ contact.phone_number }}'"
-        />
-        <button
-          type="button"
-          class="px-2 py-0.5 rounded bg-n-alpha-2 hover:bg-n-alpha-3 text-n-iris-11 transition-colors"
-          @click="insertVariable('contact.email')"
-          v-text="'{{ contact.email }}'"
-        />
-        <button
-          type="button"
-          class="px-2 py-0.5 rounded bg-n-alpha-2 hover:bg-n-alpha-3 text-n-iris-11 transition-colors"
-          @click="insertVariable('contact.company_name')"
-          v-text="'{{ contact.company_name }}'"
-        />
-        <button
-          type="button"
-          class="px-2 py-0.5 rounded bg-n-alpha-2 hover:bg-n-alpha-3 text-n-iris-11 transition-colors"
-          @click="insertVariable('contact.custom_attribute_1')"
-          v-text="'{{ contact.custom_attribute_1 }}'"
-        />
+          @click="insertVariable(variable.value)"
+        >
+          {{ variable.label }}
+        </button>
       </div>
     </div>
 
@@ -397,7 +425,9 @@ const handleSubmit = async () => {
     </div>
 
     <!-- Audience Source Selection -->
-    <div class="flex flex-col gap-2 p-3.5 rounded-lg bg-n-alpha-1 border border-n-weak">
+    <div
+      class="flex flex-col gap-2 p-3.5 rounded-lg bg-n-alpha-1 border border-n-weak"
+    >
       <label class="text-sm font-medium text-n-slate-12">
         {{ t('CAMPAIGN.GOWA.CREATE.FORM.AUDIENCE_TYPE.LABEL') }}
       </label>
@@ -405,9 +435,11 @@ const handleSubmit = async () => {
         <button
           type="button"
           class="flex items-center justify-center gap-2 py-2 px-3 text-xs font-medium rounded-lg border transition-all"
-          :class="state.audienceType === 'labels'
-            ? 'bg-n-brand/10 border-n-brand text-n-brand dark:bg-n-brand/20 dark:text-n-brand'
-            : 'bg-n-solid-2 dark:bg-n-solid-1 border-n-weak text-n-slate-11 hover:text-n-slate-12 hover:border-n-slate-6'"
+          :class="
+            state.audienceType === 'labels'
+              ? 'bg-n-brand/10 border-n-brand text-n-brand dark:bg-n-brand/20 dark:text-n-brand'
+              : 'bg-n-solid-2 dark:bg-n-solid-1 border-n-weak text-n-slate-11 hover:text-n-slate-12 hover:border-n-slate-6'
+          "
           @click="state.audienceType = 'labels'"
         >
           <span class="i-lucide-tags w-4 h-4" />
@@ -416,9 +448,11 @@ const handleSubmit = async () => {
         <button
           type="button"
           class="flex items-center justify-center gap-2 py-2 px-3 text-xs font-medium rounded-lg border transition-all"
-          :class="state.audienceType === 'file'
-            ? 'bg-n-brand/10 border-n-brand text-n-brand dark:bg-n-brand/20 dark:text-n-brand'
-            : 'bg-n-solid-2 dark:bg-n-solid-1 border-n-weak text-n-slate-11 hover:text-n-slate-12 hover:border-n-slate-6'"
+          :class="
+            state.audienceType === 'file'
+              ? 'bg-n-brand/10 border-n-brand text-n-brand dark:bg-n-brand/20 dark:text-n-brand'
+              : 'bg-n-solid-2 dark:bg-n-solid-1 border-n-weak text-n-slate-11 hover:text-n-slate-12 hover:border-n-slate-6'
+          "
           @click="state.audienceType = 'file'"
         >
           <span class="i-lucide-file-spreadsheet w-4 h-4" />
@@ -427,7 +461,10 @@ const handleSubmit = async () => {
       </div>
 
       <!-- Mode 1: Labels multi-select -->
-      <div v-if="state.audienceType === 'labels'" class="flex flex-col gap-1 mt-2">
+      <div
+        v-if="state.audienceType === 'labels'"
+        class="flex flex-col gap-1 mt-2"
+      >
         <TagMultiSelectComboBox
           v-model="state.selectedAudience"
           :options="audienceList"
@@ -459,11 +496,13 @@ const handleSubmit = async () => {
 
         <div
           class="border-2 border-dashed rounded-lg p-4 flex flex-col items-center justify-center gap-2 transition-colors cursor-pointer"
-          :class="state.parsedContacts.length > 0
-            ? 'border-emerald-500/50 bg-emerald-500/5'
-            : state.fileError
-              ? 'border-ruby-500/50 bg-ruby-500/5'
-              : 'border-n-weak hover:border-n-slate-6 bg-n-solid-2 dark:bg-n-solid-1'"
+          :class="
+            state.parsedContacts.length > 0
+              ? 'border-emerald-500/50 bg-emerald-500/5'
+              : state.fileError
+                ? 'border-ruby-500/50 bg-ruby-500/5'
+                : 'border-n-weak hover:border-n-slate-6 bg-n-solid-2 dark:bg-n-solid-1'
+          "
           @click="handleTriggerFileSelect"
         >
           <input
@@ -475,13 +514,22 @@ const handleSubmit = async () => {
           />
 
           <template v-if="state.parsedContacts.length > 0">
-            <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium text-sm">
+            <div
+              class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-medium text-sm"
+            >
               <span class="i-lucide-check-circle-2 w-5 h-5" />
               <span>{{ state.selectedFileName }}</span>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-medium">
-                {{ t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.VALID_CONTACTS_COUNT', { count: state.parsedContacts.length }) }}
+              <span
+                class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-medium"
+              >
+                {{
+                  t(
+                    'CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.VALID_CONTACTS_COUNT',
+                    { count: state.parsedContacts.length }
+                  )
+                }}
               </span>
               <button
                 type="button"
@@ -499,12 +547,19 @@ const handleSubmit = async () => {
               <span class="text-xs font-medium text-n-slate-12 block">
                 {{ t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.CHOOSE_FILE') }}
               </span>
-              <span class="text-[11px] text-n-slate-10">CSV, XLSX (.csv, .xlsx, .xls)</span>
+              <span class="text-[11px] text-n-slate-10">
+                {{
+                  t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.SUPPORTED_FORMATS')
+                }}
+              </span>
             </div>
           </template>
         </div>
 
-        <p v-if="formErrors.file" class="text-xs text-ruby-600 dark:text-ruby-400">
+        <p
+          v-if="formErrors.file"
+          class="text-xs text-ruby-600 dark:text-ruby-400"
+        >
           {{ formErrors.file }}
         </p>
       </div>
@@ -534,15 +589,19 @@ const handleSubmit = async () => {
     </div>
 
     <!-- Anti-ban Safe Delay Mechanism -->
-    <div class="flex flex-col gap-1.5 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+    <div
+      class="flex flex-col gap-1.5 p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20"
+    >
       <div class="flex items-center justify-between">
-        <div class="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+        <div
+          class="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
+        >
           <span class="i-lucide-shield-check w-4 h-4" />
           {{ t('CAMPAIGN.GOWA.CREATE.FORM.ANTIBAN.SAFE_BADGE') }}
         </div>
         <div class="flex items-center gap-1">
           <label for="delayInterval" class="text-xs text-n-slate-11">
-            {{ t('CAMPAIGN.GOWA.CREATE.FORM.ANTIBAN.INTERVAL_LABEL') }}:
+            {{ t('CAMPAIGN.GOWA.CREATE.FORM.ANTIBAN.INTERVAL_LABEL') }}
           </label>
           <input
             id="delayInterval"

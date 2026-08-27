@@ -185,7 +185,8 @@
             "VALID_CONTACTS_COUNT": "{count} contacto(s) válido(s) detectado(s)",
             "INVALID_FILE_ERROR": "Error al leer el archivo. Asegúrese de que tenga formato CSV o Excel válido.",
             "NO_VALID_CONTACTS_ERROR": "No se encontraron números de teléfono válidos en el archivo.",
-            "HELP_TEXT": "El archivo debe contener al menos la columna 'phone_number'. Opcionales: 'name', 'email', 'company_name'."
+            "HELP_TEXT": "El archivo debe contener al menos la columna 'phone_number'. Opcionales: 'name', 'email', 'company_name'.",
+            "SUPPORTED_FORMATS": "CSV, XLSX (.csv, .xlsx, .xls)"
           },
           "TEAM": {
             "LABEL": "Equipo asignado para las conversaciones",
