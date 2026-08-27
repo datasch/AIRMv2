@@ -3,6 +3,7 @@ import { reactive, computed, ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength } from '@vuelidate/validators';
+import * as XLSX from 'xlsx';
 import { useMapGetter, useStore } from 'dashboard/composables/store';
 
 import Input from 'dashboard/components-next/input/Input.vue';
@@ -164,41 +165,13 @@ const handleRemoveFile = () => {
   }
 };
 
-const parseCSVLine = (text, delimiter) => {
-  const result = [];
-  let row = [''];
-  let inQuotes = false;
-
-  for (let i = 0; i < text.length; i += 1) {
-    const char = text[i];
-    const nextChar = text[i + 1];
-
-    if (char === '"') {
-      if (inQuotes && nextChar === '"') {
-        row[row.length - 1] += '"';
-        i += 1;
-      } else {
-        inQuotes = !inQuotes;
-      }
-    } else if (char === delimiter && !inQuotes) {
-      row.push('');
-    } else if ((char === '\r' || char === '\n') && !inQuotes) {
-      if (char === '\r' && nextChar === '\n') {
-        i += 1;
-      }
-      result.push(row);
-      row = [''];
-    } else {
-      row[row.length - 1] += char;
-    }
-  }
-
-  if (row.length > 1 || row[0] !== '') {
-    result.push(row);
-  }
-
-  return result;
-};
+const normalizeHeader = str =>
+  String(str || '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '');
 
 const handleFileUpload = async event => {
   const file = event.target.files?.[0];
@@ -209,33 +182,61 @@ const handleFileUpload = async event => {
   state.parsedContacts = [];
 
   try {
-    const content = await file.text();
-    const cleanContent = content.replace(/^\uFEFF/, ''); // Remove BOM
-
-    // Detect delimiter
-    const firstLine = cleanContent.split(/[\r\n]+/)[0] || '';
-    let delimiter = ',';
-    if (firstLine.includes(';') && (firstLine.match(/;/g) || []).length >= (firstLine.match(/,/g) || []).length) {
-      delimiter = ';';
-    } else if (firstLine.includes('\t')) {
-      delimiter = '\t';
-    }
-
-    const rows = parseCSVLine(cleanContent, delimiter);
-    if (!rows || rows.length < 2) {
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer, { type: 'array' });
+    const firstSheetName = workbook.SheetNames[0];
+    if (!firstSheetName) {
       state.fileError = t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.INVALID_FILE_ERROR');
       return;
     }
 
-    const rawHeaders = rows[0].map(h => h.trim().toLowerCase().replace(/['"]/g, ''));
+    const worksheet = workbook.Sheets[firstSheetName];
+    const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '', raw: false });
 
-    // Map column indices
-    const phoneIdx = rawHeaders.findIndex(h => /phone|tel[eé]fono|celular|m[oó]vil|numero|number/i.test(h));
-    const nameIdx = rawHeaders.findIndex(h => /name|nombre|cliente|contacto/i.test(h));
-    const emailIdx = rawHeaders.findIndex(h => /email|correo|mail/i.test(h));
-    const companyIdx = rawHeaders.findIndex(h => /company|empresa|organizaci[oó]n|negocio/i.test(h));
-    const custom1Idx = rawHeaders.findIndex(h => /custom_attribute_1|atributo_1|var1|variable1/i.test(h));
-    const custom2Idx = rawHeaders.findIndex(h => /custom_attribute_2|atributo_2|var2|variable2/i.test(h));
+    if (!rows || rows.length < 1) {
+      state.fileError = t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.INVALID_FILE_ERROR');
+      return;
+    }
+
+    const row0 = rows[0] || [];
+    const normalizedHeaders = row0.map(normalizeHeader);
+
+    let phoneIdx = normalizedHeaders.findIndex(h =>
+      /phone|tel|cel|movil|numero|number|ws|wa|whatsapp|fono|tlf|num|lead|destinatario|recipient/i.test(h)
+    );
+    let nameIdx = normalizedHeaders.findIndex(h =>
+      /name|nom|cliente|contacto|lead|persona|usuario|fullname/i.test(h)
+    );
+    let emailIdx = normalizedHeaders.findIndex(h =>
+      /email|correo|mail|emailaddress/i.test(h)
+    );
+    let companyIdx = normalizedHeaders.findIndex(h =>
+      /company|empresa|org|negocio|razon|social|compania/i.test(h)
+    );
+    let custom1Idx = normalizedHeaders.findIndex(h =>
+      /customattribute1|atributo1|var1|variable1|campo1|nota1|extra1|custom1/i.test(h)
+    );
+    let custom2Idx = normalizedHeaders.findIndex(h =>
+      /customattribute2|atributo2|var2|variable2|campo2|nota2|extra2|custom2/i.test(h)
+    );
+
+    let startRow = 1;
+
+    // If no header matched phoneIdx, inspect values in row 0 and row 1 to detect phone column automatically
+    if (phoneIdx === -1) {
+      const colWithPhone0 = row0.findIndex(val => String(val).replace(/\D/g, '').length >= 7);
+      if (colWithPhone0 !== -1) {
+        phoneIdx = colWithPhone0;
+        startRow = 0; // Row 0 was directly a data row
+      } else if (rows.length > 1) {
+        const row1 = rows[1] || [];
+        const colWithPhone1 = row1.findIndex(val => String(val).replace(/\D/g, '').length >= 7);
+        if (colWithPhone1 !== -1) {
+          phoneIdx = colWithPhone1;
+          startRow = 1;
+        }
+      }
+    }
 
     if (phoneIdx === -1) {
       state.fileError = t('CAMPAIGN.GOWA.CREATE.FORM.FILE_UPLOAD.NO_VALID_CONTACTS_ERROR');
@@ -244,20 +245,20 @@ const handleFileUpload = async event => {
 
     const contactsList = [];
 
-    for (let r = 1; r < rows.length; r += 1) {
+    for (let r = startRow; r < rows.length; r += 1) {
       const row = rows[r];
       if (!row || row.length === 0) continue;
 
-      const rawPhone = row[phoneIdx]?.trim() || '';
+      const rawPhone = String(row[phoneIdx] || '').trim();
       const cleanDigits = rawPhone.replace(/\D/g, '');
 
       if (cleanDigits.length >= 7) {
-        const formattedPhone = rawPhone.startsWith('+') ? `+${cleanDigits}` : `+${cleanDigits}`;
-        const name = nameIdx !== -1 ? row[nameIdx]?.trim() : '';
-        const email = emailIdx !== -1 ? row[emailIdx]?.trim() : '';
-        const company = companyIdx !== -1 ? row[companyIdx]?.trim() : '';
-        const custom1 = custom1Idx !== -1 ? row[custom1Idx]?.trim() : '';
-        const custom2 = custom2Idx !== -1 ? row[custom2Idx]?.trim() : '';
+        const formattedPhone = `+${cleanDigits}`;
+        const name = nameIdx !== -1 ? String(row[nameIdx] || '').trim() : '';
+        const email = emailIdx !== -1 ? String(row[emailIdx] || '').trim() : '';
+        const company = companyIdx !== -1 ? String(row[companyIdx] || '').trim() : '';
+        const custom1 = custom1Idx !== -1 ? String(row[custom1Idx] || '').trim() : '';
+        const custom2 = custom2Idx !== -1 ? String(row[custom2Idx] || '').trim() : '';
 
         contactsList.push({
           phone_number: formattedPhone,
