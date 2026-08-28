@@ -10,6 +10,17 @@ class Api::V1::Accounts::Conversations::MessagesController < Api::V1::Accounts::
     if params[:source_id].present? && params[:message_type].to_s == 'incoming'
       existing = Current.account.messages.find_by(source_id: params[:source_id])
       if existing.present?
+        # Fix race condition: if webhook created the message first without attachments, process them now
+        if params[:attachments].present? && existing.attachments.blank?
+          user = Current.user || @resource
+          mb = Messages::MessageBuilder.new(user, @conversation, params)
+          mb.instance_variable_set(:@message, existing)
+          mb.send(:process_attachments)
+          if existing.save
+            ::ActionCableBroadcastJob.perform_later(existing.id)
+          end
+        end
+
         @message = existing
         return
       end
