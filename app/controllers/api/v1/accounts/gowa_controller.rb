@@ -23,26 +23,28 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
   end
 
   def pair
-    device_id = params[:device_id].presence || "acc_#{Current.account.id}_#{SecureRandom.hex(4)}"
+    account_id = Current.account.id
+    device_id = params[:device_id].presence || "acc_#{account_id}_#{SecureRandom.hex(4)}"
     service = Whatsapp::GowaService.new
     result = service.login_qr(device_id)
 
     if result[:success]
-      # Proactively configure the webhook for this device on GOWA gateway
-      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?device_id=#{CGI.escape(device_id)}"
+      # Proactively configure the webhook for this device on GOWA gateway with account_id
+      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?account_id=#{account_id}&device_id=#{CGI.escape(device_id)}"
       service.configure_device_webhook(
         device_id: device_id,
         webhook_url: gowa_webhook_target
       )
-      render json: result
+      render json: result.merge(device_id: device_id)
     else
       render json: result, status: :unprocessable_entity
     end
   end
 
   def create_inbox
+    account_id = Current.account.id
     name = params[:name].presence || 'WhatsApp Web (GOWA)'
-    device_id = params[:device_id].presence || "acc_#{Current.account.id}_#{SecureRandom.hex(4)}"
+    device_id = params[:device_id].presence || "acc_#{account_id}_#{SecureRandom.hex(4)}"
     webhook_url = "#{ENV.fetch('GOWA_URL', 'http://gowa:3000')}/chatwoot/webhook?device_id=#{CGI.escape(device_id)}"
 
     ActiveRecord::Base.transaction do
@@ -61,9 +63,9 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
         inbox.inbox_members.create!(user: Current.user)
       end
 
-      # Automatically configure GOWA per-device webhook for deterministic multi-device & multi-inbox routing
+      # Automatically configure GOWA per-device webhook for deterministic multi-account & multi-inbox routing
       service = Whatsapp::GowaService.new
-      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?device_id=#{CGI.escape(device_id)}"
+      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?account_id=#{account_id}&inbox_id=#{inbox.id}&device_id=#{CGI.escape(device_id)}"
       service.configure_device_webhook(
         device_id: device_id,
         webhook_url: gowa_webhook_target
@@ -197,24 +199,35 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
   end
 
   def find_inbox_by_device(device_id)
-    return nil if device_id.blank?
-
-    # 1. Search in all Channel::Api where webhook_url contains the device_id across all accounts
-    channel = Channel::Api.all.find do |ch|
-      ch.webhook_url.to_s.include?(device_id)
+    # 1. Direct match by inbox_id if present in webhook query params
+    if params[:inbox_id].present?
+      inbox = Inbox.find_by(id: params[:inbox_id])
+      return inbox if inbox.present?
     end
 
-    return channel.inbox if channel.present? && channel.inbox.present?
+    # 2. Match by device_id in Channel::Api webhook_url
+    if device_id.present?
+      channel = Channel::Api.where('webhook_url LIKE ?', "%device_id=#{device_id}%").first ||
+                Channel::Api.where('webhook_url LIKE ?', "%#{device_id}%").first
+      return channel.inbox if channel&.inbox.present?
 
-    # 2. Fallback to account scope if account_id or Current.account is present
-    account = Account.find_by(id: params[:account_id]) || Current.account
-    if account.present?
-      account.inboxes.where(channel_type: 'Channel::Api').find do |inb|
-        inb.channel.webhook_url.to_s.include?(device_id)
-      end || account.inboxes.where(channel_type: 'Channel::Api').first
-    else
-      Inbox.where(channel_type: 'Channel::Api').first
+      # 3. Match by acc_{account_id}_ prefix in device_id
+      if device_id =~ /\Aacc_(\d+)_/
+        account = Account.find_by(id: ::Regexp.last_match(1))
+        inbox = account&.inboxes&.where(channel_type: 'Channel::Api')&.first
+        return inbox if inbox.present?
+      end
     end
+
+    # 4. Match by account_id in webhook query params
+    if params[:account_id].present?
+      account = Account.find_by(id: params[:account_id])
+      inbox = account&.inboxes&.where(channel_type: 'Channel::Api')&.first
+      return inbox if inbox.present?
+    end
+
+    # 5. Strict multi-tenant isolation: Never fallback across accounts!
+    nil
   end
 
   def attach_media_to_message(message, payload)
@@ -260,12 +273,18 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     Channel::Api.find_each do |channel|
       next unless channel.webhook_url.to_s.include?('device_id=')
 
+      inbox = channel.inbox
+      next if inbox.blank?
+
       uri = URI.parse(channel.webhook_url)
       query_params = CGI.parse(uri.query || '')
       dev_id = query_params['device_id']&.first
       next if dev_id.blank?
 
-      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?device_id=#{CGI.escape(dev_id)}"
+      account_id = channel.account_id
+      inbox_id = inbox.id
+
+      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?account_id=#{account_id}&inbox_id=#{inbox_id}&device_id=#{CGI.escape(dev_id)}"
       service.configure_device_webhook(device_id: dev_id, webhook_url: gowa_webhook_target)
     end
   rescue StandardError => e
