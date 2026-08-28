@@ -7,9 +7,11 @@ import NextButton from 'dashboard/components-next/button/Button.vue';
 import Spinner from 'shared/components/Spinner.vue';
 import GowaAPI from 'dashboard/api/gowa';
 import { useAlert } from 'dashboard/composables';
+import { useAccount } from 'dashboard/composables/useAccount';
 
 const { t } = useI18n();
 const router = useRouter();
+const { accountId } = useAccount();
 
 const channelName = ref('');
 const deviceId = ref('');
@@ -26,8 +28,9 @@ let pollStatusInterval = null;
 const isValidName = computed(() => channelName.value.trim().length > 0);
 
 const generateDeviceId = () => {
+  const accId = accountId.value || '';
   const randomSuffix = Math.random().toString(36).substring(2, 8);
-  return `gowa_device_${randomSuffix}`;
+  return accId ? `acc_${accId}_${randomSuffix}` : `gowa_device_${randomSuffix}`;
 };
 
 const startCountdown = duration => {
