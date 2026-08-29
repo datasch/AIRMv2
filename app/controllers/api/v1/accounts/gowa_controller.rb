@@ -8,9 +8,15 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
   before_action :check_administrator_authorization, only: [:pair, :create_inbox, :disconnect]
 
   def status
-    service = Whatsapp::GowaService.new
     device_id = params[:device_id]
 
+    if evolution_enabled?
+      service = Whatsapp::EvolutionService.new
+      result = device_id.present? ? service.instance_status(device_id) : service.status
+      return render json: result
+    end
+
+    service = Whatsapp::GowaService.new
     sync_all_device_webhooks
 
     if device_id.present?
@@ -25,11 +31,23 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
   def pair
     account_id = Current.account.id
     device_id = params[:device_id].presence || "acc_#{account_id}_#{SecureRandom.hex(4)}"
+
+    if evolution_enabled?
+      service = Whatsapp::EvolutionService.new
+      result = service.create_instance(device_id)
+
+      if result[:success]
+        render json: result.merge(device_id: device_id)
+      else
+        render json: result, status: :unprocessable_entity
+      end
+      return
+    end
+
     service = Whatsapp::GowaService.new
     result = service.login_qr(device_id)
 
     if result[:success]
-      # Proactively configure the webhook for this device on GOWA gateway with account_id
       gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?account_id=#{account_id}&device_id=#{CGI.escape(device_id)}"
       service.configure_device_webhook(
         device_id: device_id,
@@ -43,33 +61,55 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
 
   def create_inbox
     account_id = Current.account.id
-    name = params[:name].presence || 'WhatsApp Web (GOWA)'
+    name = params[:name].presence || 'WhatsApp Web'
     device_id = params[:device_id].presence || "acc_#{account_id}_#{SecureRandom.hex(4)}"
-    webhook_url = "#{ENV.fetch('GOWA_URL', 'http://gowa:3000')}/chatwoot/webhook?device_id=#{CGI.escape(device_id)}"
+    existing_inbox_id = params[:inbox_id].presence
+
+    if existing_inbox_id.present?
+      inbox = Current.account.inboxes.find_by(id: existing_inbox_id)
+    end
 
     ActiveRecord::Base.transaction do
-      channel = Channel::Api.create!(
-        account: Current.account,
-        webhook_url: webhook_url
-      )
+      if inbox.blank?
+        evolution_webhook = "#{ENV.fetch('EVOLUTION_API_URL', 'http://evolution-api:8080')}/chatwoot/webhook/#{CGI.escape(device_id)}"
+        gowa_webhook = "#{ENV.fetch('GOWA_URL', 'http://gowa:3000')}/chatwoot/webhook?device_id=#{CGI.escape(device_id)}"
+        webhook_url = evolution_enabled? ? evolution_webhook : gowa_webhook
 
-      inbox = Current.account.inboxes.create!(
-        name: name,
-        channel: channel
-      )
+        channel = Channel::Api.create!(
+          account: Current.account,
+          webhook_url: webhook_url
+        )
 
-      # Automatically assign the creating user if they are an agent/admin
-      if Current.user.present? && Current.account_user.present?
-        inbox.inbox_members.create!(user: Current.user)
+        inbox = Current.account.inboxes.create!(
+          name: name,
+          channel: channel
+        )
+
+        if Current.user.present? && Current.account_user.present?
+          inbox.inbox_members.create!(user: Current.user)
+        end
       end
 
-      # Automatically configure GOWA per-device webhook for deterministic multi-account & multi-inbox routing
-      service = Whatsapp::GowaService.new
-      gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?account_id=#{account_id}&inbox_id=#{inbox.id}&device_id=#{CGI.escape(device_id)}"
-      service.configure_device_webhook(
-        device_id: device_id,
-        webhook_url: gowa_webhook_target
-      )
+      if evolution_enabled?
+        service = Whatsapp::EvolutionService.new
+        user = Current.user || Current.account&.administrators&.first || Current.account&.users&.first
+        token = user&.access_token&.token || user&.create_access_token&.token
+
+        service.configure_chatwoot(
+          instance_name: device_id,
+          account_id: account_id,
+          user_token: token,
+          inbox_id: inbox.id,
+          name_inbox: inbox.name
+        )
+      else
+        service = Whatsapp::GowaService.new
+        gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?account_id=#{account_id}&inbox_id=#{inbox.id}&device_id=#{CGI.escape(device_id)}"
+        service.configure_device_webhook(
+          device_id: device_id,
+          webhook_url: gowa_webhook_target
+        )
+      end
 
       render json: {
         success: true,
@@ -80,13 +120,19 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
       }
     end
   rescue StandardError => e
-    Rails.logger.error "[GOWA] Create inbox error: #{e.message}"
+    Rails.logger.error "[WhatsApp Integration] Create/Link inbox error: #{e.message}"
     render json: { success: false, error: e.message }, status: :unprocessable_entity
   end
 
   def disconnect
     device_id = params[:device_id]
     return render json: { success: false, error: 'device_id is required' }, status: :bad_request if device_id.blank?
+
+    if evolution_enabled?
+      service = Whatsapp::EvolutionService.new
+      result = service.logout_instance(device_id)
+      return render json: result
+    end
 
     service = Whatsapp::GowaService.new
     result = service.logout_device(device_id)
@@ -115,6 +161,10 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
   end
 
   private
+
+  def evolution_enabled?
+    ENV['EVOLUTION_API_URL'].present?
+  end
 
   def extract_device_id
     params[:device_id].presence ||

@@ -51,7 +51,13 @@ const pollConnectionStatus = () => {
     if (!deviceId.value || step.value !== 2) return;
     try {
       const response = await GowaAPI.getStatus(deviceId.value);
-      if (response.data?.is_logged_in || response.data?.is_connected) {
+      const state = response.data?.state || '';
+      const isReady = response.data?.connected ||
+                      response.data?.is_logged_in ||
+                      response.data?.is_connected ||
+                      ['open', 'connected'].includes(state.toLowerCase());
+
+      if (isReady) {
         isConnected.value = true;
         clearInterval(pollStatusInterval);
         clearInterval(countdownInterval);
@@ -84,7 +90,7 @@ const requestQRCode = async () => {
     const response = await GowaAPI.getPairingQR(deviceId.value);
     if (response.data?.success && response.data?.qr_link) {
       qrLink.value = response.data.qr_link;
-      qrDuration.value = response.data.qr_duration || 30;
+      qrDuration.value = response.data.qr_duration || 40;
       startCountdown(qrDuration.value);
       pollConnectionStatus();
     } else {
@@ -92,7 +98,7 @@ const requestQRCode = async () => {
         response.data?.error ||
           t(
             'INBOX_MGMT.ADD.GOWA.QR_ERROR',
-            'No se pudo generar el código QR. Verifique que la pasarela GOWA esté activa.'
+            'No se pudo generar el código QR. Verifique que la pasarela Evolution API esté activa.'
           )
       );
     }
@@ -102,7 +108,7 @@ const requestQRCode = async () => {
         error.message ||
         t(
           'INBOX_MGMT.ADD.GOWA.QR_ERROR',
-          'Error al conectar con la pasarela GOWA.'
+          'Error al conectar con la pasarela de WhatsApp.'
         )
     );
   } finally {
@@ -158,11 +164,11 @@ onUnmounted(() => {
 <template>
   <div class="overflow-auto col-span-6 p-6 w-full h-full">
     <PageHeader
-      :header-title="$t('INBOX_MGMT.ADD.GOWA.TITLE', 'Conectar WhatsApp (GOWA / Código QR)')"
+      :header-title="$t('INBOX_MGMT.ADD.GOWA.TITLE', 'Conectar WhatsApp (Código QR / Evolution API)')"
       :header-content="
         $t(
           'INBOX_MGMT.ADD.GOWA.DESC',
-          'Vincule cualquier cuenta de WhatsApp escaneando un código QR utilizando la pasarela multidispositivo de alto rendimiento GOWA.'
+          'Vincule cualquier cuenta de WhatsApp escaneando un código QR utilizando la pasarela multidispositivo de alta estabilidad Evolution API.'
         )
       "
     />

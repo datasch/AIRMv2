@@ -253,8 +253,8 @@
           "WHATSAPP_CLOUD": "WhatsApp Cloud",
           "WHATSAPP_CLOUD_DESC": "Quick setup through Meta",
           "WHATSAPP_CLOUD_MANUAL_SETUP_DESC": "Manual setup with Cloud API credentials",
-          "GOWA": "WhatsApp Web (QR Code / GOWA)",
-          "GOWA_DESC": "Connect your WhatsApp number by scanning a QR code without Meta API.",
+          "GOWA": "WhatsApp Web (QR Code / Evolution API)",
+          "GOWA_DESC": "Connect your WhatsApp number by scanning a QR code with Evolution API.",
           "TWILIO_DESC": "Connect via Twilio credentials",
           "360_DIALOG": "360Dialog"
         },
@@ -470,8 +470,8 @@
         }
       },
       "GOWA": {
-        "TITLE": "Connect WhatsApp (GOWA / QR Code)",
-        "DESC": "Connect any WhatsApp account by scanning a QR code using the high-performance GOWA multi-device gateway.",
+        "TITLE": "Connect WhatsApp (QR Code / Evolution API)",
+        "DESC": "Connect any WhatsApp account by scanning a QR code using the Evolution API gateway.",
         "CHANNEL_NAME": {
           "LABEL": "Inbox Name",
           "PLACEHOLDER": "e.g. WhatsApp Sales or Support",
@@ -512,8 +512,8 @@
             "DESCRIPTION": "Support your customers on WhatsApp"
           },
           "GOWA": {
-            "TITLE": "WhatsApp (QR Code / GOWA)",
-            "DESCRIPTION": "Connect any WhatsApp by scanning a QR code without official Meta API"
+            "TITLE": "WhatsApp (QR Code / Evolution API)",
+            "DESCRIPTION": "Connect any WhatsApp by scanning a QR code with Evolution API"
           },
           "WHATSAPP_CALL": {
             "TITLE": "WhatsApp Call",
