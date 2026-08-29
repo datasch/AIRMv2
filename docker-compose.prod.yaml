@@ -113,10 +113,7 @@ services:
       - DATABASE_SAVE_MESSAGE_UPDATE=true
       - DATABASE_SAVE_DATA_CONTACTS=true
       - DATABASE_SAVE_DATA_CHATS=true
-      - CACHE_REDIS_ENABLED=true
-      - 'CACHE_REDIS_URI=redis://:${REDIS_PASSWORD:-redispassword}@airm_redis:6379/1'
-      - CACHE_REDIS_PREFIX_KEY=evolution
-      - CACHE_REDIS_SAVE_INSTANCES=true
+      - CACHE_REDIS_ENABLED=false
       - CHATWOOT_ENABLED=true
       - CHATWOOT_MESSAGE_READ=true
       - CHATWOOT_MESSAGE_DELETE=true
