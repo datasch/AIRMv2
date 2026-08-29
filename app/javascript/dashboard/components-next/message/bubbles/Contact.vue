@@ -20,14 +20,24 @@ const attachment = computed(() => {
   return attachments.value[0];
 });
 
-const phoneNumber = computed(() => {
-  return attachment.value.fallbackTitle;
-});
-
 const contactName = computed(() => {
   const { meta } = attachment.value ?? {};
-  const { firstName, lastName } = meta ?? {};
-  return `${firstName ?? ''} ${lastName ?? ''}`.trim();
+  const { firstName, lastName, name, displayName } = meta ?? {};
+  if (name) return name;
+  if (displayName) return displayName;
+  const combined = `${firstName ?? ''} ${lastName ?? ''}`.trim();
+  return combined || 'Contacto';
+});
+
+const phoneNumber = computed(() => {
+  const { meta } = attachment.value ?? {};
+  return (
+    attachment.value?.fallbackTitle ||
+    meta?.phone ||
+    meta?.phone_number ||
+    meta?.formattedPhone ||
+    ''
+  );
 });
 
 const formattedPhoneNumber = computed(() => {
@@ -39,9 +49,11 @@ const rawPhoneNumber = computed(() => {
 });
 
 function getContactObject() {
+  const { meta } = attachment.value ?? {};
   const contactItem = {
     name: contactName.value,
     phone_number: `+${rawPhoneNumber.value}`,
+    email: meta?.email || undefined,
   };
   return contactItem;
 }
@@ -97,12 +109,36 @@ const action = computed(() => ({
 </script>
 
 <template>
-  <BaseAttachmentBubble
-    icon="i-teenyicons-user-circle-solid"
-    icon-bg-color="bg-[#D6409F]"
-    sender-translation-key="CONVERSATION.SHARED_ATTACHMENT.CONTACT"
-    :title="contactName"
-    :content="phoneNumber"
-    :action="formattedPhoneNumber ? action : null"
-  />
+  <div class="flex flex-col gap-1.5">
+    <BaseAttachmentBubble
+      icon="i-teenyicons-user-circle-solid"
+      icon-bg-color="bg-[#D6409F]"
+      sender-translation-key="CONVERSATION.SHARED_ATTACHMENT.CONTACT"
+      :title="contactName"
+      :content="phoneNumber"
+      :action="formattedPhoneNumber ? action : null"
+    />
+    <div
+      v-if="rawPhoneNumber"
+      class="flex items-center gap-3 px-2.5 py-1 text-xs text-n-slate-11 bg-n-alpha-1 rounded-lg border border-n-border-weak"
+    >
+      <a
+        :href="`https://wa.me/${rawPhoneNumber}`"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-1 font-semibold text-green-600 hover:text-green-700 dark:text-green-400 hover:underline"
+      >
+        <span class="i-lucide-message-circle size-3.5" />
+        <span>{{ t('CONVERSATION.WHATSAPP_CONTACT') }}</span>
+      </a>
+      <span class="i-lucide-dot size-4 text-n-slate-7" />
+      <a
+        :href="`tel:+${rawPhoneNumber}`"
+        class="inline-flex items-center gap-1 font-medium text-n-blue hover:underline"
+      >
+        <span class="i-lucide-phone size-3.5" />
+        <span>{{ t('CONVERSATION.CALL_CONTACT') }}</span>
+      </a>
+    </div>
+  </div>
 </template>

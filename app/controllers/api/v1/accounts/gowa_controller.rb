@@ -180,13 +180,34 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
       )
     end
 
-    message_content = payload[:body].presence || payload[:text].presence || payload[:caption].presence || ''
     source_id = payload[:id].present? ? "WAID:#{payload[:id]}" : nil
 
     # Prevent duplicate message ingestion by source_id in this conversation
     if source_id.present? && conversation.messages.exists?(source_id: source_id)
       Rails.logger.info "[GOWA Webhook] Skipping duplicate message #{source_id} in Inbox #{inbox.id}"
       return
+    end
+
+    raw_body = payload[:body].presence || payload[:text].presence || payload[:caption].presence || ''
+    contact_cards = extract_contact_cards(payload)
+
+    if contact_cards.present?
+      # Build structured, easily copyable text representation for sales agents & AI
+      summaries = contact_cards.map do |card|
+        phone_val = card[:phones].first.to_s.strip
+        digits = phone_val.gsub(/\D/, '')
+        wa_link = digits.present? ? "https://wa.me/#{digits}" : nil
+
+        lines = ["👤 Contacto: #{card[:name]}"]
+        lines << "📱 Teléfono: #{phone_val}" if phone_val.present?
+        lines << "💬 WhatsApp: #{wa_link}" if wa_link.present?
+        lines << "🏢 Empresa: #{card[:organization]}" if card[:organization].present?
+        lines << "✉️ Correo: #{card[:email]}" if card[:email].present?
+        lines.join("\n")
+      end
+      message_content = summaries.join("\n\n")
+    else
+      message_content = raw_body
     end
 
     message_params = ActionController::Parameters.new({
@@ -196,7 +217,14 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     })
 
     message = Messages::MessageBuilder.new(contact, conversation, message_params).perform
-    attach_media_to_message(message, payload) if message.present?
+
+    if message.present?
+      if contact_cards.present?
+        attach_contacts_to_message(message, contact_cards)
+      else
+        attach_media_to_message(message, payload)
+      end
+    end
 
     Rails.logger.info "[GOWA Webhook] Synced incoming message #{message&.id} in Account #{account.id} -> Inbox #{inbox.id} (#{inbox.name}) from #{contact.phone_number}"
   end
@@ -307,6 +335,151 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     else
       :file
     end
+  end
+
+  def extract_contact_cards(payload)
+    cards = []
+
+    # 1. Check direct vcard in payload (string or array)
+    raw_vcards = Array(payload[:vcards] || payload[:vcard] || payload.dig(:message, :vcard) || payload.dig(:message, :vcards)).compact
+    raw_vcards.each do |vcard_str|
+      parsed = parse_vcard(vcard_str.to_s)
+      cards << parsed if parsed.present?
+    end
+
+    # 2. Check contacts array / contact hash in payload
+    contact_entries = Array(payload[:contacts] || payload[:contact] || payload.dig(:message, :contacts) || payload.dig(:message, :contact)).compact
+    contact_entries.each do |entry|
+      if entry.is_a?(Hash)
+        vcard_text = entry[:vcard] || entry['vcard']
+        if vcard_text.present?
+          parsed = parse_vcard(vcard_text.to_s)
+          if parsed.present?
+            parsed[:name] = (entry[:displayName] || entry[:display_name] || entry[:name] || parsed[:name]).to_s.strip
+            parsed[:phones] << entry[:phone] if entry[:phone].present?
+            parsed[:phones].uniq!
+            cards << parsed
+          end
+        else
+          name = (entry[:displayName] || entry[:display_name] || entry[:name] || entry['displayName'] || entry['display_name'] || entry['name']).to_s.strip
+          phones = Array(entry[:phones] || entry[:phone] || entry['phones'] || entry['phone']).map do |p|
+            p.is_a?(Hash) ? (p[:phone] || p['phone']) : p.to_s
+          end.compact
+          if name.present? || phones.present?
+            cards << {
+              name: name.presence || 'Contacto',
+              first_name: name.split(' ').first,
+              last_name: name.split(' ')[1..]&.join(' '),
+              phones: phones,
+              email: entry[:email] || entry['email'],
+              organization: entry[:organization] || entry[:org] || entry['organization'] || entry['org']
+            }
+          end
+        end
+      elsif entry.is_a?(String) && entry.include?('BEGIN:VCARD')
+        parsed = parse_vcard(entry)
+        cards << parsed if parsed.present?
+      end
+    end
+
+    # 3. Check if body / text contains BEGIN:VCARD
+    body_text = (payload[:body] || payload[:text] || '').to_s
+    if body_text.include?('BEGIN:VCARD')
+      body_text.scan(/BEGIN:VCARD.*?END:VCARD/m).each do |vcard_block|
+        parsed = parse_vcard(vcard_block)
+        cards << parsed if parsed.present?
+      end
+    end
+
+    # 4. If body starts with "Contact: Name" and contains a phone or contact type
+    if cards.blank? && (payload[:type].to_s.downcase.include?('contact') || body_text.start_with?('Contact:'))
+      extracted_name = body_text.sub(/\AContact:\s*/i, '').lines.first.to_s.strip
+      extracted_phone = body_text.scan(/(?:\+?\d{1,4}[\s-]?)?\(?\d{2,4}\)?[\s-]?\d{3,4}[\s-]?\d{3,4}/).first
+      if extracted_name.present? || extracted_phone.present?
+        cards << {
+          name: extracted_name.presence || 'Contacto',
+          first_name: extracted_name.split(' ').first,
+          last_name: extracted_name.split(' ')[1..]&.join(' '),
+          phones: [extracted_phone].compact,
+          email: nil,
+          organization: nil
+        }
+      end
+    end
+
+    cards.uniq { |c| [c[:name], c[:phones]&.first] }
+  end
+
+  def parse_vcard(vcard_str)
+    return nil if vcard_str.blank?
+
+    name = ''
+    first_name = ''
+    last_name = ''
+    phones = []
+    email = ''
+    org = ''
+
+    vcard_str.each_line do |line|
+      clean_line = line.strip
+      case clean_line
+      when /\AFN:(.*)\z/i
+        name = Regexp.last_match(1).to_s.strip
+      when /\AN:([^;]*);?([^;]*)/i
+        last_name = Regexp.last_match(1).to_s.strip
+        first_name = Regexp.last_match(2).to_s.strip
+      when /\ATEL[^:]*:(.*)\z/i
+        raw_num = Regexp.last_match(1).to_s.strip
+        waid = clean_line[/waid=(\d+)/i, 1]
+        phones << (waid.present? ? "+#{waid}" : raw_num)
+      when /\AEMAIL[^:]*:(.*)\z/i
+        email = Regexp.last_match(1).to_s.strip
+      when /\AORG:(.*)\z/i
+        org = Regexp.last_match(1).to_s.strip.delete(';')
+      end
+    end
+
+    name = "#{first_name} #{last_name}".strip if name.blank? && (first_name.present? || last_name.present?)
+    first_name = name.split(' ').first if first_name.blank? && name.present?
+    last_name = name.split(' ')[1..]&.join(' ') if last_name.blank? && name.present?
+
+    return nil if name.blank? && phones.blank?
+
+    {
+      name: name.presence || phones.first || 'Contacto',
+      first_name: first_name,
+      last_name: last_name,
+      phones: phones.uniq,
+      email: email.presence,
+      organization: org.presence
+    }
+  end
+
+  def attach_contacts_to_message(message, contact_cards)
+    contact_cards.each do |card|
+      primary_phone = card[:phones].first || ''
+      clean_digits = primary_phone.gsub(/\D/, '')
+      formatted_phone = clean_digits.present? ? "+#{clean_digits}" : ''
+
+      message.attachments.create!(
+        account_id: message.account_id,
+        file_type: :contact,
+        fallback_title: formatted_phone.presence || primary_phone.presence || card[:name],
+        meta: {
+          firstName: card[:first_name],
+          lastName: card[:last_name],
+          name: card[:name],
+          displayName: card[:name],
+          phone: primary_phone,
+          formattedPhone: formatted_phone,
+          email: card[:email],
+          organization: card[:organization]
+        }.compact
+      )
+    end
+    Rails.logger.info "[GOWA Webhook] Attached #{contact_cards.size} contact card(s) to Message #{message.id}"
+  rescue StandardError => e
+    Rails.logger.warn "[GOWA Webhook] Failed to attach contact card: #{e.message}"
   end
 
   def sync_all_device_webhooks
