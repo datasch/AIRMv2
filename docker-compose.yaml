@@ -112,24 +112,40 @@ services:
       - 1025:1025
       - 8025:8025
 
-  gowa:
-    image: aldinokemal2104/go-whatsapp-web-multidevice:latest
+  evolution-api:
+    image: atendai/evolution-api:v2.2.3
     restart: always
     ports:
-      - '3030:3000'
-    volumes:
-      - gowa_data:/app/storages
-    command:
-      - rest
-      - '--webhook=http://rails:3000/public/api/v1/gowa/webhook'
-      - '--webhook-events=message,message.ack,message.reaction,message.edited,message.revoked'
+      - '8080:8080'
     environment:
-      - PORT=3000
-      - WHATSAPP_WEBHOOK=http://rails:3000/public/api/v1/gowa/webhook
-      - WHATSAPP_WEBHOOK_EVENTS=message,message.ack,message.reaction,message.edited,message.revoked
-      - CHATWOOT_ENABLED=false
-      - CHATWOOT_URL=http://rails:3000
-      - CORS_ALLOWED_ORIGINS=*
+      - SERVER_URL=http://evolution-api:8080
+      - AUTHENTICATION_TYPE=apikey
+      - AUTHENTICATION_API_KEY=evolution_secret_key_2026
+      - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
+      - DATABASE_ENABLED=true
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_CONNECTION_URI=postgresql://postgres:postgres@postgres:5432/chatwoot?sslmode=disable
+      - DATABASE_CONNECTION_CLIENT_NAME=evolution_chatwoot
+      - DATABASE_SAVE_DATA_INSTANCE=true
+      - DATABASE_SAVE_DATA_NEW_MESSAGE=true
+      - DATABASE_SAVE_MESSAGE_UPDATE=true
+      - DATABASE_SAVE_DATA_CONTACTS=true
+      - DATABASE_SAVE_DATA_CHATS=true
+      - CACHE_REDIS_ENABLED=true
+      - CACHE_REDIS_URI=redis://:redispassword@redis:6379/1
+      - CACHE_REDIS_PREFIX_KEY=evolution
+      - CACHE_REDIS_SAVE_INSTANCES=true
+      - CHATWOOT_ENABLED=true
+      - CHATWOOT_MESSAGE_READ=true
+      - CHATWOOT_MESSAGE_DELETE=true
+      - WA_BUSINESS_TOKEN_WEBHOOK=true
+      - LOG_LEVEL=ERROR,WARN,DEBUG,INFO,LOG,VERBOSE,DARK,WEBHOOKS
+      - CORS_ORIGIN=*
+    volumes:
+      - evolution_instances_data:/evolution/instances
+    depends_on:
+      - postgres
+      - redis
 
 volumes:
   postgres:
@@ -138,4 +154,4 @@ volumes:
   node_modules:
   cache:
   bundle:
-  gowa_data:
+  evolution_instances_data:

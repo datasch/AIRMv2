@@ -23,11 +23,9 @@ services:
       - POSTGRES_HOST=airm_postgres
       - POSTGRES_PORT=5432
       - 'POSTGRES_USERNAME=${POSTGRES_USERNAME:-postgres}'
-      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}'
-      - 'REDIS_URL=redis://:${REDIS_PASSWORD:-redispassword}@airm_redis:6379/0'
-      - 'GOWA_URL=http://gowa:3000'
-      - 'GOWA_PUBLIC_URL=${GOWA_PUBLIC_URL:-http://localhost:3030}'
-      - 'SAFE_FETCH_ALLOW_PRIVATE_NETWORK=true'
+      - 'EVOLUTION_API_URL=${EVOLUTION_API_URL:-http://evolution-api:8080}'
+      - 'EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-evolution_secret_key_2026}'
+      - SAFE_FETCH_ALLOW_PRIVATE_NETWORK=true
       - 'ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY:-d0fbefd4b17eac815e2ac70cf26b4dea}'
       - 'ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=${ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY:-bd6f095c423938798a37f03f010d48f9}'
       - 'ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=${ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT:-9d9aeb46b718bb12080d942bba86db81}'
@@ -81,10 +79,9 @@ services:
       - POSTGRES_HOST=airm_postgres
       - POSTGRES_PORT=5432
       - 'POSTGRES_USERNAME=${POSTGRES_USERNAME:-postgres}'
-      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}'
-      - 'REDIS_URL=redis://:${REDIS_PASSWORD:-redispassword}@airm_redis:6379/0'
-      - 'GOWA_URL=http://gowa:3000'
-      - 'SAFE_FETCH_ALLOW_PRIVATE_NETWORK=true'
+      - 'EVOLUTION_API_URL=${EVOLUTION_API_URL:-http://evolution-api:8080}'
+      - 'EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-evolution_secret_key_2026}'
+      - SAFE_FETCH_ALLOW_PRIVATE_NETWORK=true
       - 'ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY:-d0fbefd4b17eac815e2ac70cf26b4dea}'
       - 'ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=${ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY:-bd6f095c423938798a37f03f010d48f9}'
       - 'ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=${ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT:-9d9aeb46b718bb12080d942bba86db81}'
@@ -95,20 +92,42 @@ services:
         condition: service_healthy
       airm_redis:
         condition: service_healthy
-  gowa:
-    image: 'aldinokemal2104/go-whatsapp-web-multidevice:latest'
+  evolution-api:
+    image: 'atendai/evolution-api:v2.2.3'
     restart: always
-    command:
-      - rest
-      - '--webhook=http://rails:3000/public/api/v1/gowa/webhook'
-      - '--webhook-events=message,message.ack,message.reaction,message.edited,message.revoked'
+    ports:
+      - '8080:8080'
     environment:
-      - 'WHATSAPP_WEBHOOK=http://rails:3000/public/api/v1/gowa/webhook'
-      - 'WHATSAPP_WEBHOOK_EVENTS=message,message.ack,message.reaction,message.edited,message.revoked'
-      - CHATWOOT_ENABLED=false
-      - 'CHATWOOT_URL=http://rails:3000'
+      - SERVER_URL=http://evolution-api:8080
+      - AUTHENTICATION_TYPE=apikey
+      - 'AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY:-evolution_secret_key_2026}'
+      - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
+      - DATABASE_ENABLED=true
+      - DATABASE_PROVIDER=postgresql
+      - 'DATABASE_CONNECTION_URI=postgresql://${POSTGRES_USERNAME:-postgres}:${POSTGRES_PASSWORD:-postgres}@airm_postgres:5432/${POSTGRES_DATABASE:-chatwoot_production}?sslmode=disable'
+      - DATABASE_CONNECTION_CLIENT_NAME=evolution_chatwoot
+      - DATABASE_SAVE_DATA_INSTANCE=true
+      - DATABASE_SAVE_DATA_NEW_MESSAGE=true
+      - DATABASE_SAVE_MESSAGE_UPDATE=true
+      - DATABASE_SAVE_DATA_CONTACTS=true
+      - DATABASE_SAVE_DATA_CHATS=true
+      - CACHE_REDIS_ENABLED=true
+      - 'CACHE_REDIS_URI=redis://:${REDIS_PASSWORD:-redispassword}@airm_redis:6379/1'
+      - CACHE_REDIS_PREFIX_KEY=evolution
+      - CACHE_REDIS_SAVE_INSTANCES=true
+      - CHATWOOT_ENABLED=true
+      - CHATWOOT_MESSAGE_READ=true
+      - CHATWOOT_MESSAGE_DELETE=true
+      - WA_BUSINESS_TOKEN_WEBHOOK=true
+      - 'LOG_LEVEL=ERROR,WARN,DEBUG,INFO,LOG,VERBOSE,DARK,WEBHOOKS'
+      - 'CORS_ORIGIN=*'
     volumes:
-      - 'gowa_data:/app/storages'
+      - 'evolution_instances_data:/evolution/instances'
+    depends_on:
+      airm_postgres:
+        condition: service_healthy
+      airm_redis:
+        condition: service_healthy
   airm_postgres:
     image: 'pgvector/pgvector:pg16'
     restart: always
@@ -148,4 +167,4 @@ volumes:
   airm_postgres_data: null
   airm_redis_data: null
   storage_data: null
-  gowa_data: null
+  evolution_instances_data: null

@@ -150,22 +150,42 @@ services:
       redis:
         condition: service_healthy
 
-  gowa:
-    image: aldinokemal2104/go-whatsapp-web-multidevice:latest
+  evolution-api:
+    image: atendai/evolution-api:v2.2.3
     restart: always
-    command:
-      - rest
-      - '--webhook=http://rails:3000/public/api/v1/gowa/webhook'
-      - '--webhook-events=message,message.ack,message.reaction,message.edited,message.revoked'
+    ports:
+      - "8080:8080"
     environment:
-      - WHATSAPP_WEBHOOK=http://rails:3000/public/api/v1/gowa/webhook
-      - WHATSAPP_WEBHOOK_EVENTS=message,message.ack,message.reaction,message.edited,message.revoked
-      - CHATWOOT_ENABLED=false
-      - CHATWOOT_URL=http://rails:3000
+      - SERVER_URL=http://evolution-api:8080
+      - AUTHENTICATION_TYPE=apikey
+      - AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY:-evolution_secret_key_2026}
+      - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
+      - DATABASE_ENABLED=true
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_CONNECTION_URI=postgresql://${POSTGRES_USERNAME:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DATABASE:-chatwoot_production}?sslmode=disable
+      - DATABASE_CONNECTION_CLIENT_NAME=evolution_chatwoot
+      - DATABASE_SAVE_DATA_INSTANCE=true
+      - DATABASE_SAVE_DATA_NEW_MESSAGE=true
+      - DATABASE_SAVE_MESSAGE_UPDATE=true
+      - DATABASE_SAVE_DATA_CONTACTS=true
+      - DATABASE_SAVE_DATA_CHATS=true
+      - CACHE_REDIS_ENABLED=true
+      - CACHE_REDIS_URI=redis://:${REDIS_PASSWORD:-redispassword}@redis:6379/1
+      - CACHE_REDIS_PREFIX_KEY=evolution
+      - CACHE_REDIS_SAVE_INSTANCES=true
+      - CHATWOOT_ENABLED=true
+      - CHATWOOT_MESSAGE_READ=true
+      - CHATWOOT_MESSAGE_DELETE=true
+      - WA_BUSINESS_TOKEN_WEBHOOK=true
+      - LOG_LEVEL=ERROR,WARN,DEBUG,INFO,LOG,VERBOSE,DARK,WEBHOOKS
+      - CORS_ORIGIN=*
     volumes:
-      - gowa_data:/app/storages
-    expose:
-      - "3000"
+      - evolution_instances_data:/evolution/instances
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   postgres:
     image: pgvector/pgvector:pg16
@@ -198,7 +218,7 @@ volumes:
   postgres_data:
   redis_data:
   storage_data:
-  gowa_data:
+  evolution_instances_data:
 ```
 
 2. En la interfaz de Coolify:
