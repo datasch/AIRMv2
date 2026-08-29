@@ -30,7 +30,11 @@ Rails.application.config.after_initialize do
         dev_id = query_params['device_id']&.first
         next if dev_id.blank?
 
-        gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?device_id=#{CGI.escape(dev_id)}"
+        inbox = channel.inbox
+        account_id = channel.account_id
+        inbox_id = inbox&.id
+
+        gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?account_id=#{account_id}&inbox_id=#{inbox_id}&device_id=#{CGI.escape(dev_id)}"
         service.configure_device_webhook(device_id: dev_id, webhook_url: gowa_webhook_target)
       end
     end

@@ -95,7 +95,7 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
 
   def webhook
     event = params[:event] || params[:type]
-    device_id = params[:device_id] || params.dig(:payload, :device_id)
+    device_id = extract_device_id
 
     # Healthcheck / ping response
     return render json: { success: true, message: 'GOWA webhook active' } if event == 'ping' || request.get?
@@ -116,18 +116,42 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
 
   private
 
+  def extract_device_id
+    params[:device_id].presence ||
+      params[:deviceId].presence ||
+      params[:session].presence ||
+      params[:sessionId].presence ||
+      params[:instance].presence ||
+      params.dig(:payload, :device_id).presence ||
+      params.dig(:payload, :deviceId).presence ||
+      params.dig(:payload, :session).presence ||
+      params.dig(:data, :device_id).presence ||
+      params.dig(:data, :deviceId).presence ||
+      params.dig(:data, :session).presence ||
+      request.headers['X-Device-Id'].presence ||
+      request.headers['X-Device-ID'].presence ||
+      request.headers['Device-Id'].presence ||
+      request.headers['X-Session-Id'].presence
+  end
+
   def handle_incoming_message(device_id)
-    payload = params[:payload] || params
-    is_from_me = ActiveModel::Type::Boolean.new.cast(payload[:is_from_me])
+    payload = params[:payload].presence || params[:data].presence || params[:message].presence || params
 
-    # Avoid processing our own outgoing messages sent via WhatsApp
-    return if is_from_me
+    # 1. Detect if the message was sent by the device owner (outgoing echo from mobile / web)
+    raw_from_me = payload[:from_me] || payload[:fromMe] || payload[:is_from_me] || payload[:isFromMe] ||
+                  payload.dig(:key, :fromMe) || payload.dig(:key, :from_me) ||
+                  payload.dig(:info, :from_me) || payload.dig(:info, :is_from_me) || payload.dig(:info, :fromMe) ||
+                  payload[:is_echo] || payload[:isEcho]
+    is_from_me = ActiveModel::Type::Boolean.new.cast(raw_from_me)
 
-    # Ignore WhatsApp group messages and status broadcasts to prevent automated bots/AI from messaging group members
-    is_group = ActiveModel::Type::Boolean.new.cast(payload[:is_group]) ||
+    # 2. Ignore WhatsApp group messages and status broadcasts
+    is_group = ActiveModel::Type::Boolean.new.cast(payload[:is_group] || payload[:isGroup] || payload.dig(:info, :is_group)) ||
                payload[:from].to_s.include?('@g.us') ||
                payload[:chat_id].to_s.include?('@g.us') ||
-               payload[:sender].to_s.include?('@g.us')
+               payload[:chatId].to_s.include?('@g.us') ||
+               payload[:sender].to_s.include?('@g.us') ||
+               payload[:remoteJid].to_s.include?('@g.us') ||
+               payload.dig(:key, :remoteJid).to_s.include?('@g.us')
     return if is_group
 
     inbox = find_inbox_by_device(device_id)
@@ -139,13 +163,19 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     account = inbox.account
     return if account.blank?
 
-    sender_jid = (payload[:from] || payload[:chat_id] || payload[:sender]).to_s
+    if is_from_me
+      handle_outgoing_echo(inbox, account, payload)
+      return
+    end
+
+    sender_jid = (payload[:from] || payload[:chat_id] || payload[:chatId] || payload[:sender] ||
+                  payload[:remoteJid] || payload.dig(:key, :remoteJid) || payload.dig(:info, :sender)).to_s
     return if sender_jid.blank? || sender_jid.include?('status@broadcast')
 
     clean_phone = sender_jid.split('@').first.gsub(/\D/, '')
     return if clean_phone.blank?
 
-    sender_name = payload[:from_name].presence || payload[:push_name].presence || "+#{clean_phone}"
+    sender_name = payload[:from_name].presence || payload[:push_name].presence || payload[:pushName].presence || payload.dig(:info, :push_name).presence || "+#{clean_phone}"
 
     # Find or create Contact in the account that owns this inbox
     contact = account.contacts.find_by(phone_number: "+#{clean_phone}") ||
@@ -180,7 +210,7 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
       )
     end
 
-    source_id = payload[:id].present? ? "WAID:#{payload[:id]}" : nil
+    source_id = payload[:id].present? ? "WAID:#{payload[:id]}" : (payload.dig(:key, :id).present? ? "WAID:#{payload.dig(:key, :id)}" : nil)
 
     # Prevent duplicate message ingestion by source_id in this conversation
     if source_id.present? && conversation.messages.exists?(source_id: source_id)
@@ -188,27 +218,9 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
       return
     end
 
-    raw_body = payload[:body].presence || payload[:text].presence || payload[:caption].presence || ''
+    raw_body = extract_message_body(payload)
     contact_cards = extract_contact_cards(payload)
-
-    if contact_cards.present?
-      # Build structured, easily copyable text representation for sales agents & AI
-      summaries = contact_cards.map do |card|
-        phone_val = card[:phones].first.to_s.strip
-        digits = phone_val.gsub(/\D/, '')
-        wa_link = digits.present? ? "https://wa.me/#{digits}" : nil
-
-        lines = ["👤 Contacto: #{card[:name]}"]
-        lines << "📱 Teléfono: #{phone_val}" if phone_val.present?
-        lines << "💬 WhatsApp: #{wa_link}" if wa_link.present?
-        lines << "🏢 Empresa: #{card[:organization]}" if card[:organization].present?
-        lines << "✉️ Correo: #{card[:email]}" if card[:email].present?
-        lines.join("\n")
-      end
-      message_content = summaries.join("\n\n")
-    else
-      message_content = raw_body
-    end
+    message_content = build_message_text(raw_body, contact_cards)
 
     message_params = ActionController::Parameters.new({
       content: message_content,
@@ -229,6 +241,114 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     Rails.logger.info "[GOWA Webhook] Synced incoming message #{message&.id} in Account #{account.id} -> Inbox #{inbox.id} (#{inbox.name}) from #{contact.phone_number}"
   end
 
+  def handle_outgoing_echo(inbox, account, payload)
+    target_jid = (payload[:to] || payload[:chat_id] || payload[:chatId] || payload[:remoteJid] ||
+                  payload.dig(:key, :remoteJid) || payload[:recipient] || payload.dig(:info, :chat_id)).to_s
+    return if target_jid.blank? || target_jid.include?('status@broadcast') || target_jid.include?('@g.us')
+
+    clean_phone = target_jid.split('@').first.gsub(/\D/, '')
+    return if clean_phone.blank?
+
+    target_name = payload[:to_name].presence || "+#{clean_phone}"
+
+    # Find or create Contact for the recipient in this account
+    contact = account.contacts.find_by(phone_number: "+#{clean_phone}") ||
+              account.contacts.find_by(phone_number: clean_phone)
+
+    if contact.blank?
+      contact = account.contacts.create!(
+        name: target_name,
+        phone_number: "+#{clean_phone}"
+      )
+    end
+
+    # Find or create ContactInbox for this specific inbox
+    contact_inbox = contact.contact_inboxes.find_by(inbox: inbox) ||
+                    ContactInboxBuilder.new(
+                      contact: contact,
+                      inbox: inbox,
+                      source_id: clean_phone
+                    ).perform
+
+    # Find or create active Conversation in this specific inbox
+    conversation = contact_inbox.conversations.where(status: [:open, :pending]).last
+    if conversation.blank?
+      conversation = ::Conversation.create!(
+        account: account,
+        inbox: inbox,
+        contact: contact,
+        contact_inbox: contact_inbox,
+        status: :open
+      )
+    end
+
+    source_id = payload[:id].present? ? "WAID:#{payload[:id]}" : (payload.dig(:key, :id).present? ? "WAID:#{payload.dig(:key, :id)}" : nil)
+
+    # Avoid duplicate message ingestion if message was already dispatched from Chatwoot UI
+    if source_id.present? && conversation.messages.exists?(source_id: source_id)
+      Rails.logger.info "[GOWA Webhook] Skipping already-recorded outgoing message #{source_id} in Inbox #{inbox.id}"
+      return
+    end
+
+    raw_body = extract_message_body(payload)
+    contact_cards = extract_contact_cards(payload)
+    message_content = build_message_text(raw_body, contact_cards)
+
+    message_params = ActionController::Parameters.new({
+      content: message_content,
+      message_type: :outgoing,
+      status: :delivered,
+      source_id: source_id,
+      content_attributes: { external_echo: true }
+    })
+
+    message = Messages::MessageBuilder.new(nil, conversation, message_params).perform
+
+    if message.present?
+      if contact_cards.present?
+        attach_contacts_to_message(message, contact_cards)
+      else
+        attach_media_to_message(message, payload)
+      end
+    end
+
+    Rails.logger.info "[GOWA Webhook] Synced outgoing echo message #{message&.id} in Account #{account.id} -> Inbox #{inbox.id} (#{inbox.name}) to #{contact.phone_number}"
+  end
+
+  def extract_message_body(payload)
+    payload[:body].presence ||
+      payload[:text].presence ||
+      payload[:caption].presence ||
+      payload.dig(:message, :conversation).presence ||
+      payload.dig(:message, :extendedTextMessage, :text).presence ||
+      payload.dig(:message, :imageMessage, :caption).presence ||
+      payload.dig(:message, :videoMessage, :caption).presence ||
+      payload.dig(:message, :documentMessage, :caption).presence ||
+      payload.dig(:text, :body).presence ||
+      payload.dig(:message, :text).presence ||
+      ''
+  end
+
+  def build_message_text(raw_body, contact_cards)
+    if contact_cards.present?
+      summaries = contact_cards.map do |card|
+        phone_val = card[:phones].first.to_s.strip
+        digits = phone_val.gsub(/\D/, '')
+        wa_link = digits.present? ? "https://wa.me/#{digits}" : nil
+
+        lines = ["👤 Contacto: #{card[:name]}"]
+        lines << "📱 Teléfono: #{phone_val}" if phone_val.present?
+        lines << "💬 WhatsApp: #{wa_link}" if wa_link.present?
+        lines << "🏢 Empresa: #{card[:organization]}" if card[:organization].present?
+        lines << "✉️ Correo: #{card[:email]}" if card[:email].present?
+        lines.join("\n")
+      end
+      summaries.join("\n\n")
+    else
+      raw_body
+    end
+  end
+
   def handle_message_ack(device_id)
     # Optional status acknowledgment handling
   end
@@ -242,12 +362,13 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
 
     # 2. Match by device_id in Channel::Api webhook_url
     if device_id.present?
-      channel = Channel::Api.where('webhook_url LIKE ?', "%device_id=#{device_id}%").first ||
-                Channel::Api.where('webhook_url LIKE ?', "%#{device_id}%").first
+      clean_dev_id = CGI.unescape(device_id.to_s)
+      channel = Channel::Api.where('webhook_url LIKE ?', "%device_id=#{clean_dev_id}%").first ||
+                Channel::Api.where('webhook_url LIKE ?', "%#{clean_dev_id}%").first
       return channel.inbox if channel&.inbox.present?
 
       # 3. Match by acc_{account_id}_ prefix in device_id
-      if device_id =~ /\Aacc_(\d+)_/
+      if clean_dev_id =~ /\Aacc_(\d+)_/
         account = Account.find_by(id: ::Regexp.last_match(1))
         inbox = account&.inboxes&.where(channel_type: 'Channel::Api')&.first
         return inbox if inbox.present?
