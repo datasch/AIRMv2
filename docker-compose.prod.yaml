@@ -106,7 +106,7 @@ services:
       - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
       - DATABASE_ENABLED=true
       - DATABASE_PROVIDER=postgresql
-      - 'DATABASE_CONNECTION_URI=postgresql://${POSTGRES_USERNAME:-postgres}:${POSTGRES_PASSWORD:-postgres}@airm_postgres:5432/${POSTGRES_DATABASE:-chatwoot_production}?sslmode=disable'
+      - 'DATABASE_CONNECTION_URI=postgresql://${POSTGRES_USERNAME:-postgres}:${POSTGRES_PASSWORD:-postgres}@airm_postgres:5432/${POSTGRES_DATABASE:-chatwoot_production}?schema=evolution&sslmode=disable'
       - DATABASE_CONNECTION_CLIENT_NAME=evolution_chatwoot
       - DATABASE_SAVE_DATA_INSTANCE=true
       - DATABASE_SAVE_DATA_NEW_MESSAGE=true

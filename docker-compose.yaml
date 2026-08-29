@@ -124,7 +124,7 @@ services:
       - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
       - DATABASE_ENABLED=true
       - DATABASE_PROVIDER=postgresql
-      - DATABASE_CONNECTION_URI=postgresql://postgres:postgres@postgres:5432/chatwoot?sslmode=disable
+      - DATABASE_CONNECTION_URI=postgresql://postgres:postgres@postgres:5432/chatwoot?schema=evolution&sslmode=disable
       - DATABASE_CONNECTION_CLIENT_NAME=evolution_chatwoot
       - DATABASE_SAVE_DATA_INSTANCE=true
       - DATABASE_SAVE_DATA_NEW_MESSAGE=true
