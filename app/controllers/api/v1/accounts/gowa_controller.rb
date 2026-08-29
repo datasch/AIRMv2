@@ -71,15 +71,6 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
         webhook_url: gowa_webhook_target
       )
 
-      user = Current.user || Current.account&.administrators&.first || Current.account&.users&.first
-      token = user&.access_token&.token
-      service.configure_chatwoot(
-        device_id: device_id,
-        account_id: account_id,
-        inbox_id: inbox.id,
-        api_token: token
-      ) if token.present?
-
       render json: {
         success: true,
         inbox_id: inbox.id,
@@ -638,15 +629,6 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
 
       gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?account_id=#{account_id}&inbox_id=#{inbox_id}&device_id=#{CGI.escape(dev_id)}"
       service.configure_device_webhook(device_id: dev_id, webhook_url: gowa_webhook_target)
-
-      user = channel.account&.administrators&.first || channel.account&.users&.first
-      token = user&.access_token&.token
-      service.configure_chatwoot(
-        device_id: dev_id,
-        account_id: account_id,
-        inbox_id: inbox_id,
-        api_token: token
-      ) if token.present?
     end
   rescue StandardError => e
     Rails.logger.warn "[GOWA] sync_all_device_webhooks error: #{e.message}"
