@@ -153,9 +153,14 @@ services:
   gowa:
     image: aldinokemal2104/go-whatsapp-web-multidevice:latest
     restart: always
-    command: ["rest"]
+    command:
+      - rest
+      - '--webhook=http://rails:3000/public/api/v1/gowa/webhook'
+      - '--webhook-events=message,message.ack,message.reaction,message.edited,message.revoked'
     environment:
-      - CHATWOOT_ENABLED=true
+      - WHATSAPP_WEBHOOK=http://rails:3000/public/api/v1/gowa/webhook
+      - WHATSAPP_WEBHOOK_EVENTS=message,message.ack,message.reaction,message.edited,message.revoked
+      - CHATWOOT_ENABLED=false
       - CHATWOOT_URL=http://rails:3000
     volumes:
       - gowa_data:/app/storages

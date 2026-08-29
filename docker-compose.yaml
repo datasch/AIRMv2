@@ -119,12 +119,17 @@ services:
       - '3030:3000'
     volumes:
       - gowa_data:/app/storages
+    command:
+      - rest
+      - '--webhook=http://rails:3000/public/api/v1/gowa/webhook'
+      - '--webhook-events=message,message.ack,message.reaction,message.edited,message.revoked'
     environment:
       - PORT=3000
-      - CHATWOOT_ENABLED=true
+      - WHATSAPP_WEBHOOK=http://rails:3000/public/api/v1/gowa/webhook
+      - WHATSAPP_WEBHOOK_EVENTS=message,message.ack,message.reaction,message.edited,message.revoked
+      - CHATWOOT_ENABLED=false
       - CHATWOOT_URL=http://rails:3000
       - CORS_ALLOWED_ORIGINS=*
-    command: ["rest"]
 
 volumes:
   postgres:
