@@ -103,16 +103,19 @@ class Whatsapp::EvolutionService
   def configure_chatwoot(instance_name:, account_id:, user_token:, inbox_id: nil, name_inbox: 'WhatsApp')
     payload = {
       enabled: true,
-      account_id: account_id.to_s,
+      accountId: account_id.to_s,
       token: user_token,
       url: ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000').chomp('/'),
-      sign_msg: false,
-      reopen_conversation: true,
-      conversation_pending: false,
-      import_contacts: true,
-      import_messages: false
+      nameInbox: name_inbox || 'WhatsApp',
+      signMsg: false,
+      reopenConversation: true,
+      conversationPending: false,
+      importContacts: true,
+      importMessages: false
     }
 
+    # Fallback keys for backward compatibility
+    payload[:account_id] = account_id.to_s
     payload[:name_inbox] = name_inbox if name_inbox.present?
     payload[:inbox_id] = inbox_id.to_s if inbox_id.present?
 
