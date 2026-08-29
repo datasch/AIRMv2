@@ -123,6 +123,13 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
     # Avoid processing our own outgoing messages sent via WhatsApp
     return if is_from_me
 
+    # Ignore WhatsApp group messages and status broadcasts to prevent automated bots/AI from messaging group members
+    is_group = ActiveModel::Type::Boolean.new.cast(payload[:is_group]) ||
+               payload[:from].to_s.include?('@g.us') ||
+               payload[:chat_id].to_s.include?('@g.us') ||
+               payload[:sender].to_s.include?('@g.us')
+    return if is_group
+
     inbox = find_inbox_by_device(device_id)
     if inbox.blank?
       Rails.logger.warn "[GOWA Webhook] No matching inbox found for device #{device_id}"
