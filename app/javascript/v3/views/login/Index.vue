@@ -290,33 +290,39 @@ export default {
 
 <template>
   <main
-    class="flex flex-col w-full min-h-screen py-20 bg-n-brand/5 dark:bg-n-background sm:px-6 lg:px-8"
+    class="relative flex flex-col justify-center w-full min-h-screen py-16 bg-[#050505] overflow-hidden sm:px-6 lg:px-8 selection:bg-brand-violet/30"
   >
-    <section class="max-w-5xl mx-auto">
-      <img
-        :src="globalConfig.logo"
-        :alt="globalConfig.installationName"
-        class="block w-auto h-8 mx-auto dark:hidden"
-      />
-      <img
-        v-if="globalConfig.logoDark"
-        :src="globalConfig.logoDark"
-        :alt="globalConfig.installationName"
-        class="hidden w-auto h-8 mx-auto dark:block"
-      />
-      <h2 class="mt-6 text-3xl font-medium text-center text-n-slate-12">
+    <!-- Giantucchi ambient backdrop glow -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-[#8b5cf6]/15 via-[#3b82f6]/5 to-transparent blur-[120px] pointer-events-none" />
+    <div class="absolute bottom-0 right-0 w-[600px] h-[400px] bg-gradient-to-tl from-[#ec4899]/10 to-transparent blur-[100px] pointer-events-none" />
+
+    <section class="relative z-10 max-w-5xl mx-auto text-center">
+      <div class="inline-flex items-center justify-center p-2 mb-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl">
+        <img
+          :src="globalConfig.logo"
+          :alt="globalConfig.installationName"
+          class="block w-auto h-9 mx-auto dark:hidden"
+        />
+        <img
+          v-if="globalConfig.logoDark"
+          :src="globalConfig.logoDark"
+          :alt="globalConfig.installationName"
+          class="hidden w-auto h-9 mx-auto dark:block"
+        />
+      </div>
+      <h2 class="mt-4 text-3xl font-semibold tracking-tight text-center text-white">
         {{ replaceInstallationName($t('LOGIN.TITLE')) }}
       </h2>
-      <p v-if="showSignupLink" class="mt-3 text-sm text-center text-n-slate-11">
+      <p v-if="showSignupLink" class="mt-2 text-sm text-center text-[#8892B0]">
         {{ $t('COMMON.OR') }}
-        <router-link to="auth/signup" class="lowercase text-link text-n-brand">
+        <router-link to="auth/signup" class="font-medium text-white hover:text-[#8b5cf6] transition-colors">
           {{ $t('LOGIN.CREATE_NEW_ACCOUNT') }}
         </router-link>
       </p>
     </section>
 
     <!-- Session Limit Section -->
-    <section v-if="sessionsLimitReached" class="mt-11">
+    <section v-if="sessionsLimitReached" class="relative z-10 mt-8">
       <SessionLimitOverlay
         :sessions="limitedSessions"
         @revoke="handleSessionRevoke"
@@ -326,7 +332,7 @@ export default {
     </section>
 
     <!-- MFA Verification Section -->
-    <section v-else-if="mfaRequired" class="mt-11">
+    <section v-else-if="mfaRequired" class="relative z-10 mt-8">
       <MfaVerification
         :mfa-token="mfaToken"
         @verified="handleMfaVerified"
@@ -337,9 +343,9 @@ export default {
     <!-- Regular Login Section -->
     <section
       v-else
-      class="bg-white shadow sm:mx-auto mt-11 sm:w-full sm:max-w-lg dark:bg-n-solid-2 p-11 sm:shadow-lg sm:rounded-lg"
+      class="relative z-10 bg-[#09090c]/90 border border-white/10 shadow-2xl backdrop-blur-xl sm:mx-auto mt-8 sm:w-full sm:max-w-md p-8 sm:p-10 rounded-2xl"
       :class="{
-        'mb-8 mt-15': !showGoogleOAuth,
+        'mb-8 mt-10': !showGoogleOAuth,
         'animate-wiggle': loginApi.hasErrored,
       }"
     >

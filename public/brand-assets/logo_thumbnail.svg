@@ -1,27 +1,24 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="airm-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#06b6d4" />
-      <stop offset="35%" stop-color="#3b82f6" />
-      <stop offset="70%" stop-color="#a855f7" />
-      <stop offset="100%" stop-color="#ec4899" />
-    </linearGradient>
-    <linearGradient id="airm-glow" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.3" />
-      <stop offset="100%" stop-color="#a855f7" stop-opacity="0.0" />
+    <linearGradient id="giantucchi-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="25%" stop-color="#8b5cf6" />
+      <stop offset="50%" stop-color="#ec4899" />
+      <stop offset="75%" stop-color="#f97316" />
+      <stop offset="100%" stop-color="#eab308" />
     </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="128" fill="#0a0a0f" />
-  <rect width="504" height="504" x="4" y="4" rx="124" stroke="url(#airm-grad)" stroke-width="4" stroke-opacity="0.4" />
+  <rect width="512" height="512" rx="128" fill="#050505" />
+  <rect width="504" height="504" x="4" y="4" rx="124" stroke="url(#giantucchi-grad)" stroke-width="6" stroke-opacity="0.8" />
   <g transform="translate(106, 116)">
     <!-- A letter & Neural dynamic polygon -->
-    <path d="M150 20 L260 250 H205 L150 130 L95 250 H40 L150 20 Z" fill="url(#airm-grad)" />
+    <path d="M150 20 L260 250 H205 L150 130 L95 250 H40 L150 20 Z" fill="url(#giantucchi-grad)" />
     <!-- Center AI Spark Ring -->
-    <circle cx="150" cy="180" r="28" fill="#0a0a0f" stroke="url(#airm-grad)" stroke-width="12" />
-    <circle cx="150" cy="180" r="10" fill="#06b6d4" />
+    <circle cx="150" cy="180" r="28" fill="#050505" stroke="url(#giantucchi-grad)" stroke-width="12" />
+    <circle cx="150" cy="180" r="10" fill="#3b82f6" />
     <!-- Dynamic Connection Dots -->
-    <circle cx="40" cy="250" r="12" fill="#06b6d4" />
+    <circle cx="40" cy="250" r="12" fill="#3b82f6" />
     <circle cx="260" cy="250" r="12" fill="#ec4899" />
-    <circle cx="150" cy="20" r="14" fill="#3b82f6" />
+    <circle cx="150" cy="20" r="14" fill="#8b5cf6" />
   </g>
 </svg>

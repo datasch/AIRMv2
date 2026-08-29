@@ -46,10 +46,12 @@ const tailwindConfig = {
       },
       backgroundImage: {
         'brand-gradient':
-          'linear-gradient(135deg, #06b6d4 0%, #3b82f6 20%, #a855f7 40%, #ec4899 60%, #f97316 80%, #eab308 100%)',
+          'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 25%, #ec4899 50%, #f97316 75%, #eab308 100%)',
+        'brand-gradient-full':
+          'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 20%, #ec4899 40%, #ef4444 55%, #f97316 75%, #eab308 100%)',
         'brand-gradient-reverse':
-          'linear-gradient(135deg, #eab308 0%, #f97316 20%, #ec4899 40%, #a855f7 60%, #3b82f6 80%, #06b6d4 100%)',
-        'dark-gradient': 'linear-gradient(180deg, #0a0a0f 0%, #141420 100%)',
+          'linear-gradient(135deg, #eab308 0%, #f97316 25%, #ec4899 50%, #8b5cf6 75%, #3b82f6 100%)',
+        'dark-gradient': 'linear-gradient(180deg, #050505 0%, #000000 100%)',
       },
       fontWeight: {
         420: '420',
