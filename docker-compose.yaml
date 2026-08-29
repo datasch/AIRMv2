@@ -141,6 +141,9 @@ services:
       - WA_BUSINESS_TOKEN_WEBHOOK=true
       - LOG_LEVEL=ERROR,WARN,DEBUG,INFO,LOG,VERBOSE,DARK,WEBHOOKS
       - CORS_ORIGIN=*
+      - CONFIG_SESSION_PHONE_VERSION=2.3000.1028401180
+      - CONFIG_SESSION_PHONE_CLIENT=AIRM
+      - QRCODE_LIMIT=30
     volumes:
       - evolution_instances_data:/evolution/instances
     depends_on:
