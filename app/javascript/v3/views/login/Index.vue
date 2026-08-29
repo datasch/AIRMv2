@@ -293,11 +293,17 @@ export default {
     class="relative flex flex-col justify-center w-full min-h-screen py-16 bg-[#050505] overflow-hidden sm:px-6 lg:px-8 selection:bg-brand-violet/30"
   >
     <!-- Giantucchi ambient backdrop glow -->
-    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-[#8b5cf6]/15 via-[#3b82f6]/5 to-transparent blur-[120px] pointer-events-none" />
-    <div class="absolute bottom-0 right-0 w-[600px] h-[400px] bg-gradient-to-tl from-[#ec4899]/10 to-transparent blur-[100px] pointer-events-none" />
+    <div
+      class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-[#8b5cf6]/15 via-[#3b82f6]/5 to-transparent blur-[120px] pointer-events-none"
+    />
+    <div
+      class="absolute bottom-0 right-0 w-[600px] h-[400px] bg-gradient-to-tl from-[#ec4899]/10 to-transparent blur-[100px] pointer-events-none"
+    />
 
     <section class="relative z-10 max-w-5xl mx-auto text-center">
-      <div class="inline-flex items-center justify-center p-2 mb-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl">
+      <div
+        class="inline-flex items-center justify-center p-2 mb-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl"
+      >
         <img
           :src="globalConfig.logo"
           :alt="globalConfig.installationName"
@@ -310,12 +316,17 @@ export default {
           class="hidden w-auto h-9 mx-auto dark:block"
         />
       </div>
-      <h2 class="mt-4 text-3xl font-semibold tracking-tight text-center text-white">
+      <h2
+        class="mt-4 text-3xl font-semibold tracking-tight text-center text-white"
+      >
         {{ replaceInstallationName($t('LOGIN.TITLE')) }}
       </h2>
       <p v-if="showSignupLink" class="mt-2 text-sm text-center text-[#8892B0]">
         {{ $t('COMMON.OR') }}
-        <router-link to="auth/signup" class="font-medium text-white hover:text-[#8b5cf6] transition-colors">
+        <router-link
+          to="auth/signup"
+          class="font-medium text-white hover:text-[#8b5cf6] transition-colors"
+        >
           {{ $t('LOGIN.CREATE_NEW_ACCOUNT') }}
         </router-link>
       </p>
