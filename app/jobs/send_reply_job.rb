@@ -20,7 +20,6 @@ class SendReplyJob < ApplicationJob
     channel_name = message.conversation.inbox.channel.class.to_s
 
     return send_on_facebook_page(message) if channel_name == 'Channel::FacebookPage'
-    return send_on_gowa(message) if channel_name == 'Channel::Api' && gowa_inbox?(message)
 
     service_class = CHANNEL_SERVICES[channel_name]
     return unless service_class
@@ -36,13 +35,5 @@ class SendReplyJob < ApplicationJob
     else
       ::Facebook::SendOnFacebookService.new(message: message).perform
     end
-  end
-
-  def send_on_gowa(message)
-    ::Gowa::SendOnGowaService.new(message: message).perform
-  end
-
-  def gowa_inbox?(message)
-    message.conversation.inbox.channel.webhook_url.to_s.include?('device_id=')
   end
 end

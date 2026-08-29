@@ -40,8 +40,7 @@ export default {
   },
   DOCS_URL: 'https://giantucchi.com/docs',
   HELP_CENTER_DOCS_URL: 'https://giantucchi.com/help',
-  TESTIMONIAL_URL:
-    'https://giantucchi.com/testimonials.json',
+  TESTIMONIAL_URL: 'https://giantucchi.com/testimonials.json',
   WHATSAPP_EMBEDDED_SIGNUP_DOCS_URL:
     'https://developers.facebook.com/docs/whatsapp/embedded-signup/custom-flows/onboarding-business-app-users#limitations',
   SMALL_SCREEN_BREAKPOINT: 768,
@@ -77,5 +76,4 @@ export default {
   },
 };
 export const DEFAULT_REDIRECT_URL = '/app/';
-export const META_RESTRICTION_STATUS_URL =
-  'https://giantucchi.com/status';
+export const META_RESTRICTION_STATUS_URL = 'https://giantucchi.com/status';

@@ -253,8 +253,8 @@
           "WHATSAPP_CLOUD": "Nube de WhatsApp",
           "WHATSAPP_CLOUD_DESC": "Quick setup through Meta",
           "WHATSAPP_CLOUD_MANUAL_SETUP_DESC": "Configuración manual con credenciales de la API de Cloud",
-          "GOWA": "WhatsApp Web (Código QR / GOWA)",
-          "GOWA_DESC": "Conecte su número escaneando un código QR sin API de Meta.",
+          "GOWA": "WhatsApp Web (Código QR / Evolution API)",
+          "GOWA_DESC": "Conecte su número escaneando un código QR con Evolution API.",
           "TWILIO_DESC": "Connect via Twilio credentials",
           "360_DIALOG": "360dialog"
         },
@@ -470,8 +470,8 @@
         }
       },
       "GOWA": {
-        "TITLE": "Conectar WhatsApp (GOWA / Código QR)",
-        "DESC": "Vincule cualquier cuenta de WhatsApp escaneando un código QR utilizando la pasarela multidispositivo de alto rendimiento GOWA.",
+        "TITLE": "Conectar WhatsApp (Código QR / Evolution API)",
+        "DESC": "Vincule cualquier cuenta de WhatsApp escaneando un código QR utilizando la pasarela multidispositivo de alta estabilidad Evolution API.",
         "CHANNEL_NAME": {
           "LABEL": "Nombre de la Bandeja",
           "PLACEHOLDER": "ej. WhatsApp Ventas o Atención al Cliente",
@@ -490,7 +490,7 @@
         "CONNECTED_SUCCESS": "¡WhatsApp conectado exitosamente!",
         "BACK": "Volver",
         "FINISH_BUTTON": "Crear Bandeja y Asignar Agentes",
-        "QR_ERROR": "No se pudo generar el código QR. Verifique que la pasarela GOWA esté activa.",
+        "QR_ERROR": "No se pudo generar el código QR. Verifique que la pasarela Evolution API esté activa.",
         "CREATE_ERROR": "Error al crear la bandeja de WhatsApp."
       },
       "AUTH": {
@@ -512,8 +512,8 @@
             "DESCRIPTION": "Support your customers on WhatsApp"
           },
           "GOWA": {
-            "TITLE": "WhatsApp (Código QR / GOWA)",
-            "DESCRIPTION": "Conecte cualquier WhatsApp escaneando un código QR sin API oficial"
+            "TITLE": "WhatsApp (Código QR / Evolution API)",
+            "DESCRIPTION": "Conecte cualquier WhatsApp escaneando un código QR con Evolution API"
           },
           "WHATSAPP_CALL": {
             "TITLE": "Llamada de WhatsApp",

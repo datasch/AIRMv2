@@ -60,10 +60,7 @@ const termsLink = computed(() =>
       globalConfig.value.privacyURL
     )
     .replace('https://giantucchi.com/terms', globalConfig.value.termsURL)
-    .replace(
-      'https://giantucchi.com/privacy',
-      globalConfig.value.privacyURL
-    )
+    .replace('https://giantucchi.com/privacy', globalConfig.value.privacyURL)
 );
 
 const allowedLoginMethods = computed(

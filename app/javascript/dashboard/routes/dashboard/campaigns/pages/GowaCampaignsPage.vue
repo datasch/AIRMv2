@@ -22,7 +22,9 @@ const isFetchingCampaigns = computed(() => uiFlags.value.isFetching);
 
 const confirmDeleteCampaignDialogRef = ref(null);
 
-const gowaCampaigns = computed(() => getters['campaigns/getGOWACampaigns'].value);
+const gowaCampaigns = computed(
+  () => getters['campaigns/getGOWACampaigns'].value
+);
 
 const hasNoGowaCampaigns = computed(
   () => gowaCampaigns.value?.length === 0 && !isFetchingCampaigns.value

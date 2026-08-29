@@ -119,9 +119,7 @@ export const getters = {
     );
   },
   getGOWAInboxes($state) {
-    return $state.records.filter(
-      item => item.channel_type === INBOX_TYPES.API
-    );
+    return $state.records.filter(item => item.channel_type === INBOX_TYPES.API);
   },
   dialogFlowEnabledInboxes($state) {
     return $state.records.filter(

@@ -15,11 +15,10 @@ const hasError = ref(false);
 const errorStateMessage = ref('');
 const errorStateDescription = ref('');
 const isRequestingAuthorization = ref(false);
-const hasInstagramAppId = computed(
-  () =>
-    Boolean(
-      window.chatwootConfig?.instagramAppId || window.chatwootConfig?.fbAppId
-    )
+const hasInstagramAppId = computed(() =>
+  Boolean(
+    window.chatwootConfig?.instagramAppId || window.chatwootConfig?.fbAppId
+  )
 );
 const isInstagramConnectionDisabled = computed(
   () => isMetaInboxCreationDisabled.value || !hasInstagramAppId.value
@@ -75,18 +74,17 @@ const requestAuthorization = async () => {
         class="flex flex-col items-center justify-center w-full px-8 py-10 text-center rounded-2xl outline outline-1 outline-n-weak"
       >
         <div class="flex flex-col items-center w-full max-w-2xl">
-          <Banner
-            v-if="!hasInstagramAppId"
-            color="amber"
-            class="w-full mb-6"
-          >
+          <Banner v-if="!hasInstagramAppId" color="amber" class="w-full mb-6">
             <div class="flex items-start gap-3 text-start">
               <Icon
                 icon="i-lucide-triangle-alert"
                 class="flex-shrink-0 size-4 mt-0.5"
               />
               <span>
-                Para conectar Instagram, configure <code>FB_APP_ID</code>, <code>FB_APP_SECRET</code> e <code>IG_VERIFY_TOKEN</code> en su archivo <code>.env</code> o desde el panel de Super Administrador (/super_admin).
+                Para conectar Instagram, configure <code>FB_APP_ID</code>,
+                <code>FB_APP_SECRET</code> e <code>IG_VERIFY_TOKEN</code> en su
+                archivo <code>.env</code> o desde el panel de Super
+                Administrador (/super_admin).
               </span>
             </div>
           </Banner>

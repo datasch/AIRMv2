@@ -139,11 +139,11 @@
       }
     },
     "GOWA": {
-      "HEADER_TITLE": "WhatsApp Web Broadcasts (GOWA)",
+      "HEADER_TITLE": "WhatsApp Web Broadcasts (QR Code)",
       "NEW_CAMPAIGN": "Create broadcast",
       "EMPTY_STATE": {
         "TITLE": "No WhatsApp Web broadcasts available",
-        "SUBTITLE": "Launch a mass WhatsApp broadcast campaign using your connected GOWA lines. Send personalized messages, promotional offers, and updates to your segmented contact lists. Click 'Create broadcast' to get started."
+        "SUBTITLE": "Launch a mass WhatsApp broadcast campaign using your connected lines. Send personalized messages, promotional offers, and updates to your segmented contact lists. Click 'Create broadcast' to get started."
       },
       "CARD": {
         "STATUS": {
@@ -157,7 +157,7 @@
         }
       },
       "CREATE": {
-        "TITLE": "Create WhatsApp Web Broadcast (GOWA)",
+        "TITLE": "Create WhatsApp Web Broadcast (QR Code)",
         "CANCEL_BUTTON_TEXT": "Cancel",
         "CREATE_BUTTON_TEXT": "Launch broadcast",
         "FORM": {
@@ -202,7 +202,7 @@
           },
           "INBOX": {
             "LABEL": "Outgoing WhatsApp line",
-            "PLACEHOLDER": "Select WhatsApp (GOWA) line",
+            "PLACEHOLDER": "Select WhatsApp (QR Code) line",
             "ERROR": "WhatsApp line is required"
           },
           "AUDIENCE": {

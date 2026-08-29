@@ -85,7 +85,10 @@ const availableProviders = computed(() => [
   },
   {
     key: PROVIDER_TYPES.GOWA,
-    title: t('INBOX_MGMT.ADD.WHATSAPP.PROVIDERS.GOWA', 'WhatsApp Web (Código QR / Evolution API)'),
+    title: t(
+      'INBOX_MGMT.ADD.WHATSAPP.PROVIDERS.GOWA',
+      'WhatsApp Web (Código QR / Evolution API)'
+    ),
     description: t(
       'INBOX_MGMT.ADD.WHATSAPP.PROVIDERS.GOWA_DESC',
       'Conecte su número de WhatsApp escaneando un código QR con Evolution API.'

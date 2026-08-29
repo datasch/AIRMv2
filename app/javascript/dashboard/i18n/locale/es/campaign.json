@@ -139,11 +139,11 @@
       }
     },
     "GOWA": {
-      "HEADER_TITLE": "Difusiones de WhatsApp Web (GOWA)",
+      "HEADER_TITLE": "Difusiones de WhatsApp Web (Código QR)",
       "NEW_CAMPAIGN": "Crear difusión",
       "EMPTY_STATE": {
         "TITLE": "No hay difusiones de WhatsApp Web disponibles",
-        "SUBTITLE": "Inicie una campaña o difusión comercial masiva por WhatsApp con sus líneas de GOWA. Envíe promociones, mensajes personalizados y avisos a sus listas de contactos. Haga clic en \"Crear difusión\" para empezar."
+        "SUBTITLE": "Inicie una campaña o difusión comercial masiva por WhatsApp con sus líneas conectadas. Envíe promociones, mensajes personalizados y avisos a sus listas de contactos. Haga clic en \"Crear difusión\" para empezar."
       },
       "CARD": {
         "STATUS": {
@@ -157,7 +157,7 @@
         }
       },
       "CREATE": {
-        "TITLE": "Crear difusión de WhatsApp Web (GOWA)",
+        "TITLE": "Crear difusión de WhatsApp Web (Código QR)",
         "CANCEL_BUTTON_TEXT": "Cancelar",
         "CREATE_BUTTON_TEXT": "Crear difusión",
         "FORM": {
@@ -202,7 +202,7 @@
           },
           "INBOX": {
             "LABEL": "Línea de WhatsApp de salida",
-            "PLACEHOLDER": "Seleccione la línea de WhatsApp (GOWA)",
+            "PLACEHOLDER": "Seleccione la línea de WhatsApp (Código QR)",
             "ERROR": "Debe seleccionar una línea de WhatsApp"
           },
           "AUDIENCE": {

@@ -175,18 +175,17 @@ export default {
       class="flex flex-col items-center justify-center h-full text-center"
     >
       <div class="flex flex-col items-center w-full max-w-2xl">
-        <Banner
-          v-if="!hasFbAppId"
-          color="amber"
-          class="w-full mb-6"
-        >
+        <Banner v-if="!hasFbAppId" color="amber" class="w-full mb-6">
           <div class="flex items-start gap-3 text-start">
             <Icon
               icon="i-lucide-triangle-alert"
               class="flex-shrink-0 size-4 mt-0.5"
             />
             <span>
-              Para conectar Facebook Messenger, configure <code>FB_APP_ID</code> y <code>FB_APP_SECRET</code> en su archivo <code>.env</code> o desde la consola de Super Administrador (/super_admin).
+              Para conectar Facebook Messenger, configure
+              <code>FB_APP_ID</code> y <code>FB_APP_SECRET</code> en su archivo
+              <code>.env</code> o desde la consola de Super Administrador
+              (/super_admin).
             </span>
           </div>
         </Banner>

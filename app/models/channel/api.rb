@@ -40,19 +40,22 @@ class Channel::Api < ApplicationRecord
   private
 
   def logout_gowa_device
-    return unless webhook_url.to_s.include?('chatwoot/webhook') && webhook_url.to_s.include?('device_id=')
+    return if webhook_url.blank?
 
-    uri = URI.parse(webhook_url)
-    return unless uri.query
+    instance_name = nil
+    if webhook_url.include?('/chatwoot/webhook/')
+      instance_name = webhook_url.split('/chatwoot/webhook/').last.split('?').first
+    elsif webhook_url.include?('device_id=')
+      uri = URI.parse(webhook_url)
+      params = CGI.parse(uri.query || '')
+      instance_name = params['device_id']&.first
+    end
 
-    params = CGI.parse(uri.query)
-    device_id = params['device_id']&.first
+    return if instance_name.blank?
 
-    return if device_id.blank?
-
-    GowaLogoutJob.perform_later(device_id)
+    GowaLogoutJob.perform_later(instance_name)
   rescue StandardError => e
-    Rails.logger.error "[GOWA] Failed to enqueue logout job: #{e.message}"
+    Rails.logger.error "[WhatsApp] Failed to enqueue logout job for #{webhook_url}: #{e.message}"
   end
 
   def ensure_valid_agent_reply_time_window

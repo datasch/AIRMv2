@@ -5,7 +5,7 @@ class Whatsapp::EvolutionService
 
   def initialize(base_url: nil, api_key: nil)
     @base_url = (base_url || ENV['EVOLUTION_API_URL'] || 'http://evolution-api:8080').chomp('/')
-    @api_key = (api_key || ENV['EVOLUTION_API_KEY'] || 'evolution_secret_key_2026')
+    @api_key = (api_key || ENV['EVOLUTION_API_KEY'] || 'airm_evolution_secret_api_key_2026')
   end
 
   def status

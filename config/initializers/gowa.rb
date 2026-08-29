@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 Rails.application.config.after_initialize do
-  # Run in a background thread on boot to ensure GOWA webhooks and Enterprise configs are synced
+  # Run in a background thread on boot to ensure Enterprise configs and WhatsApp gateway are ready
   Thread.new do
-    sleep 5 # Allow Rails and GOWA network services to initialize
+    sleep 3 # Allow Rails and database services to initialize
     if defined?(InstallationConfig) && ActiveRecord::Base.connection.table_exists?('installation_configs')
       # Permanently unlock enterprise plan and unlimited agent licenses
       [
@@ -20,25 +20,10 @@ Rails.application.config.after_initialize do
       end
     end
 
-    if defined?(Channel::Api) && ActiveRecord::Base.connection.table_exists?('channel_api')
-      service = Whatsapp::GowaService.new
-      Channel::Api.find_each do |channel|
-        next unless channel.webhook_url.to_s.include?('device_id=')
-
-        uri = URI.parse(channel.webhook_url)
-        query_params = CGI.parse(uri.query || '')
-        dev_id = query_params['device_id']&.first
-        next if dev_id.blank?
-
-        inbox = channel.inbox
-        account_id = channel.account_id
-        inbox_id = inbox&.id
-
-        gowa_webhook_target = "#{ENV.fetch('CHATWOOT_INTERNAL_URL', 'http://rails:3000')}/public/api/v1/gowa/webhook?account_id=#{account_id}&inbox_id=#{inbox_id}&device_id=#{CGI.escape(dev_id)}"
-        service.configure_device_webhook(device_id: dev_id, webhook_url: gowa_webhook_target)
-      end
+    if ENV['EVOLUTION_API_URL'].present?
+      Rails.logger.info "[WhatsApp] Evolution API gateway active at #{ENV['EVOLUTION_API_URL']}"
     end
   rescue StandardError => e
-    Rails.logger.warn "[GOWA Initializer] Auto-sync webhooks/enterprise error: #{e.message}"
+    Rails.logger.warn "[WhatsApp Initializer] Auto-sync enterprise error: #{e.message}"
   end
 end
