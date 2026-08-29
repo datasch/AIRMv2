@@ -119,15 +119,23 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
   def extract_device_id
     params[:device_id].presence ||
       params[:deviceId].presence ||
+      params[:session_id].presence ||
       params[:session].presence ||
       params[:sessionId].presence ||
+      params[:instance_id].presence ||
+      params[:instanceId].presence ||
       params[:instance].presence ||
       params.dig(:payload, :device_id).presence ||
       params.dig(:payload, :deviceId).presence ||
+      params.dig(:payload, :session_id).presence ||
       params.dig(:payload, :session).presence ||
+      params.dig(:payload, :sessionId).presence ||
+      params.dig(:payload, :instance_id).presence ||
       params.dig(:data, :device_id).presence ||
       params.dig(:data, :deviceId).presence ||
+      params.dig(:data, :session_id).presence ||
       params.dig(:data, :session).presence ||
+      params.dig(:data, :sessionId).presence ||
       request.headers['X-Device-Id'].presence ||
       request.headers['X-Device-ID'].presence ||
       request.headers['Device-Id'].presence ||
