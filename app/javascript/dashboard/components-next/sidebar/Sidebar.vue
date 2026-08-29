@@ -896,6 +896,12 @@ const menuItems = computed(() => {
           icon: 'i-lucide-blocks',
           to: accountScopedRoute('settings_applications'),
         },
+        {
+          name: 'Settings VoIP Asterisk',
+          label: t('SIDEBAR.VOIP_ASTERISK', 'Telefonía VoIP'),
+          icon: 'i-lucide-phone-forwarded',
+          to: accountScopedRoute('voip_settings_index'),
+        },
         ...(hasDataImport.value
           ? [
               {

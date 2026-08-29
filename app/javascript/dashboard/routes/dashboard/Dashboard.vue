@@ -26,6 +26,8 @@ import CopilotContainer from 'dashboard/components/copilot/CopilotContainer.vue'
 
 import MobileSidebarLauncher from 'dashboard/components-next/sidebar/MobileSidebarLauncher.vue';
 import { useCallsStore } from 'dashboard/stores/calls';
+import VoipDialer from 'dashboard/components/widgets/conversation/VoipDialer.vue';
+import { initVoIP } from 'dashboard/helper/voipHelper';
 
 export default {
   components: {
@@ -38,6 +40,7 @@ export default {
     CopilotContainer,
     FloatingCallWidget,
     MobileSidebarLauncher,
+    VoipDialer,
   },
   setup() {
     const upgradePageRef = ref(null);
@@ -125,6 +128,9 @@ export default {
       this.showShortcutModal = false;
     },
   },
+  mounted() {
+    initVoIP();
+  },
 };
 </script>
 
@@ -161,6 +167,7 @@ export default {
         />
         <CopilotContainer />
         <FloatingCallWidget v-if="hasActiveCall || hasIncomingCall" />
+        <VoipDialer />
       </template>
       <CommandBar :is-paywalled="isAccountPaywalled" />
       <AddAccountModal

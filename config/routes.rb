@@ -297,6 +297,14 @@ Rails.application.routes.draw do
             post :disconnect
             match :webhook, via: [:get, :post]
           end
+          resource :voip, only: [], controller: 'voip' do
+            get :config, on: :member
+            post :config, on: :member, action: :update_config
+            get :agents, on: :member
+            post :agents, on: :member, action: :update_agent
+            post :call_status, on: :member
+            post :log_call, on: :member
+          end
           resources :inboxes, only: [:index, :show, :create, :update, :destroy] do
             get :assignable_agents, on: :member
             get :campaigns, on: :member

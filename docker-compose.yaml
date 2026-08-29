@@ -148,6 +148,19 @@ services:
       - postgres
       - redis
 
+  asterisk:
+    image: 'andrius/asterisk:latest'
+    restart: always
+    environment:
+      - ASTERISK_UID=1000
+      - ASTERISK_GID=1000
+    ports:
+      - '8089:8089'
+      - '5060:5060/udp'
+      - '10000-10050:10000-10050/udp'
+    volumes:
+      - 'asterisk_etc:/etc/asterisk'
+
 volumes:
   postgres:
   redis:
@@ -156,3 +169,4 @@ volumes:
   cache:
   bundle:
   evolution_instances_data:
+  asterisk_etc:

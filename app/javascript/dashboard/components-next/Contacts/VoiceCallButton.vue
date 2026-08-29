@@ -19,6 +19,7 @@ import { useWhatsappCallSession } from 'dashboard/composables/useWhatsappCallSes
 
 import Button from 'dashboard/components-next/button/Button.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
+import { voipState, makeCall, openDialer } from 'dashboard/helper/voipHelper';
 
 const props = defineProps({
   phone: { type: String, default: '' },
@@ -50,8 +51,13 @@ const voiceInboxes = computed(() =>
   (inboxesList.value || []).filter(isVoiceCallEnabled)
 );
 const hasVoiceInboxes = computed(() => voiceInboxes.value.length > 0);
+const hasVoipEnabled = computed(
+  () => voipState.isConfigured || voipState.isEnabled
+);
 
-const shouldRender = computed(() => hasVoiceInboxes.value && !!props.phone);
+const shouldRender = computed(
+  () => (hasVoiceInboxes.value || hasVoipEnabled.value) && !!props.phone
+);
 
 const isInitiatingCall = computed(() => {
   return contactsUiFlags.value?.isInitiatingCall || false;
@@ -160,6 +166,15 @@ const startCall = async (inboxId, conversationIdHint = null) => {
 };
 
 const onClick = async () => {
+  if (hasVoipEnabled.value) {
+    if (voipState.isRegistered) {
+      makeCall(props.phone, props.conversationId);
+    } else {
+      openDialer(props.phone, props.conversationId);
+    }
+    return;
+  }
+
   // In conversation context, only stay in this conversation if its inbox is
   // itself voice-capable (works the same for Twilio and WhatsApp). For
   // non-voice channels (email, web, …) fall back to the picker so the call

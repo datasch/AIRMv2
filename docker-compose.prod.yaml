@@ -36,6 +36,10 @@ services:
       - 'SMTP_PASSWORD=${SMTP_PASSWORD:-}'
       - 'SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-plain}'
       - 'SMTP_ENABLE_STARTTLS_AUTO=${SMTP_ENABLE_STARTTLS_AUTO:-true}'
+      - 'ASTERISK_ENABLED=${ASTERISK_ENABLED:-true}'
+      - 'ASTERISK_WS_URL=${ASTERISK_WS_URL:-wss://voip.giantucchi.com:8089/ws}'
+      - 'ASTERISK_SIP_DOMAIN=${ASTERISK_SIP_DOMAIN:-giantucchi.com}'
+      - 'ASTERISK_CALLER_ID=${ASTERISK_CALLER_ID:-}'
     volumes:
       - 'storage_data:/app/storage'
     depends_on:
@@ -166,8 +170,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  asterisk:
+    image: 'andrius/asterisk:latest'
+    restart: always
+    environment:
+      - ASTERISK_UID=1000
+      - ASTERISK_GID=1000
+    ports:
+      - '8089:8089'
+      - '5060:5060/udp'
+      - '10000-10050:10000-10050/udp'
+    volumes:
+      - 'asterisk_etc:/etc/asterisk'
 volumes:
   airm_postgres_data: null
   airm_redis_data: null
   storage_data: null
   evolution_instances_data: null
+  asterisk_etc: null
