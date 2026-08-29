@@ -93,7 +93,7 @@ services:
       airm_redis:
         condition: service_healthy
   evolution-api:
-    image: 'evoapicloud/evolution-api:v2.2.3'
+    image: 'evoapicloud/evolution-api:latest'
     restart: always
     expose:
       - '8080'

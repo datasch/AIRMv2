@@ -113,7 +113,7 @@ services:
       - 8025:8025
 
   evolution-api:
-    image: evoapicloud/evolution-api:v2.2.3
+    image: evoapicloud/evolution-api:latest
     restart: always
     ports:
       - '8085:8080'
