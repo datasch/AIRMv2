@@ -238,40 +238,74 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
   end
 
   def attach_media_to_message(message, payload)
-    media_url = payload[:media_url] || payload[:url]
+    media_url = payload[:media_url] || payload[:url] || payload[:file_url] ||
+                payload[:image_url] || payload[:audio_url] || payload[:video_url] ||
+                payload[:document_url] || payload[:file_path] || payload[:path] ||
+                payload.dig(:media, :url) || payload.dig(:media, :path)
     return if media_url.blank?
 
     base_gowa_url = (ENV['GOWA_URL'] || 'http://gowa:3000').chomp('/')
     full_media_url = media_url.start_with?('http') ? media_url : "#{base_gowa_url}/#{media_url.delete_prefix('/')}"
 
-    response = HTTParty.get(full_media_url, timeout: 15)
-    return unless response.success?
+    response = HTTParty.get(full_media_url, timeout: 20)
+    unless response.success?
+      Rails.logger.warn "[GOWA Webhook] Failed to fetch media from #{full_media_url} (HTTP #{response.code})"
+      return
+    end
 
-    filename = payload[:filename].presence || "whatsapp_media_#{Time.current.to_i}"
+    raw_ext = File.extname(media_url.to_s.split('?').first).downcase
+    filename = payload[:filename].presence || File.basename(media_url.to_s.split('?').first).presence || "whatsapp_media_#{Time.current.to_i}#{raw_ext}"
     content_type = payload[:mime_type] || response.headers['content-type'] || 'application/octet-stream'
+
+    # Normalize clean content_type (e.g. "audio/ogg; codecs=opus" -> "audio/ogg")
+    clean_mime = content_type.to_s.split(';').first.strip.downcase
+
+    # If filename is missing an extension, deduce it from clean_mime
+    if File.extname(filename).blank?
+      deduced_ext = case clean_mime
+                    when 'application/pdf' then '.pdf'
+                    when 'image/jpeg', 'image/jfif' then '.jpg'
+                    when 'image/png' then '.png'
+                    when 'image/webp' then '.webp'
+                    when 'audio/ogg', 'audio/opus' then '.ogg'
+                    when 'audio/mpeg', 'audio/mp3' then '.mp3'
+                    when 'audio/mp4', 'audio/m4a' then '.m4a'
+                    when 'video/mp4' then '.mp4'
+                    else ''
+                    end
+      filename = "#{filename}#{deduced_ext}"
+    end
+
+    file_type = determine_file_type(clean_mime, filename)
 
     attachment = message.attachments.build(
       account_id: message.account_id,
-      file_type: determine_file_type(content_type)
+      file_type: file_type
     )
 
     attachment.file.attach(
       io: StringIO.new(response.body),
       filename: filename,
-      content_type: content_type
+      content_type: clean_mime.presence || 'application/octet-stream'
     )
 
     attachment.save!
+    Rails.logger.info "[GOWA Webhook] Attached #{file_type} (#{filename}) to Message #{message.id}"
   rescue StandardError => e
     Rails.logger.warn "[GOWA Webhook] Failed to attach media: #{e.message}"
   end
 
-  def determine_file_type(content_type)
-    case content_type
-    when %r{^image/} then :image
-    when %r{^audio/} then :audio
-    when %r{^video/} then :video
-    else :file
+  def determine_file_type(content_type, filename = nil)
+    ext = File.extname(filename.to_s).downcase
+
+    if content_type.to_s.start_with?('image/') || %w[.jpg .jpeg .png .gif .webp .jfif .bmp .svg].include?(ext)
+      :image
+    elsif content_type.to_s.start_with?('audio/') || %w[.ogg .mp3 .wav .m4a .aac .opus .oga].include?(ext)
+      :audio
+    elsif content_type.to_s.start_with?('video/') || %w[.mp4 .mov .avi .mkv .webm .3gp].include?(ext)
+      :video
+    else
+      :file
     end
   end
 
