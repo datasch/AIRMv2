@@ -136,7 +136,7 @@ const handleIncomingSession = session => {
 export const initVoIP = async () => {
   try {
     const response = await VoipAPI.getConfig();
-    const { enabled, ws_url, sip_domain, agent, active_calls } =
+    const { enabled, ws_url, sip_domain, caller_id, agent, active_calls } =
       response.data || {};
 
     voipState.isEnabled = !!enabled;
@@ -154,6 +154,8 @@ export const initVoIP = async () => {
     }
 
     voipState.isConfigured = true;
+    voipState.caller_id = caller_id || '';
+    voipState.sip_domain = sip_domain || '';
 
     if (ua && ua.isRegistered()) {
       ua.stop();
@@ -199,7 +201,11 @@ export const initVoIP = async () => {
   }
 };
 
-export const makeCall = (targetNumber, conversationId = null) => {
+export const makeCall = (
+  targetNumber,
+  conversationId = null,
+  customCallerId = null
+) => {
   if (!ua || !voipState.isRegistered) {
     initVoIP();
   }
@@ -207,14 +213,25 @@ export const makeCall = (targetNumber, conversationId = null) => {
   if (!targetNumber) return;
 
   const cleanNumber = targetNumber.toString().replace(/[^0-9+]/g, '');
+  const callerId = customCallerId || voipState.caller_id;
+
   voipState.remoteNumber = cleanNumber;
   voipState.conversationId = conversationId;
   voipState.callState = 'calling';
   voipState.isDialerOpen = true;
 
+  const extraHeaders = [];
+  if (callerId) {
+    extraHeaders.push(`X-Caller-ID: ${callerId}`);
+    extraHeaders.push(
+      `P-Asserted-Identity: <sip:${callerId}@${voipState.sip_domain || 'pbx'}>`
+    );
+  }
+
   const eventOptions = {
     mediaConstraints: { audio: true, video: false },
     rtcOfferConstraints: { offerToReceiveAudio: 1, offerToReceiveVideo: 0 },
+    extraHeaders,
   };
 
   VoipAPI.updateCallStatus({ event: 'started', phoneNumber: cleanNumber });

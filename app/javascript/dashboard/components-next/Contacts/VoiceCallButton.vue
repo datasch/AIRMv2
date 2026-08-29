@@ -167,8 +167,19 @@ const startCall = async (inboxId, conversationIdHint = null) => {
 
 const onClick = async () => {
   if (hasVoipEnabled.value) {
+    let customCallerId = null;
+    if (props.conversationId) {
+      const conversation = store.getters.getConversationById(
+        props.conversationId
+      );
+      const conversationInbox = (inboxesList.value || []).find(
+        i => i.id === conversation?.inbox_id
+      );
+      customCallerId = conversationInbox?.phone_number;
+    }
+
     if (voipState.isRegistered) {
-      makeCall(props.phone, props.conversationId);
+      makeCall(props.phone, props.conversationId, customCallerId);
     } else {
       openDialer(props.phone, props.conversationId);
     }
