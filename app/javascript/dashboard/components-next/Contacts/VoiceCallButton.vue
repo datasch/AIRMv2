@@ -105,11 +105,11 @@ const startWhatsappCall = async (inboxId, conversationIdHint) => {
     // surface whether the request was just sent or is already pending instead of
     // claiming the call started. The permission message lands in the
     // conversation, so still navigate there.
-    const messageKey =
+    const message =
       response?.status === VOICE_CALL_OUTBOUND_INIT_STATUS.PERMISSION_PENDING
-        ? 'CONTACT_PANEL.WHATSAPP_CALL_PERMISSION_PENDING'
-        : 'CONTACT_PANEL.WHATSAPP_CALL_PERMISSION_REQUESTED';
-    useAlert(t(messageKey));
+        ? t('CONTACT_PANEL.WHATSAPP_CALL_PERMISSION_PENDING')
+        : t('CONTACT_PANEL.WHATSAPP_CALL_PERMISSION_REQUESTED');
+    useAlert(message);
     navigateToConversation(conversationId);
     return;
   }

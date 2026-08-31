@@ -104,6 +104,9 @@ export default {
       immediate: true,
     },
   },
+  mounted() {
+    initVoIP();
+  },
   methods: {
     toggleMobileSidebar() {
       this.isMobileSidebarOpen = !this.isMobileSidebarOpen;
@@ -127,9 +130,6 @@ export default {
     closeKeyShortcutModal() {
       this.showShortcutModal = false;
     },
-  },
-  mounted() {
-    initVoIP();
   },
 };
 </script>

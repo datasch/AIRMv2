@@ -161,6 +161,17 @@ services:
     volumes:
       - 'asterisk_etc:/etc/asterisk'
 
+  qdrant:
+    image: 'qdrant/qdrant:latest'
+    restart: always
+    ports:
+      - '6333:6333'
+      - '6334:6334'
+    environment:
+      - QDRANT__SERVICE__API_KEY=airm_qdrant_secret_api_key_2026
+    volumes:
+      - qdrant_data:/qdrant/storage
+
 volumes:
   postgres:
   redis:
@@ -170,3 +181,5 @@ volumes:
   bundle:
   evolution_instances_data:
   asterisk_etc:
+  qdrant_data:
+
