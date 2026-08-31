@@ -23,6 +23,8 @@ services:
       - POSTGRES_HOST=airm_postgres
       - POSTGRES_PORT=5432
       - 'POSTGRES_USERNAME=${POSTGRES_USERNAME:-postgres}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}'
+      - 'REDIS_URL=redis://:${REDIS_PASSWORD:-redispassword}@airm_redis:6379/0'
       - 'EVOLUTION_API_URL=${EVOLUTION_API_URL:-http://evolution-api:8080}'
       - 'EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-airm_evolution_secret_api_key_2026}'
       - SAFE_FETCH_ALLOW_PRIVATE_NETWORK=true
@@ -83,6 +85,8 @@ services:
       - POSTGRES_HOST=airm_postgres
       - POSTGRES_PORT=5432
       - 'POSTGRES_USERNAME=${POSTGRES_USERNAME:-postgres}'
+      - 'POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}'
+      - 'REDIS_URL=redis://:${REDIS_PASSWORD:-redispassword}@airm_redis:6379/0'
       - 'EVOLUTION_API_URL=${EVOLUTION_API_URL:-http://evolution-api:8080}'
       - 'EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-airm_evolution_secret_api_key_2026}'
       - SAFE_FETCH_ALLOW_PRIVATE_NETWORK=true
