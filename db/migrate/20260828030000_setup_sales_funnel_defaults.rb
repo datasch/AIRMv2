@@ -4,9 +4,14 @@ class SetupSalesFunnelDefaults < ActiveRecord::Migration[7.0]
   def up
     Account.find_each do |account|
       # 1. Equipo de Ventas
-      sales_team = account.teams.find_or_create_by!(name: 'Ventas') do |team|
-        team.description = 'Equipo comercial y cierre de ventas'
-        team.allow_auto_assign = true
+      sales_team = account.teams.find_by('LOWER(name) = ?', 'ventas')
+      if sales_team.nil?
+        sales_team = account.teams.new(
+          name: 'Ventas',
+          description: 'Equipo comercial y cierre de ventas',
+          allow_auto_assign: true
+        )
+        sales_team.save(validate: false)
       end
 
       # 2. Etiquetas del Funnel de Ventas
