@@ -163,10 +163,19 @@ class Contact < ApplicationRecord
     PhoneMaskerService.can_view_full_phone?(account_user) ? name : masked_name
   end
 
+  def masked_identifier
+    PhoneMaskerService.mask_if_phone(identifier)
+  end
+
+  def display_identifier(account_user = Current.account_user)
+    PhoneMaskerService.can_view_full_phone?(account_user) ? identifier : masked_identifier
+  end
+
   def push_event_data_masked
     data = push_event_data
     data[:phone_number] = masked_phone_number
     data[:name] = masked_name
+    data[:identifier] = masked_identifier
     data
   end
 
@@ -176,7 +185,7 @@ class Contact < ApplicationRecord
       custom_attributes: custom_attributes,
       email: email,
       id: id,
-      identifier: identifier,
+      identifier: display_identifier,
       name: display_name,
       phone_number: display_phone_number,
       thumbnail: avatar_url,

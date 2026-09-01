@@ -196,6 +196,9 @@ class Api::V1::Accounts::ContactsController < Api::V1::Accounts::BaseController
     if update_data[:name].present? && update_data[:name].include?('•')
       update_data.delete(:name)
     end
+    if update_data[:identifier].present? && (update_data[:identifier].include?('•') || update_data[:identifier].include?('*'))
+      update_data.delete(:identifier)
+    end
     update_data
   end
 
