@@ -263,13 +263,17 @@ export default {
             @update="value => onFieldUpdate('email', value)"
           />
           <ContactInfoRow
-            :href="contact.phone_number ? `tel:${contact.phone_number}` : ''"
+            :href="
+              isAdmin && contact.phone_number
+                ? `tel:${contact.phone_number}`
+                : ''
+            "
             :value="contact.phone_number"
             icon="call"
             emoji="📞"
             :title="$t('CONTACT_PANEL.PHONE_NUMBER')"
-            show-copy
-            editable
+            :show-copy="isAdmin"
+            :editable="isAdmin"
             @update="value => onFieldUpdate('phone_number', value)"
           />
           <ContactInfoRow

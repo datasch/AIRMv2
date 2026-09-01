@@ -153,15 +153,18 @@ class Message < ApplicationRecord
     )
     data[:echo_id] = echo_id if echo_id.present?
     data[:attachments] = attachments.map(&:push_event_data) if attachments.present?
+    data[:source_id] = PhoneMaskerService.mask_if_phone(data[:source_id]) unless PhoneMaskerService.can_view_full_phone?
     merge_sender_attributes(data)
   end
 
   def conversation_push_event_data
+    can_view_phone = PhoneMaskerService.can_view_full_phone?
+    raw_source_id = conversation.contact_inbox&.source_id
     {
       assignee_id: conversation.assignee_id,
       unread_count: conversation.unread_incoming_messages.count,
       last_activity_at: conversation.last_activity_at.to_i,
-      contact_inbox: { source_id: conversation.contact_inbox.source_id }
+      contact_inbox: { source_id: can_view_phone ? raw_source_id : PhoneMaskerService.mask_if_phone(raw_source_id) }
     }
   end
 

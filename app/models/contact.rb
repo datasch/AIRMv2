@@ -147,6 +147,29 @@ class Contact < ApplicationRecord
     contact_inboxes.find_by!(inbox_id: inbox_id).source_id
   end
 
+  def masked_phone_number
+    PhoneMaskerService.mask(phone_number)
+  end
+
+  def masked_name
+    PhoneMaskerService.mask_if_phone(name)
+  end
+
+  def display_phone_number(account_user = Current.account_user)
+    PhoneMaskerService.can_view_full_phone?(account_user) ? phone_number : masked_phone_number
+  end
+
+  def display_name(account_user = Current.account_user)
+    PhoneMaskerService.can_view_full_phone?(account_user) ? name : masked_name
+  end
+
+  def push_event_data_masked
+    data = push_event_data
+    data[:phone_number] = masked_phone_number
+    data[:name] = masked_name
+    data
+  end
+
   def push_event_data
     data = {
       additional_attributes: additional_attributes,
@@ -154,8 +177,8 @@ class Contact < ApplicationRecord
       email: email,
       id: id,
       identifier: identifier,
-      name: name,
-      phone_number: phone_number,
+      name: display_name,
+      phone_number: display_phone_number,
       thumbnail: avatar_url,
       blocked: blocked,
       type: 'contact'

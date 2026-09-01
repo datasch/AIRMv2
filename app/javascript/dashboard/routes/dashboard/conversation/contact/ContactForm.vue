@@ -84,10 +84,16 @@ export default {
   },
   computed: {
     parsePhoneNumber() {
+      if (this.phoneNumber.includes('•') || this.phoneNumber.includes('*')) {
+        return null;
+      }
       return parsePhoneNumber(this.phoneNumber);
     },
     isPhoneNumberNotValid() {
       if (this.phoneNumber !== '') {
+        if (this.phoneNumber.includes('•') || this.phoneNumber.includes('*')) {
+          return false;
+        }
         return (
           !isPhoneNumberValid(this.phoneNumber, this.activeDialCode) ||
           (this.phoneNumber !== '' ? this.activeDialCode === '' : false)
@@ -96,6 +102,9 @@ export default {
       return false;
     },
     phoneNumberError() {
+      if (this.phoneNumber.includes('•') || this.phoneNumber.includes('*')) {
+        return '';
+      }
       if (this.activeDialCode === '') {
         return this.$t('CONTACT_FORM.FORM.PHONE_NUMBER.DIAL_CODE_ERROR');
       }
@@ -215,6 +224,16 @@ export default {
           social_profiles: this.socialProfileUserNames,
         },
       };
+      if (
+        this.contact.id &&
+        this.phoneNumber &&
+        (this.phoneNumber.includes('•') || this.phoneNumber.includes('*'))
+      ) {
+        delete contactObject.phone_number;
+      }
+      if (this.contact.id && this.name && this.name.includes('•')) {
+        delete contactObject.name;
+      }
       if (this.avatarFile) {
         contactObject.avatar = this.avatarFile;
         contactObject.isFormData = true;

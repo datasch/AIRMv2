@@ -80,9 +80,95 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
     render json: { success: false, error: e.message }, status: :unprocessable_entity
   end
 
+  def call_contact
+    contact_id = params[:contact_id]
+    conversation_id = params[:conversation_id]
+
+    contact = Current.account.contacts.find_by(id: contact_id)
+    render json: { success: false, error: 'Contacto no encontrado' }, status: :not_found and return if contact.blank?
+
+    real_phone = contact.phone_number.presence
+    if real_phone.blank?
+      render json: { success: false, error: 'El contacto no tiene un número telefónico registrado' }, status: :unprocessable_entity and return
+    end
+
+    user = Current.user
+    user_sip = (user.custom_attributes || {})['sip'] || {}
+    extension = user_sip['extension'].presence || user.custom_attributes&.dig('sip_extension')
+
+    account = Current.account
+    voip_settings = account.settings['voip'] || {}
+    enabled = voip_settings['enabled'].nil? ? (ENV['ASTERISK_ENABLED'].to_s == 'true' || ENV['ASTERISK_WS_URL'].present?) : voip_settings['enabled']
+
+    unless enabled
+      render json: { success: false, error: 'El servicio de telefonía VoIP / PBX no está activo en esta cuenta' }, status: :unprocessable_entity and return
+    end
+
+    masked_phone = contact.display_phone_number
+    agent_name = user.available_name || user.name
+
+    redis = Redis::Alfred.redis
+    redis_key = "voip:account_#{account.id}:active_calls"
+    call_data = {
+      agent_id: user.id,
+      agent_name: agent_name,
+      contact_id: contact.id,
+      contact_name: contact.display_name,
+      phone_number: masked_phone,
+      status: 'calling',
+      started_at: Time.current.to_i
+    }
+    redis.hset(redis_key, user.id.to_s, call_data.to_json)
+    redis.expire(redis_key, 3600)
+
+    active_calls = current_active_calls
+    ActionCableBroadcastJob.perform_later(
+      ["account_#{account.id}"],
+      'voip.call_status_changed',
+      {
+        active_calls: active_calls,
+        event: 'started',
+        agent_id: user.id,
+        agent_name: agent_name,
+        contact_id: contact.id,
+        contact_name: contact.display_name,
+        phone_number: masked_phone
+      }
+    )
+
+    if conversation_id.present?
+      conversation = account.conversations.find_by(id: conversation_id)
+      if conversation.present?
+        message_content = "📞 **Llamada saliente iniciada**\n• Agente: #{agent_name}\n• Contacto: #{contact.display_name}\n• Número: #{masked_phone}"
+        conversation.messages.create!(
+          account: account,
+          inbox: conversation.inbox,
+          message_type: :activity,
+          content: message_content,
+          sender: user
+        )
+      end
+    end
+
+    render json: {
+      success: true,
+      contact: {
+        id: contact.id,
+        name: contact.display_name,
+        phone_number: masked_phone
+      },
+      agent_extension: extension,
+      sip_domain: voip_settings['sip_domain'].presence || ENV['ASTERISK_SIP_DOMAIN'] || 'giantucchi.com',
+      destination: PhoneMaskerService.can_view_full_phone? ? real_phone : "contact_#{contact.id}"
+    }
+  rescue StandardError => e
+    render json: { success: false, error: e.message }, status: :unprocessable_entity
+  end
+
   def call_status
     event = params[:event] # 'started', 'connected', 'ended', 'failed'
-    phone_number = params[:phone_number].to_s
+    raw_phone = params[:phone_number].to_s
+    phone_number = PhoneMaskerService.can_view_full_phone? ? raw_phone : PhoneMaskerService.mask(raw_phone)
     agent_name = Current.user.available_name || Current.user.name
     agent_id = Current.user.id
     account_id = Current.account.id
@@ -142,7 +228,10 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
               else 'Llamada finalizada'
               end
 
-      message_content = "#{icon} **#{label}**\n• Agente: #{Current.user.name}\n• Número: #{phone_number}\n• Duración: #{formatted_duration}"
+      contact = conversation.contact
+      logged_phone = PhoneMaskerService.can_view_full_phone? ? (phone_number.presence || contact&.phone_number) : (PhoneMaskerService.mask(phone_number.presence || contact&.phone_number))
+
+      message_content = "#{icon} **#{label}**\n• Agente: #{Current.user.name}\n• Número: #{logged_phone}\n• Duración: #{formatted_duration}"
 
       conversation.messages.create!(
         account: Current.account,

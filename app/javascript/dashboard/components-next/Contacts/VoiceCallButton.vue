@@ -20,6 +20,7 @@ import { useWhatsappCallSession } from 'dashboard/composables/useWhatsappCallSes
 import Button from 'dashboard/components-next/button/Button.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import { voipState, makeCall, openDialer } from 'dashboard/helper/voipHelper';
+import VoipAPI from 'dashboard/api/voip';
 
 const props = defineProps({
   phone: { type: String, default: '' },
@@ -54,6 +55,12 @@ const hasVoiceInboxes = computed(() => voiceInboxes.value.length > 0);
 const hasVoipEnabled = computed(
   () => voipState.isConfigured || voipState.isEnabled
 );
+
+const isMaskedPhone = computed(() => {
+  return (
+    props.phone && (props.phone.includes('•') || props.phone.includes('*'))
+  );
+});
 
 const shouldRender = computed(
   () => (hasVoiceInboxes.value || hasVoipEnabled.value) && !!props.phone
@@ -176,6 +183,25 @@ const onClick = async () => {
         i => i.id === conversation?.inbox_id
       );
       customCallerId = conversationInbox?.phone_number;
+    }
+
+    if (isMaskedPhone.value && props.contactId) {
+      try {
+        await VoipAPI.callContact({
+          contactId: props.contactId,
+          conversationId: props.conversationId,
+        });
+        openDialer(props.phone, props.conversationId);
+        voipState.callState = 'calling';
+        useAlert(t('CONTACT_PANEL.CALL_INITIATED'));
+      } catch (error) {
+        useAlert(
+          error.response?.data?.error ||
+            error.message ||
+            t('CONTACT_PANEL.CALL_FAILED')
+        );
+      }
+      return;
     }
 
     if (voipState.isRegistered) {

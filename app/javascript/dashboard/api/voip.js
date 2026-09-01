@@ -33,6 +33,13 @@ class VoipAPI extends ApiClient {
     });
   }
 
+  callContact({ contactId, conversationId }) {
+    return axios.post(`${this.url}/call_contact`, {
+      contact_id: contactId,
+      conversation_id: conversationId,
+    });
+  }
+
   logCall({ conversationId, phoneNumber, durationSeconds, status }) {
     return axios.post(`${this.url}/log_call`, {
       conversation_id: conversationId,

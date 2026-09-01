@@ -304,6 +304,7 @@ Rails.application.routes.draw do
             post :agents, on: :member, action: :update_agent
             post :call_status, on: :member
             post :log_call, on: :member
+            post :call_contact, on: :member
           end
           resources :inboxes, only: [:index, :show, :create, :update, :destroy] do
             get :assignable_agents, on: :member

@@ -187,9 +187,16 @@ class Api::V1::Accounts::ContactsController < Api::V1::Accounts::BaseController
   end
 
   def contact_update_params
-    permitted_params.except(:custom_attributes, :avatar_url)
-                    .merge({ custom_attributes: contact_custom_attributes })
-                    .merge({ additional_attributes: contact_additional_attributes })
+    update_data = permitted_params.except(:custom_attributes, :avatar_url)
+                                  .merge({ custom_attributes: contact_custom_attributes })
+                                  .merge({ additional_attributes: contact_additional_attributes })
+    if update_data[:phone_number].present? && (update_data[:phone_number].include?('•') || update_data[:phone_number].include?('*'))
+      update_data.delete(:phone_number)
+    end
+    if update_data[:name].present? && update_data[:name].include?('•')
+      update_data.delete(:name)
+    end
+    update_data
   end
 
   def set_include_contact_inboxes

@@ -9,7 +9,7 @@ json.status message.status
 json.content_attributes message.content_attributes
 json.created_at message.created_at.to_i
 json.private message.private
-json.source_id message.source_id
+json.source_id PhoneMaskerService.can_view_full_phone? ? message.source_id : PhoneMaskerService.mask_if_phone(message.source_id)
 json.sender message.sender.push_event_data if message.sender
 json.attachments message.attachments.map(&:push_event_data) if message.attachments.present?
 
