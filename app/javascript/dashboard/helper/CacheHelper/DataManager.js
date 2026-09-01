@@ -59,11 +59,11 @@ export class DataManager {
     if (Array.isArray(data)) {
       const tx = this.db.transaction(modelName, 'readwrite');
       data.forEach(item => {
-        tx.store.add(item);
+        tx.store.put(item);
       });
       await tx.done;
     } else {
-      await this.db.add(modelName, data);
+      await this.db.put(modelName, data);
     }
   }
 

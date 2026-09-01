@@ -80,7 +80,7 @@
   description: 'The URL to which the system events like new accounts created will be sent'
   locked: false
 - name: WEBHOOK_TIMEOUT
-  value: 5
+  value: 30
   display_title: 'Webhook request timeout (seconds)'
   description: 'Maximum time Chatwoot waits for a webhook response before failing the request'
   locked: false

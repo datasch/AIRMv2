@@ -15,7 +15,7 @@ describe Webhooks::Trigger do
   let(:payload) { { hello: :hello } }
   let(:fetch_result) { instance_double(SafeFetch::Result) }
   let(:agent_bot_error_content) { I18n.t('conversations.activity.agent_bot.error_moved_to_open') }
-  let(:default_timeout) { 5 }
+  let(:default_timeout) { 30 }
   let(:webhook_timeout) { default_timeout }
   let(:base_headers) { { 'Content-Type' => 'application/json', 'Accept' => 'application/json' } }
 

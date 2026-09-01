@@ -116,10 +116,10 @@ class Webhooks::Trigger
   end
 
   def webhook_timeout
-    raw_timeout = GlobalConfig.get_value('WEBHOOK_TIMEOUT')
+    raw_timeout = GlobalConfig.get_value('WEBHOOK_TIMEOUT') || ENV['WEBHOOK_TIMEOUT']
     timeout = raw_timeout.presence&.to_i
 
-    timeout&.positive? ? timeout : 5
+    timeout&.positive? ? timeout : 30
   end
 
   def retryable_agent_bot_error?(error)
