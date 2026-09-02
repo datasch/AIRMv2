@@ -130,9 +130,18 @@ const handleCreateAssistant = () => {
               <div class="flex items-center gap-2">
                 <span
                   v-if="!isFetchingAssistants"
-                  class="text-xl font-medium truncate text-n-slate-12"
+                  class="text-xl font-bold truncate text-n-slate-12"
                 >
                   {{ activeAssistantName }}
+                </span>
+                <span
+                  v-if="!isFetchingAssistants"
+                  class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                >
+                  <span
+                    class="size-1.5 rounded-full bg-emerald-500 animate-pulse"
+                  />
+                  {{ $t('SIDEBAR.AI_ONLINE_BADGE') }}
                 </span>
                 <div class="relative group">
                   <OnClickOutside

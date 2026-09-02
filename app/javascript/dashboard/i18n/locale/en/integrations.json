@@ -397,13 +397,13 @@
     }
   },
   "CAPTAIN": {
-    "NAME": "Captain",
+    "NAME": "AI Agent",
     "HEADER_KNOW_MORE": "Know more",
     "OVERVIEW": {
-      "HEADER": "Overview",
+      "HEADER": "Agent Overview",
       "WELCOME": {
-        "LABEL": "Captain summary",
-        "LOADING": "Generating summary…"
+        "LABEL": "AI Agent Summary & Performance",
+        "LOADING": "Analyzing agent performance…"
       },
       "INBOX_BANNER": {
         "TEXT": "This assistant isn't connected to any inbox yet, so it won't respond to conversations.",
@@ -475,10 +475,10 @@
       }
     },
     "ASSISTANT_SWITCHER": {
-      "ASSISTANTS": "Assistants",
-      "SWITCH_ASSISTANT": "Switch between assistants",
-      "NEW_ASSISTANT": "Create Assistant",
-      "EMPTY_LIST": "No assistants found, please create one to get started"
+      "ASSISTANTS": "AI Agents",
+      "SWITCH_ASSISTANT": "Select or switch agent",
+      "NEW_ASSISTANT": "+ Create New AI Agent",
+      "EMPTY_LIST": "No AI agents found, please create one to get started"
     },
     "COPILOT": {
       "TITLE": "Copilot",

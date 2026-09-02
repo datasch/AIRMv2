@@ -397,13 +397,13 @@
     }
   },
   "CAPTAIN": {
-    "NAME": "Capitán",
+    "NAME": "Agente de IA",
     "HEADER_KNOW_MORE": "Más información",
     "OVERVIEW": {
-      "HEADER": "Resumen",
+      "HEADER": "Panel del Agente",
       "WELCOME": {
-        "LABEL": "Resumen del capitán",
-        "LOADING": "Generando resumen…"
+        "LABEL": "Métricas y Rendimiento del Agente de IA",
+        "LOADING": "Analizando métricas del agente…"
       },
       "INBOX_BANNER": {
         "TEXT": "Este asistente aún no está conectado a ninguna bandeja de entrada, por lo que no responderá a las conversaciones.",
@@ -475,10 +475,10 @@
       }
     },
     "ASSISTANT_SWITCHER": {
-      "ASSISTANTS": "Asistentes",
-      "SWITCH_ASSISTANT": "Cambiar entre asistentes",
-      "NEW_ASSISTANT": "Crear asistente",
-      "EMPTY_LIST": "No se encontraron asistentes. Crea uno para comenzar"
+      "ASSISTANTS": "Agentes de IA",
+      "SWITCH_ASSISTANT": "Seleccionar o cambiar de agente",
+      "NEW_ASSISTANT": "+ Crear Nuevo Agente IA",
+      "EMPTY_LIST": "No se encontraron agentes de IA. Crea uno para comenzar"
     },
     "COPILOT": {
       "TITLE": "Copilot",
