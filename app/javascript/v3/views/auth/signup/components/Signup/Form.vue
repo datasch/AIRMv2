@@ -4,11 +4,12 @@ import { useVuelidate } from '@vuelidate/core';
 import { required, minLength, email } from '@vuelidate/validators';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useAlert } from 'dashboard/composables';
 import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
 import FormInput from '../../../../../components/Form/Input.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import Icon from 'dashboard/components-next/icon/Icon.vue';
 import PasswordRequirements from './PasswordRequirements.vue';
 import { isValidPassword } from 'shared/helpers/Validators';
 import GoogleOAuthButton from '../../../../../components/GoogleOauth/Button.vue';
@@ -20,6 +21,7 @@ const MIN_PASSWORD_LENGTH = 6;
 const store = useStore();
 const { t } = useI18n();
 const router = useRouter();
+const route = useRoute();
 
 const hCaptcha = ref(null);
 const isPasswordFocused = ref(false);
@@ -29,6 +31,46 @@ const credentials = reactive({
   email: '',
   password: '',
   hCaptchaClientResponse: '',
+});
+
+const formatSalespersonName = raw => {
+  if (!raw) return '';
+  return decodeURIComponent(String(raw))
+    .replace(/[_-]/g, ' ')
+    .replace(/\b\w/g, char => char.toUpperCase())
+    .trim();
+};
+
+const detectedSalesperson = computed(() => {
+  const queryParam = route.query.salesperson || route.query.ref;
+  if (queryParam) {
+    const formatted = formatSalespersonName(queryParam);
+    try {
+      sessionStorage.setItem('airm_salesperson_name', formatted);
+      sessionStorage.setItem(
+        'airm_referral_code',
+        String(route.query.referral_code || queryParam)
+      );
+    } catch {
+      // Ignore sessionStorage if unavailable
+    }
+    return formatted;
+  }
+  try {
+    return sessionStorage.getItem('airm_salesperson_name') || '';
+  } catch {
+    return '';
+  }
+});
+
+const detectedReferralCode = computed(() => {
+  const queryParam = route.query.referral_code || route.query.ref;
+  if (queryParam) return String(queryParam);
+  try {
+    return sessionStorage.getItem('airm_referral_code') || '';
+  } catch {
+    return '';
+  }
 });
 
 const rules = {
@@ -78,7 +120,12 @@ const isFormValid = computed(() => !v$.value.$invalid);
 const performRegistration = async () => {
   isSignupInProgress.value = true;
   try {
-    await register(credentials);
+    await register({
+      ...credentials,
+      salespersonName: detectedSalesperson.value || undefined,
+      referralCode: detectedReferralCode.value || undefined,
+      referralSource: detectedSalesperson.value ? 'sales_referral' : undefined,
+    });
     router.push({
       name: 'auth_verify_email',
       state: { email: credentials.email },
@@ -121,6 +168,32 @@ const onCaptchaError = () => {
 
 <template>
   <div class="flex-1">
+    <div
+      v-if="detectedSalesperson"
+      class="flex items-center gap-3 p-3 bg-n-alpha-1 border border-n-strong rounded-xl mb-4 text-n-slate-12 text-sm"
+    >
+      <div
+        class="w-7 h-7 rounded-full bg-n-brand/10 text-n-brand flex items-center justify-center shrink-0"
+      >
+        <Icon icon="i-lucide-user-check" class="w-4 h-4 text-n-brand" />
+      </div>
+      <div class="flex-1 min-w-0">
+        <div
+          class="text-[11px] font-semibold text-n-slate-11 uppercase tracking-wider"
+        >
+          {{ $t('REGISTER.SALESPERSON.ASSIGNED_LABEL') }}
+        </div>
+        <div class="font-semibold text-n-slate-12 truncate text-sm">
+          {{ detectedSalesperson }}
+        </div>
+      </div>
+      <span
+        class="text-xs bg-n-brand/10 text-n-brand px-2.5 py-0.5 rounded-full font-medium shrink-0"
+      >
+        {{ $t('REGISTER.SALESPERSON.REFERRAL_BADGE') }}
+      </span>
+    </div>
+
     <form class="space-y-3" @submit.prevent="submit">
       <FormInput
         v-model="credentials.email"

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propuesta Comercial - Infraestructura de Recepcionista IA & CRM AIRM | Giantucchi</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+    @page {
+      size: A4 portrait;
+      margin: 10mm 14mm 10mm 14mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1e293b;
+      background-color: #ffffff;
+      line-height: 1.4;
+      font-size: 9pt;
+    }
+
+    .page {
+      height: 275mm;
+      max-height: 275mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+      break-after: auto;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #0ea5e9;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-name {
+      font-size: 19pt;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #0f172a;
+    }
+
+    .brand-name span {
+      color: #0284c7;
+    }
+
+    .doc-badge {
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      color: #0369a1;
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    .header-meta {
+      text-align: right;
+      font-size: 7.5pt;
+      color: #64748b;
+    }
+
+    .header-meta strong {
+      color: #0f172a;
+    }
+
+    /* Main Title Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      border-left: 4px solid #0284c7;
+    }
+
+    .hero-title {
+      font-size: 13.5pt;
+      font-weight: 800;
+      margin-bottom: 3px;
+      letter-spacing: -0.3px;
+    }
+
+    .hero-subtitle {
+      font-size: 8.5pt;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    /* Section Styles */
+    .section-title {
+      font-size: 10pt;
+      font-weight: 700;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      margin-top: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 12px;
+      background: #0284c7;
+      border-radius: 2px;
+    }
+
+    /* Cards Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .card-title {
+      font-size: 9pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-desc {
+      font-size: 8pt;
+      color: #475569;
+      line-height: 1.35;
+    }
+
+    /* List items */
+    ul.feature-list {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 4px;
+    }
+
+    ul.feature-list li {
+      position: relative;
+      padding-left: 12px;
+      font-size: 8pt;
+      color: #334155;
+      margin-bottom: 3px;
+      line-height: 1.3;
+    }
+
+    ul.feature-list li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-weight: bold;
+      font-size: 8pt;
+    }
+
+    /* Pricing Box */
+    .pricing-table-wrap {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 12px;
+      margin: 8px 0;
+    }
+
+    .price-box {
+      border-radius: 8px;
+      padding: 12px 14px;
+      position: relative;
+    }
+
+    .price-box.setup {
+      background: #ffffff;
+      border: 2px solid #0284c7;
+      box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.08);
+    }
+
+    .price-box.retainer {
+      background: #f0fdf4;
+      border: 2px solid #16a34a;
+    }
+
+    .price-tag-badge {
+      display: inline-block;
+      font-size: 7pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-bottom: 4px;
+    }
+
+    .price-box.setup .price-tag-badge {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .price-box.retainer .price-tag-badge {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .price-amount {
+      font-size: 16pt;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+
+    .price-sub {
+      font-size: 7.5pt;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+
+    /* Special Highlight Box for 3-Day Pilot */
+    .pilot-box {
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+      border: 1.5px solid #f59e0b;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 8px 0;
+    }
+
+    .pilot-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .pilot-title {
+      font-size: 9pt;
+      font-weight: 800;
+      color: #92400e;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pilot-badge {
+      background: #d97706;
+      color: #ffffff;
+      font-size: 7pt;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .pilot-content {
+      font-size: 8pt;
+      color: #78350f;
+      line-height: 1.35;
+    }
+
+    .pilot-content strong {
+      color: #451a03;
+    }
+
+    /* ROI Table */
+    .roi-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      font-size: 8pt;
+    }
+
+    .roi-table th {
+      background: #0f172a;
+      color: #ffffff;
+      text-align: left;
+      padding: 6px 8px;
+      font-weight: 600;
+    }
+
+    .roi-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .roi-table tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .highlight-cell {
+      font-weight: 700;
+      color: #0284c7;
+    }
+
+    .highlight-cell-green {
+      font-weight: 700;
+      color: #16a34a;
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid #cbd5e1;
+      padding-top: 8px;
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 7.5pt;
+      color: #64748b;
+    }
+
+    .contact-chips {
+      display: flex;
+      gap: 12px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      color: #334155;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PÁGINA 1 -->
+  <div class="page">
+    <div>
+      <div class="header">
+        <div class="logo-container">
+          <div class="brand-name">GIANTUCCHI<span>.</span></div>
+          <div class="doc-badge">Infraestructura Tecnológica & IA</div>
+        </div>
+        <div class="header-meta">
+          <strong>Propuesta Técnica & Comercial</strong><br>
+          Especialidad: <strong>Inmobiliarias & Real Estate B2B</strong><br>
+          Fecha de Emisión: 01 de Septiembre, 2026
+        </div>
+      </div>
+
+      <div class="hero-banner">
+        <div class="hero-title">Recepcionista IA 24/7 Omnicanal + Plataforma CRM AIRM</div>
+        <div class="hero-subtitle">
+          Sistema integral de atención ultra-rápida (&lt;3s), calificación de compradores, envío automatizado de brochures y agendamiento de visitas para proyectos inmobiliarios.
+        </div>
+      </div>
+
+      <div class="section-title">1. El Problema en Real Estate vs. La Solución Giantucchi</div>
+      <div class="grid-2">
+        <div class="card" style="border-left: 3px solid #ef4444;">
+          <div class="card-title" style="color: #b91c1c;">⚠️ Desafío Comercial Actual</div>
+          <div class="card-desc">
+            El <strong>70% de los compradores</strong> escribe de noche o fines de semana. Si un lead demora más de 15 min en ser atendido, ya cotizó con 3 proyectos competidores. Además, los asesores pierden el 80% de su tiempo atendiendo curiosos sin crédito aprobado.
+          </div>
+        </div>
+        <div class="card" style="border-left: 3px solid #10b981;">
+          <div class="card-title" style="color: #047857;">🚀 Solución de Infraestructura Giantucchi</div>
+          <div class="card-desc">
+            Atención en <strong>menos de 3 segundos por WhatsApp</strong>, envío instantáneo de brochures en PDF, filtro financiero (crédito hipotecario vs. contado) y agendamiento de visitas a sala de ventas sincronizadas con el equipo comercial.
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">2. Estructura de Inversión y Modelos de Servicio</div>
+      
+      <div class="pricing-table-wrap">
+        <!-- SETUP BOX -->
+        <div class="price-box setup">
+          <div class="price-tag-badge">Implementación & Puesta en Marcha</div>
+          <div class="price-amount">S/ 1,500 <span style="font-size: 9pt; font-weight: 500; color: #64748b;">(Pago Único)</span></div>
+          <div class="price-sub">Configuración de ingeniería y despliegue en 3 a 5 días hábiles.</div>
+          
+          <ul class="feature-list">
+            <li><strong>Entrenamiento de la IA Inmobiliaria:</strong> Carga de inventario (metrajes, precios, amenidades, ubicación y entrega).</li>
+            <li><strong>Envío Automático de Brochures:</strong> Distribución inteligente de PDFs y fichas técnicas por WhatsApp.</li>
+            <li><strong>Embudo de Calificación:</strong> Filtro de capacidad de compra (crédito aprobado vs. contado, presupuesto y plazo).</li>
+            <li><strong>Agendamiento de Visitas:</strong> Sincronización directa con Google Calendar para citas en sala de ventas/piloto.</li>
+            <li><strong>Despliegue de Espacio AIRM Multi-Agente:</strong> Panel centralizado para asesores comerciales con app móvil (iOS/Android).</li>
+            <li><strong>Conexión de Canales:</strong> WhatsApp comercial + integración para tráfico de Meta Ads (Facebook/Instagram).</li>
+            <li><strong>Capacitación al Equipo Comercial:</strong> Inducción práctica (45 min) sobre gestión y derivación de chats.</li>
+          </ul>
+        </div>
+
+        <!-- RETAINER BOX -->
+        <div class="price-box retainer">
+          <div class="price-tag-badge">Mantenimiento & Continuidad Operativa</div>
+          <div class="price-amount">S/ 300 <span style="font-size: 9pt; font-weight: 500; color: #64748b;">/ mes</span></div>
+          <div class="price-sub">Garantía de alta disponibilidad, soporte y calibración continua.</div>
+          
+          <ul class="feature-list">
+            <li><strong>Infraestructura 24/7 en la Nube:</strong> Servidores de AIRM, bases de datos y motor de IA activos sin interrupciones.</li>
+            <li><strong>Consumo de IA Incluido (Tokens):</strong> Cobertura de las conversaciones y consultas mensuales de los clientes.</li>
+            <li><strong>Actualizaciones de Inventario (1 a 2 al mes):</strong> Modificación de precios, stock de unidades o bonos promocionales.</li>
+            <li><strong>Soporte Técnico de Disponibilidad:</strong> Monitoreo de estabilidad de WhatsApp y asistencia técnica directa.</li>
+            <li><strong>Reporte Mensual de Rendimiento:</strong> Métricas de leads recibidos, calificados y visitas agendadas.</li>
+            <li><strong>Derivación a Asesores Humanos:</strong> Transferencia fluida sin perder el historial del chat.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SPECIAL 3-DAY PILOT CLAUSE -->
+      <div class="pilot-box">
+        <div class="pilot-header">
+          <div class="pilot-title">
+            <span>⚡</span> Periodo de Prueba en Vivo (Piloto de 3 Días)
+          </div>
+          <div class="pilot-badge">Garantía de Validación Comercial</div>
+        </div>
+        <div class="pilot-content">
+          Para que la empresa pueda <strong>comprobar la efectividad, velocidad y agendamiento en su propio entorno</strong> con prospectos reales, se habilita una fase piloto de <strong>3 días continuos</strong> bajo las siguientes condiciones:
+          <div style="margin-top: 5px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div>
+              • <strong>Activación Simbólica (1%):</strong> Se solicita únicamente el <strong>1% del costo total del servicio</strong> como compromiso de activación.<br>
+              • <strong>Cobertura del Pago:</strong> Este importe cubre exclusivamente los <strong>gastos directos de API Tokens de Inteligencia Artificial</strong> y la configuración técnica inicial.
+            </div>
+            <div>
+              • <strong>Carácter No Reembolsable:</strong> Dicho 1% no es reembolsable debido al consumo inmediato de recursos en la nube.<br>
+              • <strong>Validación Sin Riesgo:</strong> Permite probar el agente configurado y la bandeja AIRM antes de desembolsar el saldo de la implementación.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="contact-chips">
+        <div class="contact-item">📞 +51 913 086 096</div>
+        <div class="contact-item">✉️ contacto@giantucchi.com</div>
+        <div class="contact-item">🌐 oferta.giantucchi.com</div>
+      </div>
+      <div>Página 1 de 2</div>
+    </div>
+  </div>
+
+  <!-- PÁGINA 2 -->
+  <div class="page">
+    <div>
+      <div class="header">
+        <div class="logo-container">
+          <div class="brand-name">GIANTUCCHI<span>.</span></div>
+          <div class="doc-badge">Análisis Financiero & Operativo</div>
+        </div>
+        <div class="header-meta">
+          <strong>Retorno de Inversión (ROI) & Modelo de Operación</strong><br>
+          Especialidad: <strong>Inmobiliarias & Real Estate B2B</strong>
+        </div>
+      </div>
+
+      <div class="section-title">3. Análisis de Retorno de Inversión (ROI) Inmobiliario</div>
+      <p style="font-size: 8pt; color: #475569; margin-bottom: 6px;">
+        En el rubro inmobiliario, donde el ticket promedio de venta o comisión ronda entre <strong>$60,000 y $200,000 USD</strong>, el costo de perder un lead calificado por demora supera con creces el costo total de la tecnología:
+      </p>
+
+      <table class="roi-table">
+        <thead>
+          <tr>
+            <th>Métrica / Escenario</th>
+            <th>Operación Tradicional (Manual)</th>
+            <th>Con Infraestructura Giantucchi (IA + AIRM)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Tiempo de Primera Respuesta (FRT)</strong></td>
+            <td>15 min a 4 horas (leads nocturnos se pierden)</td>
+            <td class="highlight-cell-green">&lt; 3 segundos (24 horas / 7 días al año)</td>
+          </tr>
+          <tr>
+            <td><strong>Tasa de Calificación de Leads</strong></td>
+            <td>Baja (Asesores saturan su día con curiosos)</td>
+            <td class="highlight-cell">Alta (La IA filtra crédito, presupuesto y plazo)</td>
+          </tr>
+          <tr>
+            <td><strong>Entrega de Información (Brochure)</strong></td>
+            <td>Manual, sujeta a disponibilidad del vendedor</td>
+            <td class="highlight-cell-green">Instantánea en PDF automatizado por WhatsApp</td>
+          </tr>
+          <tr>
+            <td><strong>Agendamiento de Visitas</strong></td>
+            <td>Coordinación manual con 3-5 mensajes de retraso</td>
+            <td class="highlight-cell">Sincronización en vivo con Google Calendar</td>
+          </tr>
+          <tr>
+            <td><strong>Impacto Financiero Directo</strong></td>
+            <td>Pérdida de 30% a 50% de leads de Meta Ads</td>
+            <td class="highlight-cell-green"><strong>Con 1 solo cierre adicional se pagan años de servicio</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="section-title">4. Los 2 Modos de Despliegue según el Equipo del Cliente</div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: #0284c7;">🏢 Modo 1: Asesores en Bandeja AIRM (Recomendado)</div>
+          <div class="card-desc">
+            Ideal para inmobiliarias con 2 o más ejecutivos comerciales. La IA recibe, responde y califica; cuando el cliente está listo para visitar o solicita un asesor, la conversación se asigna automáticamente al vendedor correspondiente en su app móvil o web.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color: #0284c7;">⚡ Modo 2: Recepcionista 100% Autónomo</div>
+          <div class="card-desc">
+            Para agentes o directores que no desean ingresar a una plataforma adicional. La IA atiende de forma autónoma y despacha los datos del prospecto calificado y la cita confirmada directamente al WhatsApp o correo del responsable comercial.
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">5. Cronograma de Implementación (3 a 5 Días)</div>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; text-align: center; font-size: 7.5pt;">
+          <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px;">
+            <div style="font-weight: 800; color: #0284c7; margin-bottom: 1px;">DÍA 1</div>
+            <div style="font-weight: 600; color: #0f172a;">Recolección</div>
+            <div style="color: #64748b; font-size: 7pt; margin-top: 1px;">Brochures, inventario, precios y FAQs.</div>
+          </div>
+          <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px;">
+            <div style="font-weight: 800; color: #0284c7; margin-bottom: 1px;">DÍA 2 - 3</div>
+            <div style="font-weight: 600; color: #0f172a;">Ingeniería IA</div>
+            <div style="color: #64748b; font-size: 7pt; margin-top: 1px;">Prompting, flujos n8n, AIRM y Calendar.</div>
+          </div>
+          <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px;">
+            <div style="font-weight: 800; color: #f59e0b; margin-bottom: 1px;">DÍAS 4 - 6</div>
+            <div style="font-weight: 600; color: #0f172a;">Piloto 3 Días</div>
+            <div style="color: #64748b; font-size: 7pt; margin-top: 1px;">Validación (1% de compromiso) y calibración.</div>
+          </div>
+          <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px;">
+            <div style="font-weight: 800; color: #16a34a; margin-bottom: 1px;">PRODUCCIÓN</div>
+            <div style="font-weight: 600; color: #0f172a;">Lanzamiento</div>
+            <div style="color: #64748b; font-size: 7pt; margin-top: 1px;">Liquidación de setup, inducción y soporte.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">6. Aceptación y Datos de Contacto</div>
+      <div style="background: #f1f5f9; border-radius: 8px; padding: 10px 14px; font-size: 8pt; color: #334155; margin-bottom: 10px;">
+        <strong>Compromiso de Servicio Giantucchi:</strong> Garantizamos una infraestructura estable, código soberano sin dependencia de planes por usuario y calibración continua de modelos para maximizar el retorno de su inversión publicitaria y comercial.
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px;">
+        <div style="border-top: 1px solid #94a3b8; padding-top: 4px; font-size: 7.5pt; color: #64748b;">
+          <strong style="color: #0f172a;">Por Giantucchi:</strong><br>
+          Ingeniería de Automatización & IA B2B<br>
+          Miraflores, Lima - Perú
+        </div>
+        <div style="border-top: 1px solid #94a3b8; padding-top: 4px; font-size: 7.5pt; color: #64748b;">
+          <strong style="color: #0f172a;">Por el Cliente (Aceptación de Términos / Piloto):</strong><br>
+          Razón Social / Inmobiliaria:<br>
+          Representante Legal / Gerencia Comercial:
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="contact-chips">
+        <div class="contact-item">📞 +51 913 086 096</div>
+        <div class="contact-item">✉️ contacto@giantucchi.com</div>
+        <div class="contact-item">📍 Av. José Pardo 601, Miraflores, Lima</div>
+      </div>
+      <div>Página 2 de 2</div>
+    </div>
+  </div>
+
+</body>
+</html>

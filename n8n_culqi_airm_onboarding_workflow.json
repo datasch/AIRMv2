@@ -1,0 +1,167 @@
+{
+  "name": "AIRM - Culqi Onboarding & Cobranza Automatizada (Piloto 1% + Setup + Suscripción)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "culqi-webhook",
+        "options": {},
+        "responseMode": "onReceived"
+      },
+      "id": "webhook-culqi-node",
+      "name": "Culqi_Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || $input.first().json;\nconst data = body.data || body;\nconst metadata = data.metadata || (data.client_details ? data.client_details.metadata : {}) || {};\n\nconst eventType = body.type || body.object || 'order.status.paid';\nconst productType = metadata.product_type || (data.amount <= 3000 ? 'pilot_3_days' : 'setup_liquidation');\nconst companyName = metadata.company_name || data.client_details?.first_name || 'Inmobiliaria Nueva';\nconst salespersonName = metadata.salesperson_name || 'Ventas Giantucchi';\nconst referralCode = metadata.referral_code || 'DIRECTO';\nconst clientEmail = data.client_details?.email || data.email || 'cliente@empresa.com';\nconst clientPhone = data.client_details?.phone_number || data.phone || '';\nconst amount = data.amount ? data.amount / 100 : 18;\n\nreturn {\n  eventType,\n  productType,\n  companyName,\n  salespersonName,\n  referralCode,\n  clientEmail,\n  clientPhone,\n  amount,\n  raw: data\n};"
+      },
+      "id": "code-extract-node",
+      "name": "Code_Extract_Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [320, 300]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.productType }}",
+        "rules": {
+          "rules": [
+            {
+              "value1": "={{ $json.productType }}",
+              "value2": "pilot_3_days",
+              "output": 0
+            },
+            {
+              "value1": "={{ $json.productType }}",
+              "value2": "setup_liquidation",
+              "output": 1
+            },
+            {
+              "value1": "={{ $json.eventType }}",
+              "value2": "subscription.charged",
+              "output": 2
+            },
+            {
+              "value1": "={{ $json.eventType }}",
+              "value2": "subscription.charge.failed",
+              "output": 3
+            }
+          ]
+        }
+      },
+      "id": "switch-event-node",
+      "name": "Switch_Event_Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [540, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://airm.giantucchi.com/api/v1/accounts",
+        "sendBody": true,
+        "specifyHeaders": true,
+        "headers": {
+          "api_access_token": "{{ $env.AIRM_SUPER_ADMIN_TOKEN || 'TU_SUPER_ADMIN_TOKEN' }}"
+        },
+        "body": {
+          "name": "={{ $json.companyName }}",
+          "email": "={{ $json.clientEmail }}",
+          "salesperson_name": "={{ $json.salespersonName }}",
+          "referral_code": "={{ $json.referralCode }}"
+        },
+        "options": {}
+      },
+      "id": "http-airm-account-node",
+      "name": "HTTP_Create_AIRM_Account",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [780, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  success: true,\n  message: 'Evento Culqi procesado exitosamente por AIRM Core',\n  timestamp: new Date().toISOString()\n};"
+      },
+      "id": "code-format-resp-node",
+      "name": "Code_Format_Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1040, 300]
+    }
+  ],
+  "connections": {
+    "Culqi_Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code_Extract_Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code_Extract_Data": {
+      "main": [
+        [
+          {
+            "node": "Switch_Event_Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch_Event_Type": {
+      "main": [
+        [
+          {
+            "node": "HTTP_Create_AIRM_Account",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code_Format_Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code_Format_Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code_Format_Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP_Create_AIRM_Account": {
+      "main": [
+        [
+          {
+            "node": "Code_Format_Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Lima"
+  }
+}

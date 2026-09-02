@@ -67,6 +67,9 @@ export const register = async creds => {
       email: creds.email,
       password: creds.password,
       h_captcha_client_response: creds.hCaptchaClientResponse,
+      salesperson_name: creds.salespersonName || creds.salesperson_name,
+      referral_code: creds.referralCode || creds.referral_code,
+      referral_source: creds.referralSource || creds.referral_source,
     });
     return response.data;
   } catch (error) {

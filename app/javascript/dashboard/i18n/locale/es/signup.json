@@ -9,6 +9,11 @@
     "OAUTH": {
       "GOOGLE_SIGNUP": "Registrarse con Google"
     },
+    "SALESPERSON": {
+      "ASSIGNED_LABEL": "Asesor Comercial asignado",
+      "ASSIGNED_DESC": "Atendido por {name}",
+      "REFERRAL_BADGE": "Invitación Comercial"
+    },
     "COMPANY_NAME": {
       "LABEL": "Nombre de la empresa",
       "PLACEHOLDER": "Introduce el nombre de tu empresa, por ejemplo: Wayne Enterprises",

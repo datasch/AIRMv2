@@ -2,7 +2,7 @@
 
 class AccountBuilder
   include CustomExceptions::Account
-  pattr_initialize [:account_name, :email!, :confirmed, :user, :user_full_name, :user_password, :super_admin, :locale]
+  pattr_initialize [:account_name, :email!, :confirmed, :user, :user_full_name, :user_password, :super_admin, :locale, :custom_attributes]
 
   def perform
     if @user.nil?
@@ -44,10 +44,13 @@ class AccountBuilder
   end
 
   def create_account
+    account_custom_attributes = { 'onboarding_step' => 'account_details' }
+    account_custom_attributes.merge!(@custom_attributes) if @custom_attributes.is_a?(Hash)
+
     @account = Account.create!(
       name: account_name,
       locale: I18n.locale,
-      custom_attributes: { 'onboarding_step' => 'account_details' }
+      custom_attributes: account_custom_attributes
     )
     Current.account = @account
   end

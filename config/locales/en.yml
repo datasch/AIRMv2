@@ -804,6 +804,8 @@ en:
         created_at: 'Created At'
         updated_at: 'Updated At'
         status: 'Status'
+        salesperson_name: 'Assigned Salesperson'
+        referral_code: 'Referral Code'
         custom_attributes: 'Custom Attributes'
         limits: 'Limits'
         users: 'Users'

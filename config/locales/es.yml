@@ -784,6 +784,8 @@ es:
         created_at: 'Fecha de Creación'
         updated_at: 'Última Modificación'
         status: 'Estado'
+        salesperson_name: 'Asesor Comercial Asignado'
+        referral_code: 'Código de Referido'
         custom_attributes: 'Atributos Personalizados'
         limits: 'Límites de Uso'
         users: 'Usuarios Asignados'

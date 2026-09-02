@@ -28,6 +28,11 @@ class Api::V1::AccountsController < Api::BaseController
       email: account_params[:email],
       user_password: account_params[:password],
       locale: account_params[:locale],
+      custom_attributes: {
+        'salesperson_name' => account_params[:salesperson_name].presence || custom_attributes_params[:salesperson_name].presence,
+        'referral_code' => account_params[:referral_code].presence || custom_attributes_params[:referral_code].presence,
+        'referral_source' => account_params[:referral_source].presence || custom_attributes_params[:referral_source].presence
+      }.compact,
       user: current_user
     ).perform
     enqueue_branding_enrichment
@@ -108,11 +113,12 @@ class Api::V1::AccountsController < Api::BaseController
   end
 
   def account_params
-    params.permit(:account_name, :email, :name, :password, :locale, :domain, :support_email, :user_full_name)
+    params.permit(:account_name, :email, :name, :password, :locale, :domain, :support_email, :user_full_name, :salesperson_name, :referral_code,
+                  :referral_source)
   end
 
   def custom_attributes_params
-    params.permit(:industry, :company_size, :timezone, :referral_source, :user_role, :website)
+    params.permit(:industry, :company_size, :timezone, :referral_source, :user_role, :website, :salesperson_name, :referral_code)
   end
 
   def settings_params
