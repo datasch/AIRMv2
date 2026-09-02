@@ -9,19 +9,7 @@ import { useMessageContext } from './provider.js';
 
 import { MESSAGE_STATUS, MESSAGE_TYPES } from './constants';
 
-const {
-  isAFacebookInbox,
-  isALineChannel,
-  isAPIInbox,
-  isASmsInbox,
-  isATelegramChannel,
-  isATwilioChannel,
-  isAWebWidgetInbox,
-  isAWhatsAppChannel,
-  isAnEmailChannel,
-  isAnInstagramChannel,
-  isATiktokChannel,
-} = useInbox();
+const { isALineChannel, isAWebWidgetInbox, isAnEmailChannel } = useInbox();
 
 const {
   status,
@@ -52,25 +40,13 @@ const showStatusIndicator = computed(() => {
 const isSent = computed(() => {
   if (!showStatusIndicator.value) return false;
 
+  // If backend marked the message as sent, it has been dispatched
+  if (status.value === MESSAGE_STATUS.SENT) return true;
+
   // Messages will be marked as sent for the Email channel if they have a source ID.
   if (isAnEmailChannel.value) return !!sourceId.value;
 
-  if (
-    isAWhatsAppChannel.value ||
-    isATwilioChannel.value ||
-    isAFacebookInbox.value ||
-    isASmsInbox.value ||
-    isATelegramChannel.value ||
-    isAnInstagramChannel.value ||
-    isATiktokChannel.value
-  ) {
-    return sourceId.value && status.value === MESSAGE_STATUS.SENT;
-  }
-
-  // API inbox messages use real sent/delivered/read status values from the external system.
-  if (isAPIInbox.value) return status.value === MESSAGE_STATUS.SENT;
-
-  // All messages will be mark as sent for the Line channel, as there is no source ID.
+  // All messages will be marked as sent for the Line channel, as there is no source ID.
   if (isALineChannel.value) return true;
 
   return false;
@@ -79,24 +55,13 @@ const isSent = computed(() => {
 const isDelivered = computed(() => {
   if (!showStatusIndicator.value) return false;
 
-  if (
-    isAWhatsAppChannel.value ||
-    isATwilioChannel.value ||
-    isASmsInbox.value ||
-    isAFacebookInbox.value ||
-    isAnInstagramChannel.value ||
-    isATiktokChannel.value
-  ) {
-    return sourceId.value && status.value === MESSAGE_STATUS.DELIVERED;
-  }
-  // API inbox messages use real delivered status from the external system.
-  if (isAPIInbox.value) return status.value === MESSAGE_STATUS.DELIVERED;
+  if (status.value === MESSAGE_STATUS.DELIVERED) return true;
   // All messages marked as delivered for the web widget inbox once they are sent.
-  if (isAWebWidgetInbox.value) {
-    return status.value === MESSAGE_STATUS.SENT;
+  if (isAWebWidgetInbox.value && status.value === MESSAGE_STATUS.SENT) {
+    return true;
   }
-  if (isALineChannel.value) {
-    return status.value === MESSAGE_STATUS.DELIVERED;
+  if (isALineChannel.value && status.value === MESSAGE_STATUS.DELIVERED) {
+    return true;
   }
 
   return false;
@@ -105,21 +70,7 @@ const isDelivered = computed(() => {
 const isRead = computed(() => {
   if (!showStatusIndicator.value) return false;
 
-  if (
-    isAWhatsAppChannel.value ||
-    isATwilioChannel.value ||
-    isAFacebookInbox.value ||
-    isAnInstagramChannel.value ||
-    isATiktokChannel.value
-  ) {
-    return sourceId.value && status.value === MESSAGE_STATUS.READ;
-  }
-
-  if (isAWebWidgetInbox.value || isAPIInbox.value) {
-    return status.value === MESSAGE_STATUS.READ;
-  }
-
-  return false;
+  return status.value === MESSAGE_STATUS.READ;
 });
 
 const statusToShow = computed(() => {
@@ -140,4 +91,3 @@ const statusToShow = computed(() => {
     <MessageStatus v-if="showStatusIndicator" :status="statusToShow" />
   </div>
 </template>
-`

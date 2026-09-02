@@ -82,7 +82,8 @@ class Api::V1::Accounts::GowaController < Api::V1::Accounts::BaseController
 
         inbox = Current.account.inboxes.create!(
           name: name,
-          channel: channel
+          channel: channel,
+          lock_to_single_conversation: true
         )
 
         if Current.user.present? && Current.account_user.present?

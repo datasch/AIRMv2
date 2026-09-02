@@ -1,10 +1,11 @@
 class Messages::StatusUpdateService
-  attr_reader :message, :status, :external_error
+  attr_reader :message, :status, :external_error, :source_id
 
-  def initialize(message, status, external_error = nil)
+  def initialize(message, status, external_error = nil, source_id = nil)
     @message = message
-    @status = status
+    @status = status.to_s.downcase.presence
     @external_error = external_error
+    @source_id = source_id
   end
 
   def perform
@@ -16,11 +17,12 @@ class Messages::StatusUpdateService
   private
 
   def update_message_status
-    # Update status and set external_error only when failed
-    message.update!(
+    attrs = {
       status: status,
       external_error: (status == 'failed' ? external_error : nil)
-    )
+    }
+    attrs[:source_id] = source_id if source_id.present?
+    message.update!(attrs)
   end
 
   def valid_status_transition?

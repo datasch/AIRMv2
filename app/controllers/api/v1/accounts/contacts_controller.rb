@@ -24,10 +24,30 @@ class Api::V1::Accounts::ContactsController < Api::V1::Accounts::BaseController
   def search
     render json: { error: 'Specify search string with parameter q' }, status: :unprocessable_entity if params[:q].blank? && return
 
-    contacts = Current.account.contacts.where(
-      'name ILIKE :search OR email ILIKE :search OR phone_number ILIKE :search OR contacts.identifier LIKE :search',
-      search: "%#{params[:q].strip}%"
-    )
+    query = params[:q].to_s.strip
+    clean_digits = query.gsub(/\D/, '')
+
+    base_scope = Current.account.contacts.left_joins(:contact_inboxes)
+
+    contacts = if clean_digits.length >= 6
+                 search_pattern = "%#{query}%"
+                 digit_pattern = "%#{clean_digits}%"
+
+                 base_scope.where(
+                   'contacts.name ILIKE :search OR contacts.email ILIKE :search OR contacts.identifier LIKE :search OR ' \
+                   'contact_inboxes.source_id LIKE :search OR ' \
+                   "REGEXP_REPLACE(contacts.phone_number, '[^0-9]', '', 'g') LIKE :digit_pattern",
+                   search: search_pattern,
+                   digit_pattern: digit_pattern
+                 ).distinct
+               else
+                 base_scope.where(
+                   'contacts.name ILIKE :search OR contacts.email ILIKE :search OR contacts.phone_number ILIKE :search OR ' \
+                   'contacts.identifier LIKE :search OR contact_inboxes.source_id LIKE :search',
+                   search: "%#{query}%"
+                 ).distinct
+               end
+
     @contacts = fetch_contacts_with_has_more(contacts)
   end
 

@@ -8,9 +8,14 @@ class ConversationBuilder
   private
 
   def look_up_exising_conversation
-    return unless @contact_inbox.inbox.lock_to_single_conversation?
+    return @contact_inbox.conversations.last if @contact_inbox.inbox.lock_to_single_conversation?
 
-    @contact_inbox.conversations.last
+    # For WhatsApp, API, and SMS inboxes, prevent duplicate concurrent conversations with the same contact
+    if @contact_inbox.inbox.channel_type.in?(%w[Channel::Whatsapp Channel::Api Channel::TwilioSms Channel::Sms Channel::Telegram])
+      return @contact_inbox.conversations.where(status: [:open, :snoozed]).order(created_at: :desc).first
+    end
+
+    nil
   end
 
   def create_new_conversation

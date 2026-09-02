@@ -141,7 +141,11 @@ services:
       - DATABASE_SAVE_MESSAGE_UPDATE=true
       - DATABASE_SAVE_DATA_CONTACTS=true
       - DATABASE_SAVE_DATA_CHATS=true
-      - CACHE_REDIS_ENABLED=false
+      - CACHE_REDIS_ENABLED=true
+      - 'CACHE_REDIS_URI=redis://airm_redis:6379/1'
+      - CACHE_REDIS_PREFIX_KEY=evolution
+      - CACHE_REDIS_TTL=604800
+      - CACHE_REDIS_SAVE_IS_ON_ARG=true
       - CHATWOOT_ENABLED=true
       - CHATWOOT_MESSAGE_READ=true
       - CHATWOOT_MESSAGE_DELETE=true
