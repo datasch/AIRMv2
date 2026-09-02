@@ -56,11 +56,7 @@ const hasVoipEnabled = computed(
   () => voipState.isConfigured || voipState.isEnabled
 );
 
-const isMaskedPhone = computed(() => {
-  return (
-    props.phone && (props.phone.includes('•') || props.phone.includes('*'))
-  );
-});
+
 
 const shouldRender = computed(
   () => (hasVoiceInboxes.value || hasVoipEnabled.value) && !!props.phone
