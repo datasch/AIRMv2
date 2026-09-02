@@ -60,38 +60,44 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
       :trunk_provider, :trunk_host, :trunk_port, :trunk_user, :trunk_password, :trunk_auth_mode
     )
 
-    current_settings = account.settings || {}
+    current_settings = (account.settings || {}).dup
     current_settings['voip'] = (current_settings['voip'] || {}).merge(voip_params.to_h)
     account.settings = current_settings
     account.save!
 
     render json: { success: true, voip: account.settings['voip'] }
   rescue StandardError => e
+    Rails.logger.error "[VoipController#update_config] Error: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}"
     render json: { success: false, error: e.message }, status: :unprocessable_entity
   end
 
   def agents
     account = Current.account
-    agents_list = account.users.map do |agent|
+    agents_list = account.users.order_by_full_name.includes(:account_users).map do |agent|
       sip_data = (agent.custom_attributes || {})['sip'] || {}
+      account_user = agent.account_users.find { |au| au.account_id == account.id }
+      user_role = account_user&.role || agent.role || 'agent'
       {
         id: agent.id,
-        name: agent.name,
+        name: agent.available_name || agent.name,
         email: agent.email,
-        role: agent.role_in_account(account),
+        role: user_role,
         extension: sip_data['extension'].presence || agent.custom_attributes&.dig('sip_extension'),
         has_password: (sip_data['password'].presence || agent.custom_attributes&.dig('sip_password')).present?
       }
     end
 
     render json: { agents: agents_list }
+  rescue StandardError => e
+    Rails.logger.error "[VoipController#agents] Error: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}"
+    render json: { agents: [] }
   end
 
   def update_agent
     user_id = params[:user_id]
     user = Current.account.users.find(user_id)
 
-    custom_attrs = user.custom_attributes || {}
+    custom_attrs = (user.custom_attributes || {}).dup
     custom_attrs['sip'] = (custom_attrs['sip'] || {}).merge({
       'extension' => params[:extension].to_s.strip,
       'password' => params[:password].to_s.strip
@@ -108,6 +114,7 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
       }
     }
   rescue StandardError => e
+    Rails.logger.error "[VoipController#update_agent] Error: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}"
     render json: { success: false, error: e.message }, status: :unprocessable_entity
   end
 
@@ -292,7 +299,6 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
   end
 
   def check_admin_authorization
-    authorize :account, :show?
     head :forbidden unless Current.account_user&.administrator?
   end
 end

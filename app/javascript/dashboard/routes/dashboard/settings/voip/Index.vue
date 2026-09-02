@@ -224,6 +224,7 @@ onMounted(() => {
             <input
               v-model="voipConfig.trunk_password"
               type="password"
+              autocomplete="new-password"
               class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
             />
           </div>
@@ -384,6 +385,7 @@ onMounted(() => {
               <input
                 v-model="agent.password"
                 type="password"
+                autocomplete="new-password"
                 :placeholder="t('VOIP_SETTINGS.PASS_PLACEHOLDER')"
                 class="w-36 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
               />
