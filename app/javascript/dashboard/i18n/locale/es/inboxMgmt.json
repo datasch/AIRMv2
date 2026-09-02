@@ -253,8 +253,8 @@
           "WHATSAPP_CLOUD": "Nube de WhatsApp",
           "WHATSAPP_CLOUD_DESC": "Quick setup through Meta",
           "WHATSAPP_CLOUD_MANUAL_SETUP_DESC": "Configuración manual con credenciales de la API de Cloud",
-          "GOWA": "WhatsApp Web (Código QR / Evolution API)",
-          "GOWA_DESC": "Conecte su número escaneando un código QR con Evolution API.",
+          "GOWA": "WhatsApp QR",
+          "GOWA_DESC": "Conecta tu cuenta de WhatsApp de forma rápida y sencilla mediante código QR.",
           "TWILIO_DESC": "Connect via Twilio credentials",
           "360_DIALOG": "360dialog"
         },
@@ -470,15 +470,15 @@
         }
       },
       "GOWA": {
-        "TITLE": "Conectar WhatsApp (Código QR / Evolution API)",
-        "DESC": "Vincule cualquier cuenta de WhatsApp escaneando un código QR utilizando la pasarela multidispositivo de alta estabilidad Evolution API.",
+        "TITLE": "WhatsApp QR",
+        "DESC": "Conecta tu cuenta de WhatsApp de forma rápida y sencilla mediante código QR.",
         "CHANNEL_NAME": {
           "LABEL": "Nombre de la Bandeja",
           "PLACEHOLDER": "ej. WhatsApp Ventas o Atención al Cliente",
           "SUBTITLE": "Un nombre identificativo para esta línea de WhatsApp dentro de AIRM."
         },
-        "INFO_TITLE": "Conexión Directa Multidispositivo",
-        "INFO_DESC": "No requiere cuenta de desarrollador de Meta ni aprobación de plantillas. Al hacer clic en Generar Código QR, se creará un código QR que podrá escanear directamente con la cámara de WhatsApp en su teléfono (Dispositivos Vinculados).",
+        "INFO_TITLE": "Conexión Directa mediante Código QR",
+        "INFO_DESC": "No requiere cuenta de desarrollador de Meta ni aprobación de plantillas. Al hacer clic en Generar Código QR, se creará un código QR que podrás escanear directamente con la cámara de WhatsApp en tu teléfono (Dispositivos Vinculados).",
         "PROCEED_BUTTON": "Generar Código QR",
         "SCAN_TITLE": "Escanee el Código QR con WhatsApp",
         "SCAN_INSTRUCTION": "Abra WhatsApp en su teléfono > Ajustes o Menú (tres puntos) > Dispositivos Vinculados > Vincular un dispositivo, y apunte la cámara al siguiente código.",
@@ -490,7 +490,7 @@
         "CONNECTED_SUCCESS": "¡WhatsApp conectado exitosamente!",
         "BACK": "Volver",
         "FINISH_BUTTON": "Crear Bandeja y Asignar Agentes",
-        "QR_ERROR": "No se pudo generar el código QR. Verifique que la pasarela Evolution API esté activa.",
+        "QR_ERROR": "No se pudo generar el código QR. Verifique el servicio de conexión.",
         "CREATE_ERROR": "Error al crear la bandeja de WhatsApp."
       },
       "AUTH": {
@@ -512,8 +512,8 @@
             "DESCRIPTION": "Support your customers on WhatsApp"
           },
           "GOWA": {
-            "TITLE": "WhatsApp (Código QR / Evolution API)",
-            "DESCRIPTION": "Conecte cualquier WhatsApp escaneando un código QR con Evolution API"
+            "TITLE": "WhatsApp QR",
+            "DESCRIPTION": "Conecta tu cuenta de WhatsApp de forma rápida y sencilla mediante código QR"
           },
           "WHATSAPP_CALL": {
             "TITLE": "Llamada de WhatsApp",

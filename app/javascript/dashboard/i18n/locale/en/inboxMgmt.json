@@ -253,8 +253,8 @@
           "WHATSAPP_CLOUD": "WhatsApp Cloud",
           "WHATSAPP_CLOUD_DESC": "Quick setup through Meta",
           "WHATSAPP_CLOUD_MANUAL_SETUP_DESC": "Manual setup with Cloud API credentials",
-          "GOWA": "WhatsApp Web (QR Code / Evolution API)",
-          "GOWA_DESC": "Connect your WhatsApp number by scanning a QR code with Evolution API.",
+          "GOWA": "WhatsApp QR",
+          "GOWA_DESC": "Connect your WhatsApp account quickly and easily via QR code.",
           "TWILIO_DESC": "Connect via Twilio credentials",
           "360_DIALOG": "360Dialog"
         },
@@ -470,8 +470,8 @@
         }
       },
       "GOWA": {
-        "TITLE": "Connect WhatsApp (QR Code / Evolution API)",
-        "DESC": "Connect any WhatsApp account by scanning a QR code using the Evolution API gateway.",
+        "TITLE": "WhatsApp QR",
+        "DESC": "Connect your WhatsApp account quickly and easily via QR code.",
         "CHANNEL_NAME": {
           "LABEL": "Inbox Name",
           "PLACEHOLDER": "e.g. WhatsApp Sales or Support",
@@ -490,7 +490,7 @@
         "CONNECTED_SUCCESS": "WhatsApp connected successfully!",
         "BACK": "Back",
         "FINISH_BUTTON": "Create Inbox & Assign Agents",
-        "QR_ERROR": "Failed to generate QR code. Ensure GOWA gateway is running.",
+        "QR_ERROR": "Failed to generate QR code. Ensure connection service is running.",
         "CREATE_ERROR": "Error creating WhatsApp inbox."
       },
       "AUTH": {
@@ -512,8 +512,8 @@
             "DESCRIPTION": "Support your customers on WhatsApp"
           },
           "GOWA": {
-            "TITLE": "WhatsApp (QR Code / Evolution API)",
-            "DESCRIPTION": "Connect any WhatsApp by scanning a QR code with Evolution API"
+            "TITLE": "WhatsApp QR",
+            "DESCRIPTION": "Connect your WhatsApp account quickly and easily via QR code"
           },
           "WHATSAPP_CALL": {
             "TITLE": "WhatsApp Call",
