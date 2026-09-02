@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import {
   voipState,
@@ -14,6 +14,14 @@ import {
 const { t } = useI18n();
 const dialerNumber = ref('');
 const isDTMFOpen = ref(false);
+
+watch(
+  () => voipState.remoteNumber,
+  newVal => {
+    if (newVal) dialerNumber.value = newVal;
+  },
+  { immediate: true }
+);
 
 const keypad = [
   ['1', '2', '3'],

@@ -197,7 +197,7 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
       },
       agent_extension: extension,
       sip_domain: voip_settings['sip_domain'].presence || ENV['ASTERISK_SIP_DOMAIN'] || 'giantucchi.com',
-      destination: PhoneMaskerService.can_view_full_phone? ? real_phone : "contact_#{contact.id}"
+      destination: real_phone
     }
   rescue StandardError => e
     render json: { success: false, error: e.message }, status: :unprocessable_entity

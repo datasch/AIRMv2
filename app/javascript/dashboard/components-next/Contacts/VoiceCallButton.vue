@@ -185,23 +185,34 @@ const onClick = async () => {
       customCallerId = conversationInbox?.phone_number;
     }
 
-    if (isMaskedPhone.value && props.contactId) {
+    if (props.contactId) {
       try {
-        await VoipAPI.callContact({
+        const response = await VoipAPI.callContact({
           contactId: props.contactId,
           conversationId: props.conversationId,
         });
-        openDialer(props.phone, props.conversationId);
-        voipState.callState = 'calling';
-        useAlert(t('CONTACT_PANEL.CALL_INITIATED'));
+        const data = response.data || {};
+        const dest = data.destination || props.phone;
+        const displayName = data.contact?.name || props.phone;
+        const displayPhone = data.contact?.phone_number || props.phone;
+
+        voipState.remoteDisplayName = displayName;
+        voipState.remoteNumber = displayPhone;
+
+        if (voipState.isRegistered && dest) {
+          makeCall(dest, props.conversationId, customCallerId);
+        } else {
+          openDialer(displayPhone, props.conversationId);
+        }
+        return;
       } catch (error) {
         useAlert(
           error.response?.data?.error ||
             error.message ||
             t('CONTACT_PANEL.CALL_FAILED')
         );
+        return;
       }
-      return;
     }
 
     if (voipState.isRegistered) {
