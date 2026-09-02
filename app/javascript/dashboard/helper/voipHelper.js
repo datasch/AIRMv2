@@ -82,6 +82,18 @@ const handleCallTermination = status => {
 const bindSessionEvents = session => {
   const audio = ensureAudioElement();
 
+  const attachMedia = eventOrStream => {
+    if (!eventOrStream) return;
+    if (eventOrStream.streams && eventOrStream.streams[0]) {
+      audio.srcObject = eventOrStream.streams[0];
+    } else if (eventOrStream.track) {
+      audio.srcObject = new MediaStream([eventOrStream.track]);
+    } else if (eventOrStream instanceof MediaStream) {
+      audio.srcObject = eventOrStream;
+    }
+    audio.play().catch(() => {});
+  };
+
   session.on('progress', () => {
     voipState.callState = 'calling';
     VoipAPI.updateCallStatus({
@@ -97,20 +109,24 @@ const bindSessionEvents = session => {
       event: 'connected',
       phoneNumber: voipState.remoteNumber,
     });
+    if (session.connection) {
+      const streams = session.connection.getRemoteStreams ? session.connection.getRemoteStreams() : [];
+      if (streams.length > 0) attachMedia(streams[0]);
+    }
   });
 
   session.on('confirmed', () => {
     voipState.callState = 'connected';
+    if (session.connection) {
+      const streams = session.connection.getRemoteStreams ? session.connection.getRemoteStreams() : [];
+      if (streams.length > 0) attachMedia(streams[0]);
+    }
   });
 
   session.on('peerconnection', e => {
     const pc = e.peerconnection;
-    pc.ontrack = trackEvent => {
-      if (trackEvent.streams && trackEvent.streams[0]) {
-        audio.srcObject = trackEvent.streams[0];
-        audio.play().catch(() => {});
-      }
-    };
+    pc.ontrack = attachMedia;
+    pc.addEventListener('track', attachMedia);
   });
 
   session.on('ended', () => {
@@ -201,7 +217,7 @@ export const initVoIP = async () => {
   }
 };
 
-export const makeCall = (
+export const makeCall = async (
   targetNumber,
   conversationId = null,
   customCallerId = null
@@ -211,6 +227,15 @@ export const makeCall = (
   }
 
   if (!targetNumber) return;
+
+  if (navigator?.mediaDevices?.getUserMedia) {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => track.stop());
+    } catch (micErr) {
+      console.warn('[VoIP] Microphone access error:', micErr);
+    }
+  }
 
   const cleanNumber = targetNumber.toString().replace(/[^0-9+]/g, '');
   const callerId = customCallerId || voipState.caller_id;
