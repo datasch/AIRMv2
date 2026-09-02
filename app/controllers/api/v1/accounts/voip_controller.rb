@@ -3,7 +3,7 @@
 class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
   before_action :check_admin_authorization, only: [:update_config, :update_agent]
 
-  def config
+  def show_config
     account = Current.account
     user = Current.user
 
@@ -40,7 +40,7 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
 
     render json: response_data
   rescue StandardError => e
-    Rails.logger.error "[VoipController#config] Error: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}"
+    Rails.logger.error "[VoipController#show_config] Error: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}"
     render json: {
       enabled: false,
       ws_url: '',

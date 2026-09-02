@@ -304,13 +304,13 @@ Rails.application.routes.draw do
             match :webhook, via: [:get, :post]
           end
           resource :voip, only: [], controller: 'voip' do
-            get :config, on: :member
-            post :config, on: :member, action: :update_config
-            get :agents, on: :member
-            post :agents, on: :member, action: :update_agent
-            post :call_status, on: :member
-            post :log_call, on: :member
-            post :call_contact, on: :member
+            get :config, action: :show_config
+            post :config, action: :update_config
+            get :agents
+            post :agents, action: :update_agent
+            post :call_status
+            post :log_call
+            post :call_contact
           end
           resources :inboxes, only: [:index, :show, :create, :update, :destroy] do
             get :assignable_agents, on: :member
