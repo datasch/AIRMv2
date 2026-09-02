@@ -105,8 +105,8 @@ module Enterprise::Account::PlanUsageAndLimits # rubocop:disable Metrics/ModuleL
     # If there are no limits configured, we allow max usage
     return max_limits if plan_quota.blank?
 
-    # if there is plan_quota configred, but plan_name is not present, we return zero limits
-    return zero_limits if plan_name.blank?
+    # If there is plan_quota configured, but plan_name is not present (self-hosted install), allow max limits
+    return max_limits if plan_name.blank?
 
     begin
       # Now we parse the plan_quota and return the limits for the plan name

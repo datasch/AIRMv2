@@ -7,8 +7,8 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
     account = Current.account
     user = Current.user
 
-    voip_settings = account.settings['voip'] || {}
-    user_sip = (user.custom_attributes || {})['sip'] || {}
+    voip_settings = account&.settings&.dig('voip') || {}
+    user_sip = user&.custom_attributes&.dig('sip') || {}
 
     is_admin = Current.account_user&.administrator?
 
@@ -20,9 +20,9 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
       concurrency_limit: voip_settings['concurrency_limit'] || 1,
       gateway_ip: ENV['VOIP_GATEWAY_IP'].presence || request.host,
       agent: {
-        extension: user_sip['extension'].presence || user.custom_attributes&.dig('sip_extension'),
-        password: user_sip['password'].presence || user.custom_attributes&.dig('sip_password'),
-        display_name: user.available_name || user.name
+        extension: user_sip['extension'].presence || user&.custom_attributes&.dig('sip_extension'),
+        password: user_sip['password'].presence || user&.custom_attributes&.dig('sip_password'),
+        display_name: user&.available_name || user&.name
       },
       active_calls: current_active_calls
     }
@@ -39,6 +39,18 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
     end
 
     render json: response_data
+  rescue StandardError => e
+    Rails.logger.error "[VoipController#config] Error: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}"
+    render json: {
+      enabled: false,
+      ws_url: '',
+      sip_domain: '',
+      caller_id: nil,
+      concurrency_limit: 1,
+      gateway_ip: request.host,
+      agent: { extension: nil, password: nil, display_name: Current.user&.name },
+      active_calls: []
+    }
   end
 
   def update_config
@@ -110,13 +122,12 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
     if real_phone.blank?
       render json: { success: false, error: 'El contacto no tiene un número telefónico registrado' }, status: :unprocessable_entity and return
     end
-
     user = Current.user
-    user_sip = (user.custom_attributes || {})['sip'] || {}
-    extension = user_sip['extension'].presence || user.custom_attributes&.dig('sip_extension')
+    user_sip = user&.custom_attributes&.dig('sip') || {}
+    extension = user_sip['extension'].presence || user&.custom_attributes&.dig('sip_extension')
 
     account = Current.account
-    voip_settings = account.settings['voip'] || {}
+    voip_settings = account&.settings&.dig('voip') || {}
     enabled = voip_settings['enabled'].nil? ? (ENV['ASTERISK_ENABLED'].to_s == 'true' || ENV['ASTERISK_WS_URL'].present?) : voip_settings['enabled']
 
     unless enabled
@@ -124,21 +135,22 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
     end
 
     masked_phone = contact.display_phone_number
-    agent_name = user.available_name || user.name
+    agent_name = user&.available_name || user&.name
 
-    redis = Redis::Alfred.redis
-    redis_key = "voip:account_#{account.id}:active_calls"
-    call_data = {
-      agent_id: user.id,
-      agent_name: agent_name,
-      contact_id: contact.id,
-      contact_name: contact.display_name,
-      phone_number: masked_phone,
-      status: 'calling',
-      started_at: Time.current.to_i
-    }
-    redis.hset(redis_key, user.id.to_s, call_data.to_json)
-    redis.expire(redis_key, 3600)
+    Redis::Alfred.with do |redis|
+      redis_key = "voip:account_#{account.id}:active_calls"
+      call_data = {
+        agent_id: user.id,
+        agent_name: agent_name,
+        contact_id: contact.id,
+        contact_name: contact.display_name,
+        phone_number: masked_phone,
+        status: 'calling',
+        started_at: Time.current.to_i
+      }
+      redis.hset(redis_key, user.id.to_s, call_data.to_json)
+      redis.expire(redis_key, 3600)
+    end
 
     active_calls = current_active_calls
     ActionCableBroadcastJob.perform_later(
@@ -188,26 +200,27 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
     event = params[:event] # 'started', 'connected', 'ended', 'failed'
     raw_phone = params[:phone_number].to_s
     phone_number = PhoneMaskerService.can_view_full_phone? ? raw_phone : PhoneMaskerService.mask(raw_phone)
-    agent_name = Current.user.available_name || Current.user.name
+    agent_name = Current.user&.available_name || Current.user&.name
     agent_id = Current.user.id
     account_id = Current.account.id
 
-    redis = Redis::Alfred.redis
-    redis_key = "voip:account_#{account_id}:active_calls"
+    Redis::Alfred.with do |redis|
+      redis_key = "voip:account_#{account_id}:active_calls"
 
-    case event
-    when 'started', 'ringing', 'connected'
-      call_data = {
-        agent_id: agent_id,
-        agent_name: agent_name,
-        phone_number: phone_number,
-        status: event,
-        started_at: Time.current.to_i
-      }
-      redis.hset(redis_key, agent_id.to_s, call_data.to_json)
-      redis.expire(redis_key, 3600) # 1 hour max safety TTL
-    when 'ended', 'failed'
-      redis.hdel(redis_key, agent_id.to_s)
+      case event
+      when 'started', 'ringing', 'connected'
+        call_data = {
+          agent_id: agent_id,
+          agent_name: agent_name,
+          phone_number: phone_number,
+          status: event,
+          started_at: Time.current.to_i
+        }
+        redis.hset(redis_key, agent_id.to_s, call_data.to_json)
+        redis.expire(redis_key, 3600) # 1 hour max safety TTL
+      when 'ended', 'failed'
+        redis.hdel(redis_key, agent_id.to_s)
+      end
     end
 
     active_calls = current_active_calls
@@ -238,14 +251,13 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
       secs = duration_seconds % 60
       formatted_duration = format('%02d:%02d', mins, secs)
 
-      icon = status == 'completed' ? '📞' : '📵'
-      label = case status
-              when 'completed' then 'Llamada saliente completada'
-              when 'missed', 'no_answer' then 'Llamada no contestada'
-              when 'busy' then 'Línea ocupada'
-              when 'rejected' then 'Llamada rechazada'
-              else 'Llamada finalizada'
-              end
+      label, icon = case status
+                    when 'completed' then ['Llamada finalizada', '✅']
+                    when 'missed' then ['Llamada perdida', '⚠️']
+                    when 'busy' then ['Línea ocupada', '📵']
+                    when 'rejected' then ['Llamada rechazada', '🚫']
+                    else ['Registro de llamada', '📞']
+                    end
 
       contact = conversation.contact
       logged_phone = PhoneMaskerService.can_view_full_phone? ? (phone_number.presence || contact&.phone_number) : (PhoneMaskerService.mask(phone_number.presence || contact&.phone_number))
@@ -269,11 +281,13 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
   private
 
   def current_active_calls
-    redis = Redis::Alfred.redis
-    redis_key = "voip:account_#{Current.account.id}:active_calls"
-    raw_calls = redis.hgetall(redis_key) || {}
-    raw_calls.values.map { |v| JSON.parse(v) rescue nil }.compact
-  rescue StandardError
+    Redis::Alfred.with do |conn|
+      redis_key = "voip:account_#{Current.account&.id}:active_calls"
+      raw_calls = conn.hgetall(redis_key) || {}
+      raw_calls.values.map { |v| JSON.parse(v) rescue nil }.compact
+    end
+  rescue StandardError => e
+    Rails.logger.warn "[VoipController] current_active_calls error: #{e.message}"
     []
   end
 
