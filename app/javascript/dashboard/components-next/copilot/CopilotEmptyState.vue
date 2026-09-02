@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import Icon from '../icon/Icon.vue';
+import IanLogo from 'dashboard/components-next/captain/IanLogo.vue';
 
 const props = defineProps({
   hasAssistants: {
@@ -75,7 +76,11 @@ const handleSuggestion = opt => {
 <template>
   <div class="flex-1 flex flex-col gap-6 px-2">
     <div class="flex flex-col space-y-4 py-4">
-      <Icon icon="i-woot-captain" class="text-n-slate-9 text-4xl" />
+      <div
+        class="size-12 rounded-2xl bg-black text-white dark:bg-black dark:text-white border border-slate-700/60 shadow flex items-center justify-center p-2 group"
+      >
+        <IanLogo class="size-8" />
+      </div>
       <div class="space-y-1">
         <h3 class="text-base font-medium text-n-slate-12 leading-8">
           {{ $t('CAPTAIN.COPILOT.PANEL_TITLE') }}

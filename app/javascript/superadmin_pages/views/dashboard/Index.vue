@@ -9,6 +9,14 @@ const failed = ref(false);
 
 const loading = computed(() => !stats.value && !failed.value);
 
+const pageTitle = 'Panel de Super Admin AIRM';
+const pageSubtitle =
+  'Métricas globales, gestión de empresas y supervisión del motor de inteligencia artificial.';
+const systemStatus = 'Sistema Operativo 24/7';
+const chartTitle = 'Volumen de Conversaciones';
+const chartSubtitle =
+  'Flujo diario de mensajes recibidos y procesados por agentes humanos e IA.';
+
 onMounted(async () => {
   try {
     const response = await fetch(window.location.pathname, {
@@ -22,10 +30,10 @@ onMounted(async () => {
 });
 
 const metrics = computed(() => [
-  { label: 'Organizaciones', value: stats.value?.accountsCount },
-  { label: 'Usuarios', value: stats.value?.usersCount },
+  { label: 'Organizaciones / Cuentas', value: stats.value?.accountsCount },
+  { label: 'Usuarios Registrados', value: stats.value?.usersCount },
   { label: 'Bandejas de Entrada', value: stats.value?.inboxesCount },
-  { label: 'Conversaciones', value: stats.value?.conversationsCount },
+  { label: 'Conversaciones Totales', value: stats.value?.conversationsCount },
 ]);
 
 const chartAriaLabel = 'Conversaciones creadas por día';
@@ -38,7 +46,7 @@ const chartData = computed(() => {
       {
         id: 'conversations',
         label: 'Conversaciones',
-        color: '#06b6d4',
+        color: '#38bdf8',
         data: sourceData.map(([, value]) => value),
       },
     ],
@@ -47,38 +55,81 @@ const chartData = computed(() => {
 </script>
 
 <template>
-  <div class="w-full h-full">
-    <header class="main-content__header" role="banner">
-      <h1 id="page-title" class="main-content__page-title">
-        {{ 'Panel de Administración' }}
-      </h1>
-    </header>
+  <div class="w-full h-full p-6 lg:p-8 space-y-6">
+    <!-- Header with AIRM Branding -->
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800"
+    >
+      <div>
+        <h1
+          id="page-title"
+          class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white"
+        >
+          {{ pageTitle }}
+        </h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          {{ pageSubtitle }}
+        </p>
+      </div>
+      <div
+        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 w-fit"
+      >
+        <span class="size-2 rounded-full bg-emerald-500 animate-pulse" />
+        {{ systemStatus }}
+      </div>
+    </div>
 
-    <section class="main-content__body main-content__body--flush">
-      <div class="report--list">
-        <div v-for="item in metrics" :key="item.label" class="report-card">
-          <div class="metric">
-            <span
-              v-if="loading"
-              class="inline-block w-20 h-8 rounded bg-woot-100 animate-pulse"
-            />
-            <template v-else>{{ item.value || 'N/A' }}</template>
-          </div>
-          <div>{{ item.label }}</div>
+    <!-- Metric Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div
+        v-for="item in metrics"
+        :key="item.label"
+        class="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#14161f] shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 flex flex-col justify-between"
+      >
+        <div
+          class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+        >
+          {{ item.label }}
+        </div>
+        <div
+          class="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight"
+        >
+          <span
+            v-if="loading"
+            class="inline-block w-20 h-8 rounded bg-slate-200 dark:bg-slate-800 animate-pulse"
+          />
+          <template v-else>{{ item.value || '0' }}</template>
         </div>
       </div>
-    </section>
+    </div>
+
+    <!-- Chart Card -->
     <div
-      v-if="loading"
-      class="p-8 mx-8 h-64 rounded bg-woot-100 animate-pulse"
-    />
-    <div v-else-if="!failed" class="p-8 w-full min-w-0">
-      <BarChart
-        :data="chartData"
-        :height="500"
-        timeseries
-        :aria-label="chartAriaLabel"
+      class="p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#14161f] shadow-sm"
+    >
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h2 class="text-base font-bold text-slate-900 dark:text-white">
+            {{ chartTitle }}
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            {{ chartSubtitle }}
+          </p>
+        </div>
+      </div>
+
+      <div
+        v-if="loading"
+        class="h-72 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse"
       />
+      <div v-else-if="!failed" class="w-full min-w-0">
+        <BarChart
+          :data="chartData"
+          :height="360"
+          timeseries
+          :aria-label="chartAriaLabel"
+        />
+      </div>
     </div>
   </div>
 </template>

@@ -16,55 +16,189 @@ const globalConfig = useMapGetter('globalConfig/get');
     v-else
     v-once
     v-bind="attrs"
-    width="20"
-    height="20"
-    viewBox="0 0 512 512"
+    viewBox="0 0 400 400"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    class="shrink-0"
   >
-    <defs>
-      <linearGradient
-        id="giantucchi-vue-grad"
-        x1="0%"
-        y1="0%"
-        x2="100%"
-        y2="100%"
-      >
-        <stop offset="0%" stop-color="#3b82f6" />
-        <stop offset="25%" stop-color="#8b5cf6" />
-        <stop offset="50%" stop-color="#ec4899" />
-        <stop offset="75%" stop-color="#f97316" />
-        <stop offset="100%" stop-color="#eab308" />
-      </linearGradient>
-    </defs>
-    <rect width="512" height="512" rx="128" fill="#050505" />
-    <rect
-      width="496"
-      height="496"
-      x="8"
-      y="8"
-      rx="120"
-      stroke="url(#giantucchi-vue-grad)"
-      stroke-width="16"
-      stroke-opacity="0.8"
-    />
-    <g transform="translate(106, 116)">
-      <path
-        d="M150 20 L260 250 H205 L150 130 L95 250 H40 L150 20 Z"
-        fill="url(#giantucchi-vue-grad)"
+    <!-- GIANTUCCHI AI (IAN) OFFICIAL BRAND LOGO & ISOTYPE -->
+    <rect width="400" height="400" rx="90" fill="#000000" />
+    <g transform="translate(200, 200)">
+      <!-- CENTRAL SOLID HEXAGON -->
+      <polygon
+        points="0,-42 36.37,-21 36.37,21 0,42 -36.37,21 -36.37,-21"
+        fill="#FFFFFF"
       />
-      <circle
-        cx="150"
-        cy="180"
-        r="28"
-        fill="#050505"
-        stroke="url(#giantucchi-vue-grad)"
-        stroke-width="12"
-      />
-      <circle cx="150" cy="180" r="10" fill="#3b82f6" />
-      <circle cx="40" cy="250" r="12" fill="#3b82f6" />
-      <circle cx="260" cy="250" r="12" fill="#ec4899" />
-      <circle cx="150" cy="20" r="14" fill="#8b5cf6" />
+
+      <!-- 12 RADIAL RAYS AND OUTER NODES -->
+      <!-- Angle 0° (Top) -->
+      <g>
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-100"
+          stroke="#FFFFFF"
+          stroke-width="4"
+          stroke-linecap="round"
+          opacity="0.9"
+        />
+        <circle cx="0" cy="-125" r="7" fill="#FFFFFF" />
+      </g>
+      <!-- Angle 30° -->
+      <g transform="rotate(30)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-90"
+          stroke="#FFFFFF"
+          stroke-width="3"
+          stroke-linecap="round"
+          opacity="0.6"
+        />
+        <circle cx="0" cy="-110" r="5" fill="#FFFFFF" opacity="0.7" />
+      </g>
+      <!-- Angle 60° -->
+      <g transform="rotate(60)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-100"
+          stroke="#FFFFFF"
+          stroke-width="4"
+          stroke-linecap="round"
+          opacity="0.9"
+        />
+        <circle cx="0" cy="-125" r="7" fill="#FFFFFF" />
+      </g>
+      <!-- Angle 90° (Right) -->
+      <g transform="rotate(90)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-90"
+          stroke="#FFFFFF"
+          stroke-width="3"
+          stroke-linecap="round"
+          opacity="0.6"
+        />
+        <circle cx="0" cy="-110" r="5" fill="#FFFFFF" opacity="0.7" />
+      </g>
+      <!-- Angle 120° -->
+      <g transform="rotate(120)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-100"
+          stroke="#FFFFFF"
+          stroke-width="4"
+          stroke-linecap="round"
+          opacity="0.9"
+        />
+        <circle cx="0" cy="-125" r="7" fill="#FFFFFF" />
+      </g>
+      <!-- Angle 150° -->
+      <g transform="rotate(150)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-90"
+          stroke="#FFFFFF"
+          stroke-width="3"
+          stroke-linecap="round"
+          opacity="0.6"
+        />
+        <circle cx="0" cy="-110" r="5" fill="#FFFFFF" opacity="0.7" />
+      </g>
+      <!-- Angle 180° (Bottom) -->
+      <g transform="rotate(180)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-100"
+          stroke="#FFFFFF"
+          stroke-width="4"
+          stroke-linecap="round"
+          opacity="0.9"
+        />
+        <circle cx="0" cy="-125" r="7" fill="#FFFFFF" />
+      </g>
+      <!-- Angle 210° -->
+      <g transform="rotate(210)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-90"
+          stroke="#FFFFFF"
+          stroke-width="3"
+          stroke-linecap="round"
+          opacity="0.6"
+        />
+        <circle cx="0" cy="-110" r="5" fill="#FFFFFF" opacity="0.7" />
+      </g>
+      <!-- Angle 240° -->
+      <g transform="rotate(240)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-100"
+          stroke="#FFFFFF"
+          stroke-width="4"
+          stroke-linecap="round"
+          opacity="0.9"
+        />
+        <circle cx="0" cy="-125" r="7" fill="#FFFFFF" />
+      </g>
+      <!-- Angle 270° (Left) -->
+      <g transform="rotate(270)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-90"
+          stroke="#FFFFFF"
+          stroke-width="3"
+          stroke-linecap="round"
+          opacity="0.6"
+        />
+        <circle cx="0" cy="-110" r="5" fill="#FFFFFF" opacity="0.7" />
+      </g>
+      <!-- Angle 300° -->
+      <g transform="rotate(300)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-100"
+          stroke="#FFFFFF"
+          stroke-width="4"
+          stroke-linecap="round"
+          opacity="0.9"
+        />
+        <circle cx="0" cy="-125" r="7" fill="#FFFFFF" />
+      </g>
+      <!-- Angle 330° -->
+      <g transform="rotate(330)">
+        <line
+          x1="0"
+          y1="-56"
+          x2="0"
+          y2="-90"
+          stroke="#FFFFFF"
+          stroke-width="3"
+          stroke-linecap="round"
+          opacity="0.6"
+        />
+        <circle cx="0" cy="-110" r="5" fill="#FFFFFF" opacity="0.7" />
+      </g>
     </g>
   </svg>
 </template>

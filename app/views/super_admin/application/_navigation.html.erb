@@ -1,10 +1,6 @@
 <%#
 # Navigation
-
 This partial is used to display the navigation in Administrate.
-By default, the navigation contains navigation links
-for all resources in the admin dashboard,
-as defined by the routes in the `admin/` namespace
 %>
 
 <%= vite_client_tag %>
@@ -20,20 +16,29 @@ as defined by the routes in the `admin/` namespace
   }
 %>
 
-<div class="border-slate-100 border-r w-56 flex-shrink-0 justify-between h-full flex flex-col" role="navigation">
+<div class="border-slate-200 dark:border-slate-800/80 border-r w-64 flex-shrink-0 justify-between h-full min-h-screen flex flex-col bg-slate-50/50 dark:bg-[#0c0d12] transition-colors duration-150" role="navigation">
   <div>
-    <div class="flex mx-4 mb-4 border-slate-100 border-b py-6">
-      <%= link_to image_tag('/brand-assets/logo_thumbnail.svg', alt: 'AIRM Super Admin', class: 'h-10'), super_admin_root_url %>
-      <div class="flex flex-col ml-3">
-        <div class="text-sm font-semibold">AIRM <%= Chatwoot.config[:version] %></div>
-        <div class="text-xs text-slate-700 mt-0.5"><%= t('super_admin.navigation.super_admin_console', default: 'Consola de Super Admin') %></div>
+    <!-- Brand Header -->
+    <div class="flex items-center mx-4 mb-4 border-slate-200 dark:border-slate-800/80 border-b py-5">
+      <%= link_to image_tag('/brand-assets/logo_thumbnail.svg', alt: 'AIRM Super Admin', class: 'size-10 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 shrink-0'), super_admin_root_url %>
+      <div class="flex flex-col ml-3 min-w-0">
+        <div class="flex items-center gap-1.5">
+          <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">AIRM</span>
+          <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            v<%= Chatwoot.config[:version] %>
+          </span>
+        </div>
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 font-medium truncate">
+          <%= t('super_admin.navigation.super_admin_console', default: 'Consola Super Admin') %>
+        </div>
       </div>
     </div>
 
-    <ul class="my-4">
+    <!-- Main Links -->
+    <ul class="my-2 space-y-0.5">
       <%= render partial: "nav_item", locals: { icon: 'icon-grid-line', url: super_admin_root_url, label: t('super_admin.navigation.dashboard', default: 'Panel Principal') } %>
       <% Administrate::Namespace.new(namespace).resources.each do |resource| %>
-        <% next if ["account_users", "access_tokens", "installation_configs", "dashboard", "devise/sessions", "app_configs", "instance_statuses", "settings", "push_diagnostics"].include?  resource.resource %>
+        <% next if ["account_users", "access_tokens", "installation_configs", "dashboard", "devise/sessions", "app_configs", "instance_statuses", "settings", "push_diagnostics"].include? resource.resource %>
         <% next if resource.resource == "platform_banners" && !ChatwootApp.chatwoot_cloud? %>
         <%= render partial: "nav_item", locals: {
             icon: sidebar_icons[resource.resource.to_sym],
@@ -41,18 +46,39 @@ as defined by the routes in the `admin/` namespace
             label: display_resource_name(resource),
           }
         %>
-
       <% end %>
       <%= render 'settings_menu', open: settings_open? %>
     </ul>
   </div>
-  <div>
-    <ul class="my-4">
+
+  <!-- Bottom Actions & Theme Switcher -->
+  <div class="border-t border-slate-200 dark:border-slate-800/80 pt-2 pb-4">
+    <ul class="my-2 space-y-0.5">
       <%= render partial: "nav_item", locals: { icon: 'icon-mist-fill', url: sidekiq_web_url, label: t('super_admin.navigation.sidekiq', default: 'Panel de Sidekiq') } %>
       <%= render partial: "nav_item", locals: { icon: 'icon-health-book-line', url: super_admin_instance_status_url, label: t('super_admin.navigation.instance_health', default: 'Estado de la Instancia') } %>
       <%= render partial: "nav_item", locals: { icon: 'icon-mail-send-fill', url: super_admin_push_diagnostics_url, label: t('super_admin.navigation.push_diagnostics', default: 'Diagnóstico Push') } %>
-      <%= render partial: "nav_item", locals: { icon: 'icon-dashboard-line', url: '/', label: t('super_admin.navigation.agent_dashboard', default: 'Panel de Agentes') } %>
+      <%= render partial: "nav_item", locals: { icon: 'icon-dashboard-line', url: '/', label: t('super_admin.navigation.agent_dashboard', default: 'Ir a la App (/app)') } %>
       <%= render partial: "nav_item", locals: { icon: 'icon-logout-circle-r-line', url: super_admin_logout_url, label: t('super_admin.navigation.logout', default: 'Cerrar Sesión') } %>
     </ul>
+
+    <!-- Dark / Light Theme Toggle -->
+    <div class="px-4 mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between">
+      <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
+        <%= t('super_admin.theme.label', default: 'Tema de Interfaz') %>
+      </span>
+      <button
+        id="theme-toggle-btn"
+        type="button"
+        class="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer shadow-2xs"
+        title="Cambiar Modo Claro / Oscuro"
+      >
+        <svg id="theme-toggle-dark-icon" class="hidden size-4" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+        </svg>
+        <svg id="theme-toggle-light-icon" class="hidden size-4" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    </div>
   </div>
 </div>

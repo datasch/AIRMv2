@@ -9,6 +9,7 @@ import { COPILOT_EVENTS } from 'dashboard/helper/AnalyticsHelper/events';
 import MessageFormatter from 'shared/helpers/MessageFormatter.js';
 
 import Button from 'dashboard/components-next/button/Button.vue';
+import IanLogo from 'dashboard/components-next/captain/IanLogo.vue';
 
 const props = defineProps({
   isLastMessage: {
@@ -57,7 +58,14 @@ const useCopilotResponse = () => {
 
 <template>
   <div class="flex flex-col gap-1 text-n-slate-12">
-    <div class="font-medium">{{ $t('CAPTAIN.NAME') }}</div>
+    <div class="flex items-center gap-1.5 font-medium">
+      <div
+        class="size-4.5 rounded-full bg-black text-white dark:bg-black dark:text-white flex items-center justify-center p-0.5 shrink-0"
+      >
+        <IanLogo class="size-3.5 text-white" />
+      </div>
+      <span>{{ $t('CAPTAIN.NAME') }}</span>
+    </div>
     <span v-if="hasEmptyMessageContent" class="text-n-ruby-11">
       {{ $t('CAPTAIN.COPILOT.EMPTY_MESSAGE') }}
     </span>

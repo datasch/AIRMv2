@@ -212,3 +212,137 @@ body {
     --white-alpha: 255, 255, 255, 0.1;
   }
 }
+
+// AIRM Brand & Dark Mode Super Admin Overrides
+.dark {
+  .main-content__header {
+    background-color: transparent !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+    h1, .main-content__page-title {
+      color: #ffffff !important;
+    }
+  }
+
+  .report--list {
+    .report-card {
+      background-color: #14161f !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      border-radius: 1rem !important;
+      color: #94a3b8 !important;
+
+      .metric {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+      }
+    }
+  }
+
+  table {
+    background-color: #14161f !important;
+    color: #f1f5f9 !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 0.75rem !important;
+    overflow: hidden !important;
+
+    thead {
+      background-color: #0c0d14 !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+
+      th {
+        color: #94a3b8 !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+        font-size: 0.75rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+      }
+    }
+
+    tbody tr {
+      background-color: transparent !important;
+      border-color: rgba(255, 255, 255, 0.06) !important;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.03) !important;
+      }
+
+      td {
+        border-color: rgba(255, 255, 255, 0.06) !important;
+        color: #e2e8f0 !important;
+
+        a {
+          color: #38bdf8 !important;
+
+          &:hover {
+            color: #7dd3fc !important;
+          }
+        }
+      }
+    }
+  }
+
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  select,
+  textarea {
+    background-color: #14161f !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #f1f5f9 !important;
+    border-radius: 0.5rem !important;
+
+    &:focus {
+      border-color: #38bdf8 !important;
+      outline: none !important;
+    }
+  }
+
+  .button,
+  button.button,
+  input[type="submit"].button,
+  a.button {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-radius: 0.5rem !important;
+    font-weight: 600 !important;
+    border: none !important;
+
+    &:hover {
+      background-color: #e2e8f0 !important;
+    }
+  }
+
+  .button--secondary {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+
+    &:hover {
+      background-color: #334155 !important;
+    }
+  }
+
+  .button--danger {
+    background-color: #ef4444 !important;
+    color: #ffffff !important;
+  }
+
+  .field-unit {
+    border-color: rgba(255, 255, 255, 0.06) !important;
+
+    .field-unit__label {
+      color: #94a3b8 !important;
+    }
+  }
+
+  .search {
+    input {
+      background-color: #14161f !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+      color: #ffffff !important;
+    }
+  }
+}
+
