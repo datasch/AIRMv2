@@ -56,8 +56,6 @@ const hasVoipEnabled = computed(
   () => voipState.isConfigured || voipState.isEnabled
 );
 
-
-
 const shouldRender = computed(
   () => (hasVoiceInboxes.value || hasVoipEnabled.value) && !!props.phone
 );
