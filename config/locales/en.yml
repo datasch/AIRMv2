@@ -383,6 +383,10 @@ en:
           reply_with_inbox_name: '%{inbox_name} <%{from_email}>'
       email_subject: 'New messages on this conversation'
       transcript_subject: 'Conversation Transcript'
+      greeting: 'Hi'
+      new_messages: 'You have new messages on your conversation.'
+      attachments: 'Attachments:'
+      rate_conversation: 'Click here to rate the conversation.'
     survey:
       response: 'Please rate this conversation, %{link}'
   contacts:

@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { useI18n } from 'vue-i18n';
-import Logo from 'dashboard/components-next/icon/Logo.vue';
+import IanLogo from 'dashboard/components-next/captain/IanLogo.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import FeaturePlaceholder from './FeaturePlaceholder.vue';
 
@@ -47,12 +47,12 @@ const quickActions = computed(() => [
     <!-- EMBLEM WITH GLOW -->
     <div class="relative mb-6">
       <div
-        class="absolute -inset-4 bg-gradient-to-tr from-n-brand/30 via-indigo-500/20 to-purple-500/30 rounded-full blur-xl opacity-70 animate-pulse"
+        class="absolute -inset-4 bg-gradient-to-tr from-slate-700/30 via-slate-500/20 to-slate-900/30 rounded-full blur-xl opacity-70 animate-pulse"
       />
       <div
-        class="relative w-16 h-16 rounded-2xl bg-n-solid-2 border border-n-strong shadow-lg flex items-center justify-center"
+        class="relative w-16 h-16 rounded-2xl bg-black text-white dark:bg-black dark:text-white border border-slate-700/60 shadow-lg flex items-center justify-center p-2.5 group hover:scale-105 transition-transform"
       >
-        <Logo class="w-10 h-10" />
+        <IanLogo class="w-11 h-11" />
       </div>
     </div>
 

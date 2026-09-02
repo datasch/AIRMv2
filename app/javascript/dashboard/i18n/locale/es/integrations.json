@@ -401,6 +401,21 @@
     "HEADER_KNOW_MORE": "Más información",
     "OVERVIEW": {
       "HEADER": "Panel del Agente",
+      "IAN_HERO": {
+        "TITLE": "Ian · Asistente Comercial IA",
+        "STATUS": "Operando 24/7",
+        "DESCRIPTION": "Agente de inteligencia artificial de Giantucchi entrenado para calificar prospectos, responder consultas con tus fichas técnicas y agendar citas comerciales automáticamente.",
+        "MODEL": "Modelo: GPT-4o Mini / Gemini",
+        "RAG": "RAG & Inventario Seguro",
+        "DOCS": "Archivos & Fichas PDF",
+        "DOCS_DESC": "Subir brochures e inventario",
+        "PROMPT": "Comportamiento & Prompt",
+        "PROMPT_DESC": "Reglas y personalidad de Ian",
+        "PLAYGROUND": "Simulador en Vivo",
+        "PLAYGROUND_DESC": "Probar respuestas en tiempo real",
+        "INBOXES": "Canales de WhatsApp",
+        "INBOXES_DESC": "Vincular números de atención"
+      },
       "WELCOME": {
         "LABEL": "Métricas y Rendimiento del Agente de IA",
         "LOADING": "Analizando métricas del agente…"

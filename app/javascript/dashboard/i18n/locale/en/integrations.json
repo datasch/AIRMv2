@@ -401,6 +401,21 @@
     "HEADER_KNOW_MORE": "Know more",
     "OVERVIEW": {
       "HEADER": "Agent Overview",
+      "IAN_HERO": {
+        "TITLE": "Ian · Commercial AI Agent",
+        "STATUS": "Operating 24/7",
+        "DESCRIPTION": "Giantucchi AI Agent trained to qualify leads, answer property and product inquiries, and automatically schedule sales appointments.",
+        "MODEL": "Model: GPT-4o Mini / Gemini",
+        "RAG": "RAG & Secure Knowledge",
+        "DOCS": "Files & PDF Knowledge",
+        "DOCS_DESC": "Upload brochures and catalog",
+        "PROMPT": "Behavior & Prompt",
+        "PROMPT_DESC": "Rules and Ian's personality",
+        "PLAYGROUND": "Live Simulator",
+        "PLAYGROUND_DESC": "Test real-time responses",
+        "INBOXES": "WhatsApp Channels",
+        "INBOXES_DESC": "Link customer support numbers"
+      },
       "WELCOME": {
         "LABEL": "AI Agent Summary & Performance",
         "LOADING": "Analyzing agent performance…"

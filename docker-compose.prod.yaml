@@ -6,7 +6,10 @@ services:
     entrypoint:
       - sh
       - docker/entrypoints/rails.sh
-    command: ["sh", "-c", "mkdir -p tmp/pids && rm -f tmp/pids/server.pid && bundle exec puma -C config/puma.rb -b tcp://0.0.0.0:3000"]
+    command:
+      - sh
+      - '-c'
+      - 'mkdir -p tmp/pids && rm -f tmp/pids/server.pid && bundle exec puma -C config/puma.rb -b tcp://0.0.0.0:3000'
     environment:
       - RAILS_ENV=production
       - NODE_ENV=production
@@ -17,6 +20,7 @@ services:
       - EXECJS_RUNTIME=Disabled
       - RAILS_SERVE_STATIC_FILES=true
       - 'SECRET_KEY_BASE=${SECRET_KEY_BASE:-f89b0c8ca72e50112353e8fc153b43a24fc1656cf2492266a5de8ae5374e29d93709bd07ab5fee72bb364f41f00af21967656a66d88341bf9abd9138c40e332d}'
+      - 'DEFAULT_LOCALE=${DEFAULT_LOCALE:-es}'
       - 'FRONTEND_URL=${FRONTEND_URL:-https://airm.giantucchi.com}'
       - 'HELPCENTER_URL=${HELPCENTER_URL:-}'
       - 'POSTGRES_DATABASE=${POSTGRES_DATABASE:-chatwoot_production}'
@@ -84,6 +88,7 @@ services:
       - BUNDLE_FORCE_RUBY_PLATFORM=1
       - EXECJS_RUNTIME=Disabled
       - 'SECRET_KEY_BASE=${SECRET_KEY_BASE:-f89b0c8ca72e50112353e8fc153b43a24fc1656cf2492266a5de8ae5374e29d93709bd07ab5fee72bb364f41f00af21967656a66d88341bf9abd9138c40e332d}'
+      - 'DEFAULT_LOCALE=${DEFAULT_LOCALE:-es}'
       - 'FRONTEND_URL=${FRONTEND_URL:-https://airm.giantucchi.com}'
       - 'POSTGRES_DATABASE=${POSTGRES_DATABASE:-chatwoot_production}'
       - POSTGRES_HOST=airm_postgres
@@ -97,6 +102,13 @@ services:
       - 'ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=${ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY:-d0fbefd4b17eac815e2ac70cf26b4dea}'
       - 'ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=${ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY:-bd6f095c423938798a37f03f010d48f9}'
       - 'ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=${ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT:-9d9aeb46b718bb12080d942bba86db81}'
+      - 'MAILER_SENDER_EMAIL=${MAILER_SENDER_EMAIL:-AIRM <soporte@giantucchi.com>}'
+      - 'SMTP_ADDRESS=${SMTP_ADDRESS:-}'
+      - 'SMTP_PORT=${SMTP_PORT:-587}'
+      - 'SMTP_USERNAME=${SMTP_USERNAME:-}'
+      - 'SMTP_PASSWORD=${SMTP_PASSWORD:-}'
+      - 'SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-plain}'
+      - 'SMTP_ENABLE_STARTTLS_AUTO=${SMTP_ENABLE_STARTTLS_AUTO:-true}'
       - 'OPENAI_API_KEY=${OPENAI_API_KEY:-}'
       - 'CAPTAIN_OPEN_AI_API_KEY=${CAPTAIN_OPEN_AI_API_KEY:-}'
       - 'CULQI_PUBLIC_KEY=${CULQI_PUBLIC_KEY:-}'

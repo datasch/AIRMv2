@@ -8,6 +8,7 @@ import CaptainAssistant from 'dashboard/api/captain/assistant';
 
 import PageLayout from 'dashboard/components-next/captain/PageLayout.vue';
 import CaptainPaywall from 'dashboard/components-next/captain/pageComponents/Paywall.vue';
+import IanStudioHero from 'dashboard/components-next/captain/pageComponents/overview/IanStudioHero.vue';
 import RangeSelector from 'dashboard/components-next/captain/pageComponents/overview/RangeSelector.vue';
 import WelcomeCard from 'dashboard/components-next/captain/pageComponents/overview/WelcomeCard.vue';
 import MetricCard from 'dashboard/components-next/captain/pageComponents/overview/MetricCard.vue';
@@ -214,6 +215,8 @@ const closeDrilldown = () => {
     </template>
     <template #body>
       <div class="flex flex-col gap-6 pb-8">
+        <IanStudioHero />
+
         <InboxBanner />
 
         <CoverageBanner :knowledge="faqStats ?? undefined" />
