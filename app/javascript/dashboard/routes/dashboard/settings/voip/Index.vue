@@ -11,13 +11,21 @@ const { t } = useI18n();
 
 const isSavingConfig = ref(false);
 const isSavingAgent = ref({});
+const isCopied = ref(false);
 
 const voipConfig = ref({
   enabled: true,
   ws_url: 'wss://voip.giantucchi.com:8089/ws',
   sip_domain: 'giantucchi.com',
-  caller_id: '',
+  caller_id: '51913086096',
   concurrency_limit: 1,
+  trunk_provider: 'voiprabbit',
+  trunk_host: '149.20.185.4',
+  trunk_port: 5060,
+  trunk_user: 'JoseMaster',
+  trunk_password: '',
+  trunk_auth_mode: 'credentials',
+  gateway_ip: '',
 });
 
 const agents = ref([]);
@@ -31,11 +39,18 @@ const fetchVoipData = async () => {
 
     if (configRes.data) {
       voipConfig.value = {
-        enabled: configRes.data.enabled,
+        enabled: configRes.data.enabled !== false,
         ws_url: configRes.data.ws_url || 'wss://voip.giantucchi.com:8089/ws',
         sip_domain: configRes.data.sip_domain || 'giantucchi.com',
-        caller_id: configRes.data.caller_id || '',
+        caller_id: configRes.data.caller_id || '51913086096',
         concurrency_limit: configRes.data.concurrency_limit || 1,
+        trunk_provider: configRes.data.trunk_provider || 'voiprabbit',
+        trunk_host: configRes.data.trunk_host || '149.20.185.4',
+        trunk_port: configRes.data.trunk_port || 5060,
+        trunk_user: configRes.data.trunk_user || 'JoseMaster',
+        trunk_password: configRes.data.trunk_password || '',
+        trunk_auth_mode: configRes.data.trunk_auth_mode || 'credentials',
+        gateway_ip: configRes.data.gateway_ip || window.location.hostname,
       };
     }
 
@@ -81,6 +96,15 @@ const saveAgent = async agent => {
   }
 };
 
+const copyGatewayIp = () => {
+  if (!voipConfig.value.gateway_ip) return;
+  navigator.clipboard.writeText(voipConfig.value.gateway_ip);
+  isCopied.value = true;
+  setTimeout(() => {
+    isCopied.value = false;
+  }, 2500);
+};
+
 onMounted(() => {
   fetchVoipData();
 });
@@ -94,6 +118,118 @@ onMounted(() => {
     />
 
     <div class="mt-6 max-w-4xl space-y-8">
+      <!-- Banner informativo / Instrucciones de Troncal -->
+      <div
+        class="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-6 dark:border-blue-500/30 dark:bg-blue-500/10"
+      >
+        <div class="flex items-start gap-4">
+          <div
+            class="flex items-center justify-center w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 shrink-0"
+          >
+            <i class="i-lucide-globe text-xl" />
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100">
+              {{ t('VOIP_SETTINGS.GATEWAY_IP_TITLE') }}
+            </h4>
+            <p class="mt-1 text-xs text-slate-600 dark:text-slate-300">
+              {{ t('VOIP_SETTINGS.GATEWAY_IP_DESC') }}
+            </p>
+            <div class="mt-3 flex items-center gap-3">
+              <div
+                class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 font-mono text-xs font-semibold text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+              >
+                <span>{{ voipConfig.gateway_ip }}</span>
+              </div>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-xl border border-blue-600/30 bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 transition-colors"
+                @click="copyGatewayIp"
+              >
+                <span>
+                  {{
+                    isCopied
+                      ? t('VOIP_SETTINGS.GATEWAY_IP_COPIED')
+                      : t('VOIP_SETTINGS.GATEWAY_IP_COPY')
+                  }}
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Troncal SIP Proveedor (VoIPRabbit / Asterisk / Vicidial) -->
+      <div
+        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
+      >
+        <div class="border-b border-slate-100 pb-4 dark:border-slate-800">
+          <h3 class="text-base font-bold text-slate-900 dark:text-slate-100">
+            {{ t('VOIP_SETTINGS.TRUNK_TITLE') }}
+          </h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            {{ t('VOIP_SETTINGS.TRUNK_DESC') }}
+          </p>
+        </div>
+
+        <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1"
+            >
+              {{ t('VOIP_SETTINGS.TRUNK_HOST_LABEL') }}
+            </label>
+            <input
+              v-model="voipConfig.trunk_host"
+              type="text"
+              :placeholder="t('VOIP_SETTINGS.TRUNK_HOST_PLACEHOLDER')"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1"
+            >
+              {{ t('VOIP_SETTINGS.TRUNK_PORT_LABEL') }}
+            </label>
+            <input
+              v-model.number="voipConfig.trunk_port"
+              type="number"
+              :placeholder="t('VOIP_SETTINGS.TRUNK_PORT_PLACEHOLDER')"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1"
+            >
+              {{ t('VOIP_SETTINGS.TRUNK_USER_LABEL') }}
+            </label>
+            <input
+              v-model="voipConfig.trunk_user"
+              type="text"
+              :placeholder="t('VOIP_SETTINGS.TRUNK_USER_PLACEHOLDER')"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1"
+            >
+              {{ t('VOIP_SETTINGS.TRUNK_PASS_LABEL') }}
+            </label>
+            <input
+              v-model="voipConfig.trunk_password"
+              type="password"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+          </div>
+        </div>
+      </div>
+
       <!-- General PBX Settings Card -->
       <div
         class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900"
@@ -135,6 +271,41 @@ onMounted(() => {
             <label
               class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1"
             >
+              {{ t('VOIP_SETTINGS.CALLER_ID_LABEL') }}
+            </label>
+            <input
+              v-model="voipConfig.caller_id"
+              type="text"
+              :placeholder="t('VOIP_SETTINGS.CALLER_ID_PLACEHOLDER')"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+            <p class="mt-1 text-[11px] text-slate-400">
+              {{ t('VOIP_SETTINGS.CALLER_ID_HELP') }}
+            </p>
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1"
+            >
+              {{ t('VOIP_SETTINGS.CONCURRENCY_LIMIT_LABEL') }}
+            </label>
+            <input
+              v-model.number="voipConfig.concurrency_limit"
+              type="number"
+              min="1"
+              max="100"
+              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+            <p class="mt-1 text-[11px] text-slate-400">
+              {{ t('VOIP_SETTINGS.CONCURRENCY_LIMIT_HELP') }}
+            </p>
+          </div>
+
+          <div>
+            <label
+              class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1"
+            >
               {{ t('VOIP_SETTINGS.WS_URL_LABEL') }}
             </label>
             <input
@@ -162,38 +333,6 @@ onMounted(() => {
             />
             <p class="mt-1 text-[11px] text-slate-400">
               {{ t('VOIP_SETTINGS.SIP_DOMAIN_HELP') }}
-            </p>
-          </div>
-
-          <div>
-            <label
-              class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1"
-            >
-              {{ t('VOIP_SETTINGS.CALLER_ID_LABEL') }}
-            </label>
-            <input
-              v-model="voipConfig.caller_id"
-              type="text"
-              :placeholder="t('VOIP_SETTINGS.CALLER_ID_PLACEHOLDER')"
-              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-            />
-          </div>
-
-          <div>
-            <label
-              class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1"
-            >
-              {{ t('VOIP_SETTINGS.CONCURRENCY_LIMIT_LABEL') }}
-            </label>
-            <input
-              v-model.number="voipConfig.concurrency_limit"
-              type="number"
-              min="1"
-              max="50"
-              class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-sm text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-            />
-            <p class="mt-1 text-[11px] text-slate-400">
-              {{ t('VOIP_SETTINGS.CONCURRENCY_LIMIT_HELP') }}
             </p>
           </div>
         </div>

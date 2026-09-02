@@ -10,7 +10,7 @@ const router = useRouter();
 
 const setupVoiceChannel = () => {
   router.push({
-    name: 'settings_inbox_new',
+    name: 'voip_settings_index',
     params: { accountId: route.params.accountId },
   });
 };
