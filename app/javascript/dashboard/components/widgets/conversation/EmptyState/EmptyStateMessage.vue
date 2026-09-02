@@ -47,7 +47,7 @@ const quickActions = computed(() => [
     <!-- EMBLEM WITH GLOW -->
     <div class="relative mb-6">
       <div
-        class="absolute -inset-4 bg-gradient-to-tr from-slate-700/30 via-slate-500/20 to-slate-900/30 rounded-full blur-xl opacity-70 animate-pulse"
+        class="absolute -inset-4 bg-gradient-to-tr from-cyan-500/20 via-violet-500/20 to-pink-500/20 rounded-full blur-xl opacity-75 animate-pulse"
       />
       <div
         class="relative w-16 h-16 rounded-2xl bg-black text-white dark:bg-black dark:text-white border border-slate-700/60 shadow-lg flex items-center justify-center p-2.5 group hover:scale-105 transition-transform"

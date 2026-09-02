@@ -62,10 +62,10 @@ const studioActions = computed(() => [
   >
     <!-- AMBIENT GLOW -->
     <div
-      class="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-n-brand/10 blur-3xl pointer-events-none"
+      class="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-violet-500/15 blur-3xl pointer-events-none"
     />
     <div
-      class="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-slate-500/10 blur-3xl pointer-events-none"
+      class="absolute -bottom-24 -left-24 h-64 w-64 rounded-full bg-cyan-500/15 blur-3xl pointer-events-none"
     />
 
     <div

@@ -56,12 +56,16 @@ const emitNewAccount = () => {
       <!-- Collapsed view: Logo trigger -->
       <button
         v-if="isCollapsed"
-        class="grid flex-shrink-0 place-content-center p-2 rounded-lg cursor-pointer hover:bg-n-alpha-1"
+        class="grid flex-shrink-0 place-content-center p-1.5 rounded-xl cursor-pointer hover:scale-105 transition-transform"
         :class="{ 'bg-n-alpha-1': isOpen }"
         :title="currentAccount.name"
         @click="toggle"
       >
-        <Logo class="size-7" />
+        <div
+          class="size-7 rounded-xl bg-black text-white dark:bg-black dark:text-white border border-slate-700/60 p-1 shadow-xs flex items-center justify-center"
+        >
+          <Logo class="size-5" />
+        </div>
       </button>
       <!-- Expanded view: Account name trigger -->
       <button
