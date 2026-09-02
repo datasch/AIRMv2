@@ -1,33 +1,95 @@
-<script>
+<script setup>
+import { computed } from 'vue';
+import { useAccount } from 'dashboard/composables/useAccount';
+import { useI18n } from 'vue-i18n';
+import Logo from 'dashboard/components-next/icon/Logo.vue';
+import Icon from 'dashboard/components-next/icon/Icon.vue';
 import FeaturePlaceholder from './FeaturePlaceholder.vue';
-export default {
-  components: { FeaturePlaceholder },
-  props: {
-    message: {
-      type: String,
-      required: true,
-    },
+
+defineProps({
+  message: {
+    type: String,
+    required: true,
   },
-};
+});
+
+const { t } = useI18n();
+const { accountScopedRoute } = useAccount();
+
+const quickActions = computed(() => [
+  {
+    icon: 'i-woot-captain',
+    title: t('CONVERSATION.EMPTY_STATE.QUICK_AI'),
+    desc: t('CONVERSATION.EMPTY_STATE.QUICK_AI_DESC'),
+    to: accountScopedRoute('captain_assistants_index', {
+      navigationPath: 'captain_assistants_overview_index',
+    }),
+  },
+  {
+    icon: 'i-lucide-phone',
+    title: t('CONVERSATION.EMPTY_STATE.QUICK_VOIP'),
+    desc: t('CONVERSATION.EMPTY_STATE.QUICK_VOIP_DESC'),
+    to: accountScopedRoute('calls_dashboard_index'),
+  },
+  {
+    icon: 'i-lucide-contact',
+    title: t('CONVERSATION.EMPTY_STATE.QUICK_CONTACTS'),
+    desc: t('CONVERSATION.EMPTY_STATE.QUICK_CONTACTS_DESC'),
+    to: accountScopedRoute('contacts_dashboard_index'),
+  },
+]);
 </script>
 
 <template>
-  <div class="flex flex-col items-center justify-center h-full">
-    <img
-      class="m-4 w-32 hidden dark:block"
-      src="dashboard/assets/images/no-chat-dark.svg"
-      alt="No Chat dark"
-    />
-    <img
-      class="m-4 w-32 block dark:hidden"
-      src="dashboard/assets/images/no-chat.svg"
-      alt="No Chat"
-    />
-    <span class="text-sm text-n-slate-12 font-medium text-center">
-      {{ message }}
-      <br />
-    </span>
-    <!-- Cmd bar, keyboard shortcuts placeholder -->
+  <div
+    class="flex flex-col items-center justify-center h-full max-w-xl mx-auto px-6 py-8 text-center select-none"
+  >
+    <!-- EMBLEM WITH GLOW -->
+    <div class="relative mb-6">
+      <div
+        class="absolute -inset-4 bg-gradient-to-tr from-n-brand/30 via-indigo-500/20 to-purple-500/30 rounded-full blur-xl opacity-70 animate-pulse"
+      />
+      <div
+        class="relative w-16 h-16 rounded-2xl bg-n-solid-2 border border-n-strong shadow-lg flex items-center justify-center"
+      >
+        <Logo class="w-10 h-10" />
+      </div>
+    </div>
+
+    <h2 class="text-xl font-bold text-n-slate-12 tracking-tight mb-1">
+      {{ t('CONVERSATION.EMPTY_STATE.AIRM_TITLE') }}
+    </h2>
+    <p class="text-xs text-n-slate-11 max-w-sm mb-6">
+      {{ message || t('CONVERSATION.EMPTY_STATE.AIRM_SUBTITLE') }}
+    </p>
+
+    <!-- QUICK ACCESS CARDS -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full mb-6 text-left">
+      <RouterLink
+        v-for="action in quickActions"
+        :key="action.title"
+        :to="action.to"
+        class="p-3 bg-n-alpha-1 hover:bg-n-alpha-2 border border-n-weak hover:border-n-brand/40 rounded-xl transition-all duration-150 group shadow-xs"
+      >
+        <div class="flex items-center gap-2 mb-1.5">
+          <div
+            class="w-6 h-6 rounded-lg bg-n-brand/10 text-n-brand flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform"
+          >
+            <Icon :icon="action.icon" class="w-3.5 h-3.5" />
+          </div>
+          <span
+            class="text-xs font-semibold text-n-slate-12 truncate group-hover:text-n-brand transition-colors"
+          >
+            {{ action.title }}
+          </span>
+        </div>
+        <p class="text-[11px] text-n-slate-10 line-clamp-2 leading-relaxed">
+          {{ action.desc }}
+        </p>
+      </RouterLink>
+    </div>
+
+    <!-- KEYBOARD SHORTCUTS FOOTER -->
     <FeaturePlaceholder />
   </div>
 </template>

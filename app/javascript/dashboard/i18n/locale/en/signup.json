@@ -14,6 +14,50 @@
       "ASSIGNED_DESC": "Assisted by {name}",
       "REFERRAL_BADGE": "Commercial Invitation"
     },
+    "ACTIVATION": {
+      "BADGE": "Commercial Activation",
+      "TITLE": "Activate your AI Receptionist",
+      "SUBTITLE": "Validate real-time WhatsApp response with real prospects.",
+      "PROMO_APPLIED": "Promotion Applied (1%)",
+      "RECOMMENDED": "Recommended",
+      "SUCCESS_TITLE": "Pilot Activated Successfully!",
+      "SUCCESS_DESC": "Your AI agent is ready to be calibrated with your business inventory.",
+      "CONTINUE_BUTTON": "Continue Setup",
+      "PAYMENT_METHODS_TITLE": "Available Payment Methods",
+      "CURRENCY_PEN": "🇵🇪 S/ Soles",
+      "CURRENCY_USD": "🌎 $ USD",
+      "METHOD_YAPE": "💜 Yape (QR)",
+      "METHOD_CARDS": "💳 Visa / Mastercard / Amex",
+      "METHOD_TRANSFER": "🏦 Bank Transfer / PagoEfectivo",
+      "PAY_BUTTON_PEN": "Activate Pilot for {amount} (Yape / Card)",
+      "PAY_BUTTON_USD": "Activate Pilot for {amount} (Card)",
+      "SKIP_OR_EXPLORE": "Configure and pay later",
+      "PERIODS": {
+        "ONCE_3_DAYS": "One-time payment for 3 days",
+        "ONE_TIME": "One-time setup fee",
+        "MONTHLY": "per month"
+      },
+      "PLANS": {
+        "PILOT_TITLE": "Live Pilot (3-Day Trial)",
+        "PILOT_DESC": "Covers AI API tokens and initial engineering setup.",
+        "SETUP_TITLE": "Full Implementation & CRM",
+        "SETUP_DESC": "Complete inventory training, multi-agent CRM and support.",
+        "MAINTENANCE_TITLE": "Maintenance & Continuity",
+        "MAINTENANCE_DESC": "24/7 high-availability servers and monthly AI tokens included."
+      },
+      "FEATURES": {
+        "PILOT_1": "Ultra-fast response (< 3 seconds) on WhatsApp",
+        "PILOT_2": "Automated PDF Brochure & Spec sheet delivery",
+        "PILOT_3": "Buyer qualification & meeting scheduling",
+        "SETUP_1": "Unlimited project & inventory loading",
+        "SETUP_2": "AIRM multi-agent workspace & Mobile app",
+        "SETUP_3": "Meta Ads traffic integration",
+        "SETUP_4": "45-minute training for sales reps",
+        "MAINT_1": "24/7 Cloud servers & DB uptime",
+        "MAINT_2": "Monthly AI tokens included",
+        "MAINT_3": "Monthly price & promo updates"
+      }
+    },
     "COMPANY_NAME": {
       "LABEL": "Company name",
       "PLACEHOLDER": "Enter your company name. E.g., Wayne Enterprises",

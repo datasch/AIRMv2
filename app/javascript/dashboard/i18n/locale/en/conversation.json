@@ -23,7 +23,16 @@
     "VIEW_TRANSLATED": "View translated",
     "EMPTY_STATE": {
       "CMD_BAR": "to open command menu",
-      "KEYBOARD_SHORTCUTS": "to view keyboard shortcuts"
+      "KEYBOARD_SHORTCUTS": "to view keyboard shortcuts",
+      "AIRM_TITLE": "AIRM Operations Center",
+      "AIRM_SUBTITLE": "Commercial Intelligence & Automated Omnichannel Support",
+      "SELECT_PROMPT": "Select a conversation from the left panel or access quick tools:",
+      "QUICK_AI": "Captain AI Assistant",
+      "QUICK_AI_DESC": "Calibrate knowledge base and prompts",
+      "QUICK_VOIP": "VoIP Telephony",
+      "QUICK_VOIP_DESC": "WebRTC dialer and 1-click calls",
+      "QUICK_CONTACTS": "CRM & Leads",
+      "QUICK_CONTACTS_DESC": "Qualified prospects management"
     },
     "SEARCH": {
       "TITLE": "Search messages",

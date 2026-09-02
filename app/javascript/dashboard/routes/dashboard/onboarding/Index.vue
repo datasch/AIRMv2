@@ -19,6 +19,7 @@ import OnboardingFormSelect from './account-details/OnboardingFormSelect.vue';
 import { useAccountEnrichment } from './account-details/useAccountEnrichment';
 import InlineInput from 'dashboard/components-next/inline-input/InlineInput.vue';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
+import ActivationCheckout from './ActivationCheckout.vue';
 import {
   COMPANY_SIZE_OPTIONS,
   INDUSTRY_OPTIONS,
@@ -30,6 +31,33 @@ const { t } = useI18n();
 const router = useRouter();
 const store = useStore();
 const { accountId, currentAccount, finishOnboarding } = useAccount();
+
+const salespersonName = computed(() => {
+  return (
+    currentAccount.value?.custom_attributes?.salesperson_name ||
+    sessionStorage.getItem('airm_salesperson_name') ||
+    ''
+  );
+});
+
+const isTrialPaid = computed(
+  () =>
+    currentAccount.value?.custom_attributes?.trial_status === 'active_trial' ||
+    currentAccount.value?.custom_attributes?.payment_status === 'paid'
+);
+
+const showActivationStep = ref(
+  !isTrialPaid.value && Boolean(salespersonName.value)
+);
+
+const onActivationCompleted = data => {
+  showActivationStep.value = false;
+  if (currentAccount.value?.custom_attributes) {
+    currentAccount.value.custom_attributes.trial_status = 'active_trial';
+    currentAccount.value.custom_attributes.selected_plan = data?.planId;
+    currentAccount.value.custom_attributes.billing_currency = data?.currency;
+  }
+};
 
 // Where each onboarding cursor routes. The backend owns which steps run where;
 // the frontend just follows the cursor it advanced us to (no deployment checks).
@@ -205,7 +233,14 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit">
+  <ActivationCheckout
+    v-if="showActivationStep"
+    :salesperson-name="salespersonName"
+    :company-name="accountName"
+    @completed="onActivationCompleted"
+    @skip="showActivationStep = false"
+  />
+  <form v-else @submit.prevent="handleSubmit">
     <OnboardingLayout
       :greeting="t('ONBOARDING_NEXT.GREETING', { name: userName })"
       :subtitle="t('ONBOARDING_NEXT.SUBTITLE')"

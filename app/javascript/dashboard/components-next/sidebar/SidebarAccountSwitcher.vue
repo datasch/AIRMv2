@@ -70,26 +70,34 @@ const emitNewAccount = () => {
         :data-account-id="accountId"
         aria-haspopup="listbox"
         aria-controls="account-options"
-        class="flex items-center gap-2 justify-between w-full rounded-lg px-2"
+        class="flex items-center gap-2 justify-between w-full rounded-lg px-2 py-1 transition-all"
         :class="[
-          isOpen && 'bg-n-alpha-1',
+          isOpen && 'bg-n-alpha-2',
           showAccountSwitcher
             ? 'hover:bg-n-alpha-1 cursor-pointer'
             : 'cursor-default',
         ]"
         @click="() => showAccountSwitcher && toggle()"
       >
-        <span
-          class="text-sm font-medium leading-5 text-n-slate-12 truncate"
-          aria-live="polite"
-        >
-          {{ currentAccount.name }}
-        </span>
+        <div class="flex items-center gap-1.5 min-w-0 flex-1">
+          <span
+            class="text-sm font-semibold leading-5 text-n-slate-12 truncate"
+            aria-live="polite"
+          >
+            {{ currentAccount.name }}
+          </span>
+          <span
+            class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0"
+          >
+            <span class="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            {{ $t('SIDEBAR.AI_BADGE') }}
+          </span>
+        </div>
 
         <span
           v-if="showAccountSwitcher"
           aria-hidden="true"
-          class="i-lucide-chevron-down size-4 text-n-slate-10 flex-shrink-0"
+          class="i-lucide-chevron-down size-3.5 text-n-slate-10 flex-shrink-0"
         />
       </button>
     </template>

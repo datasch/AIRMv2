@@ -14,6 +14,50 @@
       "ASSIGNED_DESC": "Atendido por {name}",
       "REFERRAL_BADGE": "Invitación Comercial"
     },
+    "ACTIVATION": {
+      "BADGE": "Activación Comercial",
+      "TITLE": "Activa tu Recepcionista de IA",
+      "SUBTITLE": "Valida la atención inmediata en WhatsApp con prospectos reales.",
+      "PROMO_APPLIED": "Promoción Aplicada (1%)",
+      "RECOMMENDED": "Recomendado",
+      "SUCCESS_TITLE": "¡Piloto Activado con Éxito!",
+      "SUCCESS_DESC": "Tu agente de IA está listo para ser calibrado con el inventario de tu empresa.",
+      "CONTINUE_BUTTON": "Continuar con la Configuración",
+      "PAYMENT_METHODS_TITLE": "Métodos de Pago Habilitados",
+      "CURRENCY_PEN": "🇵🇪 S/ Soles",
+      "CURRENCY_USD": "🌎 $ USD",
+      "METHOD_YAPE": "💜 Yape (QR)",
+      "METHOD_CARDS": "💳 Visa / Mastercard / Amex",
+      "METHOD_TRANSFER": "🏦 PagoEfectivo / Transferencia",
+      "PAY_BUTTON_PEN": "Activar Piloto por {amount} (Yape / Tarjeta)",
+      "PAY_BUTTON_USD": "Activar Piloto por {amount} (Tarjeta)",
+      "SKIP_OR_EXPLORE": "Configurar y pagar más tarde",
+      "PERIODS": {
+        "ONCE_3_DAYS": "Pago único por 3 días",
+        "ONE_TIME": "Pago único de implementación",
+        "MONTHLY": "por mes"
+      },
+      "PLANS": {
+        "PILOT_TITLE": "Piloto en Vivo (3 Días de Prueba)",
+        "PILOT_DESC": "Cubre los API tokens de IA y la configuración inicial.",
+        "SETUP_TITLE": "Implementación Integral AIRM",
+        "SETUP_DESC": "Entrenamiento completo, CRM multi-agente y soporte.",
+        "MAINTENANCE_TITLE": "Mantenimiento & Continuidad",
+        "MAINTENANCE_DESC": "Servidores 24/7 y tokens mensuales de IA incluidos."
+      },
+      "FEATURES": {
+        "PILOT_1": "Respuestas ultra-rápidas (< 3 segundos) por WhatsApp",
+        "PILOT_2": "Envío de Brochures y Fichas en PDF",
+        "PILOT_3": "Calificación de prospectos y agendamiento de citas",
+        "SETUP_1": "Carga ilimitada de proyectos e inventarios",
+        "SETUP_2": "Espacio AIRM para múltiples asesores y App móvil",
+        "SETUP_3": "Canalización de campañas de Meta Ads",
+        "SETUP_4": "Capacitación de 45 minutos al equipo de ventas",
+        "MAINT_1": "Servidores y bases de datos 24/7 sin caídas",
+        "MAINT_2": "Consumo de tokens de IA cubierto",
+        "MAINT_3": "Actualizaciones mensuales de precios y promociones"
+      }
+    },
     "COMPANY_NAME": {
       "LABEL": "Nombre de la empresa",
       "PLACEHOLDER": "Introduce el nombre de tu empresa, por ejemplo: Wayne Enterprises",

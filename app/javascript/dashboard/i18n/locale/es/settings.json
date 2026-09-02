@@ -308,6 +308,8 @@
     }
   },
   "SIDEBAR": {
+    "AI_BADGE": "AI",
+    "ADMIN_BADGE": "Admin",
     "NO_ITEMS": "No hay elementos",
     "CURRENTLY_VIEWING_ACCOUNT": "Visualizando:",
     "SWITCH": "Cambiar",

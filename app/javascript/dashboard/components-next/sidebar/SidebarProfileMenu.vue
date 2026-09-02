@@ -150,11 +150,21 @@ const allowedMenuItems = computed(() => {
           :status="currentUserAvailability"
           class="flex-shrink-0"
         />
-        <div v-if="!isCollapsed" class="min-w-0">
-          <div class="text-sm font-medium leading-4 truncate text-n-slate-12">
-            {{ currentUser.available_name }}
+        <div v-if="!isCollapsed" class="min-w-0 flex-1">
+          <div class="flex items-center gap-1.5">
+            <span
+              class="text-xs font-semibold leading-4 truncate text-n-slate-12"
+            >
+              {{ currentUser.available_name }}
+            </span>
+            <span
+              v-if="currentUser.type === 'SuperAdmin'"
+              class="text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.2 rounded bg-n-brand/10 text-n-brand shrink-0"
+            >
+              {{ $t('SIDEBAR.ADMIN_BADGE') }}
+            </span>
           </div>
-          <div class="text-xs truncate text-n-slate-11">
+          <div class="text-[11px] truncate text-n-slate-10 mt-0.5">
             {{ currentUser.email }}
           </div>
         </div>
