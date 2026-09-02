@@ -10,18 +10,14 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
     voip_settings = account.settings['voip'] || {}
     user_sip = (user.custom_attributes || {})['sip'] || {}
 
-    render json: {
+    is_admin = Current.account_user&.administrator?
+
+    response_data = {
       enabled: voip_settings['enabled'].nil? ? (ENV['ASTERISK_ENABLED'].to_s == 'true' || ENV['ASTERISK_WS_URL'].present?) : voip_settings['enabled'],
       ws_url: voip_settings['ws_url'].presence || ENV['ASTERISK_WS_URL'] || 'wss://voip.giantucchi.com:8089/ws',
       sip_domain: voip_settings['sip_domain'].presence || ENV['ASTERISK_SIP_DOMAIN'] || 'giantucchi.com',
       caller_id: voip_settings['caller_id'].presence || ENV['ASTERISK_CALLER_ID'],
       concurrency_limit: voip_settings['concurrency_limit'] || 1,
-      trunk_provider: voip_settings['trunk_provider'].presence || 'voiprabbit',
-      trunk_host: voip_settings['trunk_host'].presence || '149.20.185.4',
-      trunk_port: voip_settings['trunk_port'] || 5060,
-      trunk_user: voip_settings['trunk_user'].presence || 'JoseMaster',
-      trunk_password: voip_settings['trunk_password'].presence || '',
-      trunk_auth_mode: voip_settings['trunk_auth_mode'].presence || 'credentials',
       gateway_ip: ENV['VOIP_GATEWAY_IP'].presence || request.host,
       agent: {
         extension: user_sip['extension'].presence || user.custom_attributes&.dig('sip_extension'),
@@ -30,6 +26,19 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
       },
       active_calls: current_active_calls
     }
+
+    if is_admin
+      response_data.merge!(
+        trunk_provider: voip_settings['trunk_provider'].presence || 'voiprabbit',
+        trunk_host: voip_settings['trunk_host'].presence || '149.20.185.4',
+        trunk_port: voip_settings['trunk_port'] || 5060,
+        trunk_user: voip_settings['trunk_user'].presence || 'JoseMaster',
+        trunk_password: voip_settings['trunk_password'].presence || '',
+        trunk_auth_mode: voip_settings['trunk_auth_mode'].presence || 'credentials'
+      )
+    end
+
+    render json: response_data
   end
 
   def update_config
