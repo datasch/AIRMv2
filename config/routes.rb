@@ -15,6 +15,12 @@ Rails.application.routes.draw do
     root to: 'api#index'
   else
     root to: 'landing#index'
+    get '/terms', to: 'landing#terms'
+    get '/terminos-condiciones', to: 'landing#terms'
+    get '/privacy', to: 'landing#privacy'
+    get '/politicas-privacidad', to: 'landing#privacy'
+    get '/status', to: 'landing#status'
+    get '/estado', to: 'landing#status'
 
     get '/app', to: 'dashboard#index'
     get '/app/*params', to: 'dashboard#index'

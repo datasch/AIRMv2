@@ -1,0 +1,143 @@
+<% content_for :title, "Términos y Condiciones de Servicio — AIRM by Giantucchi" %>
+
+<!-- Background radial glow -->
+<div class="fixed inset-0 pointer-events-none z-0">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[450px] bg-gradient-to-b from-blue-600/10 via-purple-600/10 to-transparent blur-3xl opacity-60"></div>
+</div>
+
+<!-- Navigation Bar -->
+<header class="fixed top-0 left-0 right-0 z-50 nav-glass transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 group">
+      <div class="w-9 h-9 rounded-xl bg-black border border-white/15 flex items-center justify-center p-1.5 shadow-md group-hover:scale-105 transition-transform shrink-0">
+        <img src="/brand-assets/logo_thumbnail.svg" alt="AIRM" class="w-6 h-6" />
+      </div>
+      <div class="flex flex-col">
+        <div class="flex items-center gap-1.5">
+          <span class="text-lg font-bold tracking-tight text-white">AIRM</span>
+          <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">AI CRM</span>
+        </div>
+        <span class="text-[8px] font-bold tracking-widest text-slate-400 uppercase">by Giantucchi</span>
+      </div>
+    </a>
+
+    <div class="flex items-center gap-3">
+      <a href="/" class="text-xs font-semibold text-slate-300 hover:text-white transition-colors px-3 py-1.5">
+        ← Volver al Inicio
+      </a>
+      <a href="<%= @login_url %>" class="btn-primary text-xs !px-4 !py-2">
+        Ingresar a la Plataforma
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="relative z-10 flex-1 pt-32 pb-24 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-12 text-left border-b border-white/10 pb-8">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.1] text-xs font-semibold text-slate-300 mb-4">
+        <span>Última actualización: Septiembre 2026</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
+        Términos y Condiciones de Servicio
+      </h1>
+      <p class="text-base text-slate-400 leading-relaxed">
+        Los presentes Términos y Condiciones regulan el acceso, suscripción y uso de la plataforma <strong>AIRM (AI Relationship Manager)</strong> y sus módulos de inteligencia artificial operados por <strong><%= @company_name %></strong>.
+      </p>
+    </div>
+
+    <!-- Content Sections -->
+    <div class="space-y-10 text-slate-300 text-sm leading-relaxed">
+      <!-- 1. Información de la Empresa -->
+      <section class="p-6 rounded-2xl glass-card border border-white/10">
+        <h2 class="text-xl font-bold text-white mb-3 flex items-center gap-2">
+          <span>1. Información de la Empresa Titular</span>
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-300 mt-4">
+          <p><strong class="text-white">Razón Social:</strong> <%= @company_name %></p>
+          <p><strong class="text-white">RUC:</strong> <%= @company_ruc %></p>
+          <p><strong class="text-white">Domicilio Legal:</strong> <%= @company_address %></p>
+          <p><strong class="text-white">Teléfono de Contacto:</strong> <%= @company_phone %></p>
+          <p><strong class="text-white">Correo Electrónico:</strong> <%= @company_email %></p>
+          <p><strong class="text-white">Portal Web Oficial:</strong> <a href="https://giantucchi.com" target="_blank" class="text-cyan-400 hover:underline">https://giantucchi.com</a></p>
+        </div>
+      </section>
+
+      <!-- 2. Descripción del Servicio AIRM -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-white">2. Descripción de la Plataforma AIRM</h2>
+        <p>
+          <strong>AIRM</strong> es una suite SaaS omnicanal de gestión de relaciones comerciales y automatización potenciada por Inteligencia Artificial que incluye:
+        </p>
+        <ul class="list-disc list-inside space-y-2 text-slate-300 pl-2">
+          <li><strong>Agentes y Copilotos de IA (Ian Studio):</strong> Modelos de lenguaje adaptados para calificar prospectos, responder consultas y automatizar flujos de venta en tiempo real.</li>
+          <li><strong>Conexión WhatsApp Multidispositivo (Código QR):</strong> Vinculación de terminales mediante protocolo QR para comunicación directa con clientes.</li>
+          <li><strong>Integración con Meta WhatsApp Cloud API:</strong> Acceso a la API oficial verificada por Meta para despliegues masivos y corporativos.</li>
+          <li><strong>Bandeja Omnicanal Centralizada:</strong> Integración unificada de Instagram Direct, Facebook Messenger, Telegram, Correo Electrónico y Live Chat Web.</li>
+          <li><strong>Pipeline CRM & Automatizaciones:</strong> Embudos de conversión estilo Kanban, etiquetado inteligente, webhooks y conexión a plataformas externas (n8n, Make, Zapier, ERPs).</li>
+        </ul>
+      </section>
+
+      <!-- 3. Verificación como Meta Tech Provider -->
+      <section class="p-6 rounded-2xl bg-blue-950/20 border border-blue-500/30">
+        <h2 class="text-lg font-bold text-white mb-2">3. Proveedor de Tecnología Verificado por Meta</h2>
+        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+          <strong>Giantucchi Inc EIRL</strong> es un Proveedor de Tecnología Verificado por Meta. Estamos legal y técnicamente autorizados para desarrollar, operar e integrar soluciones comerciales con la Plataforma de Meta (Facebook, Instagram y WhatsApp Cloud API), garantizando la total observancia de los estándares de ciberseguridad, integridad y normativas de desarrollo de Meta.
+        </p>
+      </section>
+
+      <!-- 4. Condiciones de Uso y Responsabilidades -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-white">4. Condiciones de Uso y Conducta Prohibida</h2>
+        <p>El usuario suscriptor se compromete a hacer uso de AIRM exclusivamente para fines comerciales legítimos. Queda terminantemente prohibido:</p>
+        <ul class="list-disc list-inside space-y-2 text-slate-300 pl-2">
+          <li>El envío de mensajes no solicitados masivos de carácter invasivo (Spam) que violen las políticas de mensajería de WhatsApp o leyes aplicables.</li>
+          <li>La utilización de la IA para generar contenido engañoso, fraudulento, difamatorio, ilegal o que infrinja derechos de terceros.</li>
+          <li>Intentos de ingeniería inversa, descompilación, extracción no autorizada de código o vulneración de los mecanismos de seguridad de AIRM.</li>
+          <li>Eludir las restricciones de cuotas o licencias estipuladas en el plan contratado.</li>
+        </ul>
+      </section>
+
+      <!-- 5. Disponibilidad del Servicio (SLA) y Mantenimiento -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-white">5. Niveles de Servicio (SLA) y Continuidad Operativa</h2>
+        <p>
+          Giantucchi implementa arquitecturas de alta disponibilidad con un objetivo de disponibilidad del <strong>99.9%</strong>. Los estados en tiempo real de cada microservicio, base de datos y pasarelas de mensajería pueden ser supervisados permanentemente a través de <a href="/status" class="text-cyan-400 hover:underline">/status</a>.
+        </p>
+      </section>
+
+      <!-- 6. Facturación, Planes y Cancelación -->
+      <section class="space-y-4">
+        <h2 class="text-xl font-bold text-white">6. Planes, Pagos y Políticas de Cancelación</h2>
+        <p>
+          Las suscripciones a AIRM se facturan por períodos mensuales o anuales por adelantado. El cliente puede cancelar su suscripción en cualquier momento desde el panel de ajustes o contactando al soporte comercial antes de la siguiente fecha de renovación.
+        </p>
+      </section>
+
+      <!-- 7. Jurisdicción y Ley Aplicable -->
+      <section class="space-y-4 border-t border-white/10 pt-6">
+        <h2 class="text-xl font-bold text-white">7. Legislación Aplicable y Resolución de Disputas</h2>
+        <p>
+          Estos términos se rigen por las leyes vigentes de la República del Perú. Cualquier controversia será resuelta prioritariamente mediante trato directo de buena fe o sometida a la jurisdicción de los jueces y tribunales de la ciudad de Lima, Perú.
+        </p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-[#05070a] border-t border-white/5 py-12 relative z-10 text-slate-400 text-xs">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div class="flex items-center gap-3">
+      <span class="font-extrabold text-white text-sm">AIRM</span>
+      <span>© 2024–2026 <%= @company_name %>. Todos los derechos reservados.</span>
+    </div>
+    <div class="flex items-center gap-6">
+      <a href="/terms" class="text-white hover:underline">Términos de Servicio</a>
+      <a href="/privacy" class="hover:text-white transition-colors">Políticas de Privacidad</a>
+      <a href="<%= @help_url %>" target="_blank" class="hover:text-white transition-colors">Centro de Ayuda</a>
+      <a href="/status" class="hover:text-white transition-colors">Estado del Sistema</a>
+    </div>
+  </div>
+</footer>

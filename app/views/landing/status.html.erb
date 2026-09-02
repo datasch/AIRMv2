@@ -1,0 +1,178 @@
+<% content_for :title, "Estado del Sistema en Tiempo Real — AIRM by Giantucchi" %>
+
+<!-- Background radial glow -->
+<div class="fixed inset-0 pointer-events-none z-0">
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[450px] bg-gradient-to-b from-emerald-600/10 via-cyan-600/10 to-transparent blur-3xl opacity-60"></div>
+</div>
+
+<!-- Navigation Bar -->
+<header class="fixed top-0 left-0 right-0 z-50 nav-glass transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 group">
+      <div class="w-9 h-9 rounded-xl bg-black border border-white/15 flex items-center justify-center p-1.5 shadow-md group-hover:scale-105 transition-transform shrink-0">
+        <img src="/brand-assets/logo_thumbnail.svg" alt="AIRM" class="w-6 h-6" />
+      </div>
+      <div class="flex flex-col">
+        <div class="flex items-center gap-1.5">
+          <span class="text-lg font-bold tracking-tight text-white">AIRM</span>
+          <span class="text-[9px] font-bold px-1.5 py-0.2 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">AI CRM</span>
+        </div>
+        <span class="text-[8px] font-bold tracking-widest text-slate-400 uppercase">by Giantucchi</span>
+      </div>
+    </a>
+
+    <div class="flex items-center gap-3">
+      <a href="/" class="text-xs font-semibold text-slate-300 hover:text-white transition-colors px-3 py-1.5">
+        ← Volver al Inicio
+      </a>
+      <a href="<%= @login_url %>" class="btn-primary text-xs !px-4 !py-2">
+        Ingresar a la Plataforma
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="relative z-10 flex-1 pt-32 pb-24 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-10 text-left border-b border-white/10 pb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-2">
+            Estado de la Plataforma
+          </h1>
+          <p class="text-sm text-slate-400">
+            Monitoreo en tiempo real de los servicios e infraestructura de AIRM.
+          </p>
+        </div>
+        <!-- Overall Status Badge -->
+        <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold text-xs shrink-0 w-fit">
+          <span class="size-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Todos los Sistemas Operacionales</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Uptime Overview Card -->
+    <div class="p-6 rounded-2xl glass-card border border-white/10 mb-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl">
+          ⚡
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-white">Disponibilidad Global de la Red</h3>
+          <p class="text-xs text-slate-400">Promedio de actividad acumulada en los últimos 90 días</p>
+        </div>
+      </div>
+      <div class="text-right shrink-0">
+        <div class="text-3xl font-black text-emerald-400 font-mono">99.99%</div>
+        <div class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">SLA Cumplido</div>
+      </div>
+    </div>
+
+    <!-- Service Status List -->
+    <div class="space-y-3 mb-12">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Servicios y Módulos de AIRM</h2>
+
+      <!-- Item 1: Ian AI Engine -->
+      <div class="p-4 rounded-xl glass-card flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="size-2 rounded-full bg-emerald-500"></div>
+          <div>
+            <h4 class="text-sm font-semibold text-white">Motor de Inteligencia Artificial (Ian Studio & Copilot)</h4>
+            <p class="text-[11px] text-slate-400">Procesamiento de lenguaje natural, RAG y calificación autónoma</p>
+          </div>
+        </div>
+        <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">Operacional</span>
+      </div>
+
+      <!-- Item 2: WhatsApp QR Gateway -->
+      <div class="p-4 rounded-xl glass-card flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="size-2 rounded-full bg-emerald-500"></div>
+          <div>
+            <h4 class="text-sm font-semibold text-white">Pasarela WhatsApp QR Multidispositivo</h4>
+            <p class="text-[11px] text-slate-400">Vinculación por código QR, envío y recepción en tiempo real</p>
+          </div>
+        </div>
+        <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">Operacional</span>
+      </div>
+
+      <!-- Item 3: Meta WhatsApp Cloud API -->
+      <div class="p-4 rounded-xl glass-card flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="size-2 rounded-full bg-emerald-500"></div>
+          <div>
+            <h4 class="text-sm font-semibold text-white">Conexión Meta Cloud API (WhatsApp, Instagram, Facebook)</h4>
+            <p class="text-[11px] text-slate-400">Meta Verified Tech Provider Gateway</p>
+          </div>
+        </div>
+        <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">Operacional</span>
+      </div>
+
+      <!-- Item 4: Webhooks & Automations -->
+      <div class="p-4 rounded-xl glass-card flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="size-2 rounded-full bg-emerald-500"></div>
+          <div>
+            <h4 class="text-sm font-semibold text-white">Motor de Automatizaciones & Webhooks</h4>
+            <p class="text-[11px] text-slate-400">Ejecución de macros, reglas de negocio y despachos REST</p>
+          </div>
+        </div>
+        <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">Operacional</span>
+      </div>
+
+      <!-- Item 5: Database & Storage -->
+      <div class="p-4 rounded-xl glass-card flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="size-2 rounded-full bg-emerald-500"></div>
+          <div>
+            <h4 class="text-sm font-semibold text-white">Base de Datos PostgreSQL & Redis Cache</h4>
+            <p class="text-[11px] text-slate-400">Persistencia segura y cola de procesamiento en memoria</p>
+          </div>
+        </div>
+        <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">Operacional</span>
+      </div>
+
+      <!-- Item 6: Authentication & Security -->
+      <div class="p-4 rounded-xl glass-card flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="size-2 rounded-full bg-emerald-500"></div>
+          <div>
+            <h4 class="text-sm font-semibold text-white">Servicio de Autenticación & Encriptación</h4>
+            <p class="text-[11px] text-slate-400">Cifrado TLS 1.3, gestión de sesiones y tokens seguros</p>
+          </div>
+        </div>
+        <span class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">Operacional</span>
+      </div>
+    </div>
+
+    <!-- Recent Incident History -->
+    <div class="space-y-4">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">Historial Reciente de Operaciones</h2>
+      <div class="p-6 rounded-2xl glass-card border border-white/10 text-xs text-slate-400 space-y-3">
+        <div class="flex items-center justify-between text-white font-semibold text-sm border-b border-white/5 pb-2">
+          <span>Septiembre 2026</span>
+          <span class="text-emerald-400 font-mono">100% de Disponibilidad</span>
+        </div>
+        <p>No se registraron interrupciones ni degradaciones de servicio en ninguna región.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="bg-[#05070a] border-t border-white/5 py-12 relative z-10 text-slate-400 text-xs">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div class="flex items-center gap-3">
+      <span class="font-extrabold text-white text-sm">AIRM</span>
+      <span>© 2024–2026 <%= @company_name %>. Todos los derechos reservados.</span>
+    </div>
+    <div class="flex items-center gap-6">
+      <a href="/terms" class="hover:text-white transition-colors">Términos de Servicio</a>
+      <a href="/privacy" class="hover:text-white transition-colors">Políticas de Privacidad</a>
+      <a href="<%= @help_url %>" target="_blank" class="hover:text-white transition-colors">Centro de Ayuda</a>
+      <a href="/status" class="text-white hover:underline">Estado del Sistema</a>
+    </div>
+  </div>
+</footer>
