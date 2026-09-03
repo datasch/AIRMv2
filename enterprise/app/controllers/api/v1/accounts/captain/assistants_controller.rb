@@ -39,6 +39,12 @@ class Api::V1::Accounts::Captain::AssistantsController < Api::V1::Accounts::Base
                  )
                end
 
+    if response.is_a?(Hash)
+      normalized_text = response['response'].presence || response['content'].presence || response[:response].presence || response[:content].presence
+      response['response'] ||= normalized_text
+      response['content'] ||= normalized_text
+    end
+
     render json: response
   end
 

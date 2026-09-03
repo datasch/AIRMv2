@@ -67,15 +67,34 @@ const sendMessage = async () => {
       messageHistory: formatMessagesForApi(),
     });
 
+    let assistantContent = data?.response || data?.content;
+    if (data?.error) {
+      assistantContent = `⚠️ ${data.reasoning || data.error_reason || 'Error al procesar la respuesta del modelo.'}`;
+    } else if (assistantContent === 'conversation_handoff') {
+      assistantContent = `ℹ️ [Transferencia a Agente Humano]: ${data.reasoning || 'El asistente no encontró información en su base de conocimiento y solicitó transferir el caso.'}`;
+    } else if (!assistantContent) {
+      assistantContent = 'No se recibió respuesta del asistente.';
+    }
+
     messages.value.push({
-      content: data.response,
+      content: assistantContent,
       sender: 'assistant',
-      agentName: data.agent_name,
+      agentName: data?.agent_name,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Error getting assistant response:', error);
+    const errorMsg =
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      error.message ||
+      'Error al comunicarse con el servidor.';
+    messages.value.push({
+      content: `⚠️ Error: ${errorMsg}`,
+      sender: 'assistant',
+      timestamp: new Date().toISOString(),
+    });
   } finally {
     isLoading.value = false;
   }
