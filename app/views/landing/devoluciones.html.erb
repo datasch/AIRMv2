@@ -1,0 +1,129 @@
+<% content_for :title, "Política de Devoluciones y Cancelaciones — AIRM by Giantucchi" %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-28 text-slate-300">
+  <div class="mb-10 text-center">
+    <a href="/" class="inline-flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 mb-6 transition-colors">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span>Volver al inicio</span>
+    </a>
+    <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+      Política de Cambios, Cancelaciones y Devoluciones
+    </h1>
+    <p class="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+      Condiciones comerciales aplicables a la adquisición de licencias de software SaaS, planes de Recepcionista IA, servicios de computación en la nube y consultoría técnica prestados por <strong><%= @company_name %></strong>.
+    </p>
+    <div class="mt-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-slate-400">
+      <span>Última actualización: Septiembre de 2026</span> • <span>Lima, República del Perú</span>
+    </div>
+  </div>
+
+  <div class="glass-card rounded-3xl p-8 sm:p-12 space-y-8 text-sm leading-relaxed border border-white/10">
+    
+    <!-- 1. Identificación del Proveedor -->
+    <section>
+      <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+        1. Identificación de la Empresa Proveedora
+      </h2>
+      <p>
+        Los servicios disponibles en esta plataforma tecnológica (<a href="/" class="text-cyan-400 hover:underline">airm.giantucchi.com</a>) son comercializados y operados por:
+      </p>
+      <ul class="mt-3 space-y-1.5 list-disc pl-5 text-slate-300">
+        <li><strong>Razón Social:</strong> <%= @company_name %></li>
+        <li><strong>RUC:</strong> <%= @company_ruc %></li>
+        <li><strong>Domicilio Fiscal:</strong> <%= @company_address %></li>
+        <li><strong>Correo electrónico oficial:</strong> <a href="mailto:<%= @company_email %>" class="text-cyan-400 hover:underline"><%= @company_email %></a></li>
+        <li><strong>Canal de Soporte y Facturación:</strong> <a href="mailto:<%= @company_support_email %>" class="text-cyan-400 hover:underline"><%= @company_support_email %></a></li>
+        <li><strong>Teléfono / WhatsApp de Atención:</strong> <%= @company_phone %> (<%= @company_hours %>)</li>
+      </ul>
+    </section>
+
+    <!-- 2. Naturaleza de los Servicios Contratados -->
+    <section>
+      <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+        2. Naturaleza Digital e Intangible de los Servicios
+      </h2>
+      <p>
+        El cliente y/o usuario reconoce y acepta de manera expresa que los productos adquiridos corresponden a <strong>servicios de software como servicio (SaaS), procesamiento computacional de Inteligencia Artificial en la nube, activación de canales de mensajería (WhatsApp QR y WhatsApp Business API de Meta) y servicios de configuración y entrenamiento técnico personalizado</strong>.
+      </p>
+      <p class="mt-2">
+        La prestación de estos servicios implica el aprovisionamiento inmediato de infraestructura dedicada de servidores 24/7, bases de datos PostgreSQL/Redis y el consumo irreversible en tiempo real de unidades computacionales de cómputo y tokens de Modelos de Lenguaje (LLMs).
+      </p>
+    </section>
+
+    <!-- 3. Política de No Devolución y No Reembolso -->
+    <section>
+      <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+        3. Política de No Reembolso (Non-Refundable Policy)
+      </h2>
+      <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs sm:text-sm">
+        <strong>⚠️ Cláusula Expresa:</strong> Debido a que el software, las licencias y los recursos computacionales de IA se activan y consumen de forma inmediata e irrevocable a favor del cliente tras la confirmación de la orden, <strong>NO SE REALIZAN DEVOLUCIONES NI REEMBOLSOS TOTALES O PARCIALES DEL IMPORTE PAGADO</strong> una vez que el servicio ha sido activado, entregado o puesto a disposición.
+      </div>
+      <p class="mt-3">
+        Esto aplica a todas las modalidades de contratación disponibles en nuestra tienda virtual:
+      </p>
+      <ul class="mt-2 space-y-2 list-disc pl-5">
+        <li><strong>Piloto Recepcionista IA (3 Días de Prueba):</strong> Cuota fija no reembolsable destinada a cubrir el costo directo de los tokens de IA consumidos durante los 3 días de validación.</li>
+        <li><strong>Suscripciones Mensuales (Starter, Mantenimiento, Professional):</strong> Cargos devengados por el mes en curso correspondientes a la disponibilidad de servidores 24/7 y licencias activas.</li>
+        <li><strong>Implementación Integral & Entrenamiento IA (Setup Onboarding):</strong> Pago único correspondiente al servicio de ingeniería personalizada, carga de catálogo y capacitación ya ejecutada por nuestro equipo técnico.</li>
+      </ul>
+    </section>
+
+    <!-- 4. Cancelación de Suscripciones Recurrentes -->
+    <section>
+      <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+        4. Cancelación de Planes y Renovaciones
+      </h2>
+      <p>
+        El cliente puede cancelar o pausar la renovación automática de su plan mensual en cualquier momento, <strong>sin cobro de penalidades ni tarifas de cancelación</strong>, comunicándose a través de nuestros canales oficiales (<a href="mailto:<%= @company_support_email %>" class="text-cyan-400 hover:underline"><%= @company_support_email %></a> o WhatsApp <%= @company_phone %>) con al menos <strong>tres (3) días hábiles de anticipación</strong> a la fecha de vencimiento de su ciclo de facturación.
+      </p>
+      <p class="mt-2">
+        Al cancelar, el cliente conservará el acceso a la plataforma hasta el último día del periodo mensual ya abonado, fecha tras la cual el servicio y las conexiones de mensajería quedarán inactivos.
+      </p>
+    </section>
+
+    <!-- 5. Excepciones Autorizadas para Reembolso -->
+    <section>
+      <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+        5. Casos Excepcionales de Reembolso
+      </h2>
+      <p>
+        Únicamente procederá la devolución del dinero en los siguientes supuestos taxativos:
+      </p>
+      <ul class="mt-2 space-y-2 list-disc pl-5">
+        <li><strong>Cobro duplicado:</strong> Cuando por un error atribuible a la pasarela de pagos (<a href="https://culqi.com" target="_blank" class="text-cyan-400 hover:underline">Culqi</a>) o a la plataforma se procese más de una vez el cobro por una misma orden o factura.</li>
+        <li><strong>Imposibilidad técnica comprobada de activación:</strong> Cuando por causas imputables de forma exclusiva a <%= @company_name %>, sea materialmente imposible poner a disposición el acceso a la plataforma dentro del plazo máximo de siete (7) días calendario posteriores al pago.</li>
+      </ul>
+      <p class="mt-3">
+        En dichos casos excepcionales, el cliente deberá reportar el caso dentro de los diez (10) días calendario de realizado el pago adjuntando el comprobante de transacción emitido por Culqi. El reembolso se efectuará a través del mismo medio de pago empleado por el cliente (reverso de tarjeta o transferencia) conforme a los plazos bancarios vigentes (habitualmente de 15 a 30 días hábiles según la entidad emisora).
+      </p>
+    </section>
+
+    <!-- 6. Marco Legal e Indecopi -->
+    <section>
+      <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+        6. Cumplimiento Normativo (Indecopi y Ley N° 29571)
+      </h2>
+      <p>
+        La presente política se rige bajo las disposiciones del <strong>Código de Protección y Defensa del Consumidor (Ley N° 29571)</strong> y las leyes de la República del Perú. Para la atención de quejas o reclamos formales, el cliente tiene a su disposición nuestro 
+        <a href="/libro-reclamaciones" class="text-amber-400 font-bold hover:underline">Libro de Reclamaciones Virtual</a> conforme al estándar legal obligatorio.
+      </p>
+    </section>
+
+    <!-- 7. Contacto para Consultas de Facturación -->
+    <section class="border-t border-white/10 pt-6">
+      <h3 class="text-base font-bold text-white mb-2">¿Consultas o dudas sobre tu facturación?</h3>
+      <p class="text-xs text-slate-400">
+        Comunícate con nuestro equipo administrativo al correo <a href="mailto:<%= @company_support_email %>" class="text-cyan-400 hover:underline"><%= @company_support_email %></a> o al WhatsApp comercial <%= @company_phone %> de lunes a viernes en horario de 9:00 AM a 6:00 PM (GMT-5).
+      </p>
+    </section>
+
+  </div>
+</div>

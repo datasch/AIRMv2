@@ -22,12 +22,13 @@
     </a>
 
     <!-- Nav Links (Desktop) -->
-    <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+    <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
       <a href="#features" class="hover:text-white transition-colors">Características</a>
       <a href="#demo" class="hover:text-white transition-colors">Simulador</a>
       <a href="#canales" class="hover:text-white transition-colors">Canales</a>
-      <a href="#precios" class="hover:text-white transition-colors">Precios</a>
+      <a href="#productos" class="hover:text-white transition-colors font-bold text-white">Catálogo &amp; Precios</a>
       <a href="#faq" class="hover:text-white transition-colors">Preguntas</a>
+      <a href="/libro-reclamaciones" class="hover:text-amber-400 text-amber-300 font-semibold transition-colors flex items-center gap-1">📖 Libro Reclamaciones</a>
     </nav>
 
     <!-- CTAs & Language -->
@@ -366,76 +367,290 @@
     </div>
   </section>
 
-  <!-- Pricing Plans Section -->
-  <section id="precios" class="py-24 bg-[#050505] border-t border-white/5 relative">
+  <!-- Catálogo de Productos y Servicios (Culqi Compliance) -->
+  <section id="productos" class="py-24 bg-[#050505] border-t border-white/5 relative">
+    <div id="precios" class="absolute -top-20"></div>
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
       <div class="text-center max-w-3xl mx-auto mb-16">
-        <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-4 tracking-tight">Planes diseñados para tu crecimiento</h2>
-        <p class="text-slate-400 text-base">
-          Comienza a potenciar tus ventas y escala sin límites con la infraestructura de Giantucchi.
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-bold mb-4 uppercase tracking-wider">
+          <span>🛒 Catálogo Oficial de Productos &amp; Servicios</span>
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-4 tracking-tight">
+          Nuestros Productos &amp; Planes de Servicio
+        </h2>
+        <p class="text-slate-400 text-base leading-relaxed">
+          Precios transparentes y visibles en <strong>Soles (PEN S/)</strong> para el mercado peruano, procesados de forma segura con tarjeta o Yape a través de <strong>Culqi</strong>.
         </p>
+
+        <!-- Currency Selector Pill -->
+        <div class="mt-6 inline-flex items-center gap-2 p-1 rounded-xl bg-white/[0.04] border border-white/10">
+          <button type="button" onclick="switchCurrency('PEN')" id="cur-btn-pen" class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-purple-600 text-white shadow-md">
+            🇵🇪 Soles (PEN S/)
+          </button>
+          <button type="button" onclick="switchCurrency('USD')" id="cur-btn-usd" class="px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all">
+            🌎 Dólares (USD $)
+          </button>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-        <!-- Starter Plan -->
-        <div class="p-8 rounded-3xl glass-card flex flex-col justify-between">
+      <!-- Products Grid: Row 1 (3 products) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto mb-10">
+        
+        <!-- PRODUCT 1: Piloto 3 Días -->
+        <div class="p-6 rounded-3xl glass-card flex flex-col justify-between border border-amber-500/40 relative hover:border-amber-400 transition-all shadow-lg hover:shadow-amber-500/10">
+          <div class="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[10px] uppercase tracking-wider shadow">
+            VALIDACIÓN COMERCIAL
+          </div>
           <div>
-            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Starter</span>
-            <h3 class="text-3xl font-black text-white mt-2 mb-4">$29 <span class="text-sm font-normal text-slate-400">/ mes</span></h3>
-            <p class="text-xs text-slate-400 mb-6">Ideal para profesionales y pequeños negocios iniciando en ventas digitales.</p>
-            <ul class="space-y-3 text-sm text-slate-300 mb-8">
-              <li class="flex items-center gap-2">✓ 2 Agentes incluidos</li>
-              <li class="flex items-center gap-2">✓ WhatsApp QR: Conecta tu cuenta mediante código QR</li>
-              <li class="flex items-center gap-2">✓ Bandeja Omnicanal Unificada</li>
-              <li class="flex items-center gap-2">✓ Respuestas rápidas y notas</li>
+            <!-- Product Image -->
+            <div class="w-full h-44 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-black flex items-center justify-center">
+              <img src="/products/pilot-ia.svg" alt="Piloto Recepcionista IA 3 Días" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+            </div>
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Plan de Entrada</span>
+            <h3 class="text-xl font-extrabold text-white mt-1 mb-2">Piloto Recepcionista IA</h3>
+            
+            <!-- Price Display -->
+            <div class="my-4 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+              <span class="text-xs text-slate-400 block font-medium">Inversión (Prueba en Vivo):</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-3xl font-black text-amber-400 price-val" data-pen="S/ 18.00" data-usd="$5.00">S/ 18.00</span>
+                <span class="text-xs text-slate-400">/ pago único (3 días)</span>
+              </div>
+              <span class="text-[11px] text-slate-500 block mt-1">Equivalente: <span class="alt-price" data-pen="$5.00 USD" data-usd="S/ 18.00 PEN">$5.00 USD</span></span>
+            </div>
+
+            <p class="text-xs text-slate-300 mb-5 leading-relaxed">
+              Validación en vivo de atención inmediata en WhatsApp (&lt; 3s) con prospectos reales, filtro de compradores y entrega de fichas técnicas en PDF.
+            </p>
+
+            <ul class="space-y-2.5 text-xs text-slate-300 mb-6">
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Conexión de WhatsApp por Código QR</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Respuestas en menos de 3 segundos</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Distribución automática de catálogos PDF</li>
+              <li class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Calificación de prospectos reales</li>
+              <li class="flex items-center gap-2 text-amber-300 font-semibold"><span class="text-amber-400">✓</span> Consumo de tokens de IA 100% cubierto</li>
             </ul>
           </div>
-          <a href="<%= @login_url %>" class="w-full py-3 text-center text-sm font-bold text-white rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-colors">
-            Elegir Starter
-          </a>
+
+          <div class="space-y-2 pt-2 border-t border-white/5">
+            <button type="button" onclick="openPurchaseModal('pilot_3_days')" class="btn-primary w-full justify-center !py-3.5 text-xs font-bold !bg-amber-400 !text-slate-950 hover:!bg-amber-300 shadow-md">
+              🛒 Comprar Piloto (S/ 18)
+            </button>
+            <span class="text-[10px] text-slate-500 text-center block">Pago seguro con Culqi (Yape o Tarjeta)</span>
+          </div>
         </div>
 
-        <!-- Pro Plan (Featured with Giantucchi Ambient Glow) -->
-        <div class="p-8 rounded-3xl glass-card border-2 border-purple-500/50 relative flex flex-col justify-between shadow-2xl shadow-purple-500/20 transform md:-translate-y-2 bg-[#0c0d16]">
+        <!-- PRODUCT 2: Plan Starter -->
+        <div class="p-6 rounded-3xl glass-card flex flex-col justify-between border border-cyan-500/30 relative hover:border-cyan-400 transition-all shadow-lg hover:shadow-cyan-500/10">
+          <div class="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-cyan-500 text-slate-950 font-black text-[10px] uppercase tracking-wider shadow">
+            EQUIPOS DE VENTA
+          </div>
+          <div>
+            <!-- Product Image -->
+            <div class="w-full h-44 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-black flex items-center justify-center">
+              <img src="/products/starter-crm.svg" alt="Plan AIRM Starter CRM" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+            </div>
+            <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider">Suscripción Mensual</span>
+            <h3 class="text-xl font-extrabold text-white mt-1 mb-2">AIRM Starter CRM</h3>
+            
+            <!-- Price Display -->
+            <div class="my-4 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+              <span class="text-xs text-slate-400 block font-medium">Cuota Mensual:</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-3xl font-black text-cyan-400 price-val" data-pen="S/ 149.00" data-usd="$39.00">S/ 149.00</span>
+                <span class="text-xs text-slate-400">/ mes</span>
+              </div>
+              <span class="text-[11px] text-slate-500 block mt-1">Equivalente: <span class="alt-price" data-pen="$39.00 USD" data-usd="S/ 149.00 PEN">$39.00 USD</span></span>
+            </div>
+
+            <p class="text-xs text-slate-300 mb-5 leading-relaxed">
+              Bandeja omnicanal colaborativa para centralizar la comunicación comercial de tu negocio en una sola pantalla compartida.
+            </p>
+
+            <ul class="space-y-2.5 text-xs text-slate-300 mb-6">
+              <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> 3 Asesores comerciales incluidos</li>
+              <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Conexión WhatsApp QR multidispositivo</li>
+              <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Instagram Direct &amp; Facebook Messenger</li>
+              <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Bandeja compartida y notas internas</li>
+              <li class="flex items-center gap-2"><span class="text-cyan-400">✓</span> Base de datos de clientes y contactos</li>
+            </ul>
+          </div>
+
+          <div class="space-y-2 pt-2 border-t border-white/5">
+            <button type="button" onclick="openPurchaseModal('starter_crm')" class="btn-primary w-full justify-center !py-3.5 text-xs font-bold !bg-cyan-500 !text-slate-950 hover:!bg-cyan-400 shadow-md">
+              🛒 Comprar Starter (S/ 149)
+            </button>
+            <span class="text-[10px] text-slate-500 text-center block">Facturación mensual • Cancela cuando desees</span>
+          </div>
+        </div>
+
+        <!-- PRODUCT 3: Mantenimiento Operativo -->
+        <div class="p-6 rounded-3xl glass-card flex flex-col justify-between border border-pink-500/30 relative hover:border-pink-400 transition-all shadow-lg hover:shadow-pink-500/10">
+          <div class="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-pink-500 text-slate-950 font-black text-[10px] uppercase tracking-wider shadow">
+            ALTA DISPONIBILIDAD
+          </div>
+          <div>
+            <!-- Product Image -->
+            <div class="w-full h-44 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-black flex items-center justify-center">
+              <img src="/products/maintenance-cloud.svg" alt="Mantenimiento y Continuidad Operativa" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+            </div>
+            <span class="text-xs font-bold text-pink-400 uppercase tracking-wider">Continuidad Cloud</span>
+            <h3 class="text-xl font-extrabold text-white mt-1 mb-2">Mantenimiento &amp; IA 24/7</h3>
+            
+            <!-- Price Display -->
+            <div class="my-4 p-3 rounded-xl bg-white/[0.03] border border-white/5">
+              <span class="text-xs text-slate-400 block font-medium">Cuota Mensual:</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-3xl font-black text-pink-400 price-val" data-pen="S/ 300.00" data-usd="$79.00">S/ 300.00</span>
+                <span class="text-xs text-slate-400">/ mes</span>
+              </div>
+              <span class="text-[11px] text-slate-500 block mt-1">Equivalente: <span class="alt-price" data-pen="$79.00 USD" data-usd="S/ 300.00 PEN">$79.00 USD</span></span>
+            </div>
+
+            <p class="text-xs text-slate-300 mb-5 leading-relaxed">
+              Infraestructura dedicada en la nube con consumo mensual de IA incluido, soporte de estabilidad y actualización recurrente de inventarios.
+            </p>
+
+            <ul class="space-y-2.5 text-xs text-slate-300 mb-6">
+              <li class="flex items-center gap-2"><span class="text-pink-400">✓</span> Servidores 24/7 de alta disponibilidad (99.9%)</li>
+              <li class="flex items-center gap-2"><span class="text-pink-400">✓</span> Tokens mensuales de IA incluidos sin límite</li>
+              <li class="flex items-center gap-2"><span class="text-pink-400">✓</span> 1 a 2 actualizaciones mensuales de stock/precios</li>
+              <li class="flex items-center gap-2"><span class="text-pink-400">✓</span> Monitoreo y soporte técnico continuo</li>
+              <li class="flex items-center gap-2"><span class="text-pink-400">✓</span> Reporte mensual de métricas comerciales</li>
+            </ul>
+          </div>
+
+          <div class="space-y-2 pt-2 border-t border-white/5">
+            <button type="button" onclick="openPurchaseModal('monthly_maintenance')" class="btn-primary w-full justify-center !py-3.5 text-xs font-bold !bg-pink-500 !text-slate-950 hover:!bg-pink-400 shadow-md">
+              🛒 Comprar Mantenimiento (S/ 300)
+            </button>
+            <span class="text-[10px] text-slate-500 text-center block">Continuidad operativa y soporte garantizado</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Grid: Row 2 (2 products: Pro & Full Setup) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        
+        <!-- PRODUCT 4: Plan Professional -->
+        <div class="p-8 rounded-3xl glass-card border-2 border-purple-500/60 relative flex flex-col justify-between shadow-2xl shadow-purple-500/20 bg-[#0c0d16] hover:border-purple-400 transition-all">
           <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-[11px] font-extrabold text-white uppercase tracking-wider shadow-md">
-            MÁS POPULAR
+            ⭐ MÁS POPULAR EN EMPRESAS
           </div>
           <div>
-            <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Professional</span>
-            <h3 class="text-3xl font-black text-white mt-2 mb-4">$79 <span class="text-sm font-normal text-slate-400">/ mes</span></h3>
-            <p class="text-xs text-slate-400 mb-6">Para equipos comerciales que buscan automatizar flujos y calificar prospectos.</p>
-            <ul class="space-y-3 text-sm text-slate-200 mb-8">
-              <li class="flex items-center gap-2 text-cyan-300">✓ Agentes ilimitados</li>
-              <li class="flex items-center gap-2">✓ WhatsApp QR + WhatsApp Cloud + Instagram</li>
-              <li class="flex items-center gap-2 text-purple-300 font-semibold">✓ Copiloto de IA (Ian Studio) y Chatbots Autónomos</li>
-              <li class="flex items-center gap-2">✓ Pipeline CRM Kanban avanzado</li>
-              <li class="flex items-center gap-2">✓ Automatizaciones y macros</li>
+            <div class="w-full h-48 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-black flex items-center justify-center">
+              <img src="/products/pro-automation.svg" alt="Plan AIRM Professional" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+            </div>
+            <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Suite Completa</span>
+            <h3 class="text-2xl font-black text-white mt-1 mb-2">AIRM Professional &amp; Copiloto IA</h3>
+            
+            <div class="my-4 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
+              <span class="text-xs text-purple-300 block font-medium">Cuota Mensual:</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-3xl sm:text-4xl font-black text-purple-400 price-val" data-pen="S/ 499.00" data-usd="$129.00">S/ 499.00</span>
+                <span class="text-xs text-slate-400">/ mes</span>
+              </div>
+              <span class="text-xs text-slate-400 block mt-1">Equivalente: <span class="alt-price" data-pen="$129.00 USD" data-usd="S/ 499.00 PEN">$129.00 USD</span></span>
+            </div>
+
+            <p class="text-xs text-slate-300 mb-6 leading-relaxed">
+              Para empresas que buscan automatizar flujos complejos, calificar masivamente prospectos y operar con agentes ilimitados y chatbots de IA avanzados.
+            </p>
+
+            <ul class="space-y-3 text-xs text-slate-200 mb-8">
+              <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> <strong>Agentes ilimitados</strong> para todo tu equipo de ventas</li>
+              <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> WhatsApp QR + WhatsApp Business API Oficial de Meta</li>
+              <li class="flex items-center gap-2 font-semibold text-purple-300"><span class="text-purple-400">✓</span> Copiloto de IA (Ian Studio) y Chatbots Autónomos 24/7</li>
+              <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Pipeline CRM Kanban con etapas comerciales personalizadas</li>
+              <li class="flex items-center gap-2"><span class="text-purple-400">✓</span> Automatizaciones avanzadas, macros y webhooks</li>
+              <li class="flex items-center gap-2 text-emerald-400"><span class="text-emerald-400">✓</span> Funciones Enterprise 100% Desbloqueadas</li>
             </ul>
           </div>
-          <a href="<%= @login_url %>" class="btn-primary w-full justify-center !py-3.5 text-sm">
-            Comenzar Prueba Pro
-          </a>
+
+          <div class="space-y-2 pt-4 border-t border-white/10">
+            <button type="button" onclick="openPurchaseModal('pro_automation')" class="btn-primary w-full justify-center !py-4 text-sm font-bold shadow-lg shadow-purple-600/30">
+              🛒 Comprar Plan Pro (S/ 499)
+            </button>
+            <span class="text-xs text-slate-400 text-center block">Activación digital en 24 a 72 horas hábiles</span>
+          </div>
         </div>
 
-        <!-- Enterprise Plan -->
-        <div class="p-8 rounded-3xl glass-card flex flex-col justify-between">
+        <!-- PRODUCT 5: Implementación Integral (Setup) -->
+        <div class="p-8 rounded-3xl glass-card border border-amber-500/40 relative flex flex-col justify-between hover:border-amber-400 transition-all shadow-xl">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-[11px] font-black text-slate-950 uppercase tracking-wider shadow-md">
+            ⚡ IMPLEMENTACIÓN LLAVE EN MANO
+          </div>
           <div>
-            <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Enterprise</span>
-            <h3 class="text-3xl font-black text-white mt-2 mb-4">$199 <span class="text-sm font-normal text-slate-400">/ mes</span></h3>
-            <p class="text-xs text-slate-400 mb-6">Para empresas con alto volumen de conversaciones que requieren despliegue dedicado.</p>
-            <ul class="space-y-3 text-sm text-slate-300 mb-8">
-              <li class="flex items-center gap-2">✓ Todo lo incluido en Pro</li>
-              <li class="flex items-center gap-2 font-semibold text-emerald-400">✓ Funciones Enterprise 100% Desbloqueadas</li>
-              <li class="flex items-center gap-2">✓ Videollamadas RealtimeKit integradas</li>
-              <li class="flex items-center gap-2">✓ Soporte prioritario y SLA garantizado</li>
-              <li class="flex items-center gap-2">✓ Servidor e IP dedicada</li>
+            <div class="w-full h-48 rounded-2xl overflow-hidden mb-5 border border-white/10 bg-black flex items-center justify-center">
+              <img src="/products/setup-onboarding.svg" alt="Implementación Integral y Onboarding" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+            </div>
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Servicio de Ingeniería</span>
+            <h3 class="text-2xl font-black text-white mt-1 mb-2">Implementación Integral &amp; Setup</h3>
+            
+            <div class="my-4 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
+              <span class="text-xs text-amber-300 block font-medium">Pago Único de Configuración:</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span class="text-3xl sm:text-4xl font-black text-amber-400 price-val" data-pen="S/ 1,500.00" data-usd="$399.00">S/ 1,500.00</span>
+                <span class="text-xs text-slate-400">/ pago único</span>
+              </div>
+              <span class="text-xs text-slate-400 block mt-1">Equivalente: <span class="alt-price" data-pen="$399.00 USD" data-usd="S/ 1,500.00 PEN">$399.00 USD</span></span>
+            </div>
+
+            <p class="text-xs text-slate-300 mb-6 leading-relaxed">
+              Despliegue y entrenamiento a medida en 3 a 5 días hábiles. Calibramos el catálogo de tu empresa en la IA y capacitamos a tu equipo comercial.
+            </p>
+
+            <ul class="space-y-3 text-xs text-slate-200 mb-8">
+              <li class="flex items-center gap-2"><span class="text-amber-400">✓</span> Carga ilimitada y calibración del inventario/catálogo en la IA</li>
+              <li class="flex items-center gap-2"><span class="text-amber-400">✓</span> Configuración de envío instantáneo de brochures en PDF</li>
+              <li class="flex items-center gap-2"><span class="text-amber-400">✓</span> Embudo de calificación financiera y agendamiento de citas</li>
+              <li class="flex items-center gap-2"><span class="text-amber-400">✓</span> Sincronización directa con Google Calendar para sala de ventas</li>
+              <li class="flex items-center gap-2"><span class="text-amber-400">✓</span> Canalización de campañas de Meta Ads (Facebook/Instagram)</li>
+              <li class="flex items-center gap-2 font-semibold text-amber-300"><span class="text-amber-400">✓</span> Capacitación de 45 min al equipo de ventas sobre uso y app móvil</li>
             </ul>
           </div>
-          <a href="<%= @login_url %>" class="w-full py-3 text-center text-sm font-bold text-white rounded-2xl bg-white/10 hover:bg-white/20 border border-white/10 transition-colors">
-            Contactar Ventas
-          </a>
+
+          <div class="space-y-2 pt-4 border-t border-white/10">
+            <button type="button" onclick="openPurchaseModal('full_setup')" class="btn-primary w-full justify-center !py-4 text-sm font-bold !bg-amber-400 !text-slate-950 hover:!bg-amber-300 shadow-lg shadow-amber-500/20">
+              🛒 Comprar Implementación (S/ 1,500)
+            </button>
+            <span class="text-xs text-slate-400 text-center block">Entregable llave en mano en 3 a 5 días hábiles</span>
+          </div>
         </div>
       </div>
+
+      <!-- Trust Badges & Payment Guarantees -->
+      <div class="mt-16 p-8 rounded-3xl glass-card border border-white/10 max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+        <div class="space-y-1">
+          <div class="flex items-center justify-center md:justify-start gap-2 text-white font-bold text-sm">
+            <span class="text-emerald-400 text-lg">🔒</span> Pasarela de Pago 100% Segura y Certificada
+          </div>
+          <p class="text-xs text-slate-400">
+            Transacciones encriptadas con tecnología SSL de 256 bits y procesadas con Culqi bajo normativa PCI-DSS Nivel 1.
+          </p>
+        </div>
+        <!-- Payment Brand Icons -->
+        <div class="flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-slate-300">
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 flex items-center gap-1.5">
+            <span class="text-purple-400 font-extrabold">culqi</span>
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[#1a1f71] font-black bg-white">
+            VISA
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[#eb001b] font-black bg-white">
+            Mastercard
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-[#006fcf] font-black bg-white">
+            AMEX
+          </span>
+          <span class="px-3 py-1.5 rounded-lg bg-purple-900/60 border border-purple-500/40 text-purple-200 flex items-center gap-1">
+            💜 Yape
+          </span>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -512,79 +727,135 @@
   </section>
 </main>
 
-<!-- Footer (Full Official Giantucchi Ecosystem Layout) -->
+<!-- Footer (Full Official Giantucchi Ecosystem Layout & Legal Compliance) -->
 <footer class="bg-black border-t border-white/10 pt-16 pb-12 relative z-10 text-slate-400 text-xs">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 md:grid-cols-5 gap-10 pb-12 border-b border-white/[0.08]">
-      <!-- Column 1: Brand & Description -->
+      
+      <!-- Column 1 & 2: Brand, Legal Entity & Merchant Info -->
       <div class="md:col-span-2 space-y-4">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-black border border-white/15 flex items-center justify-center p-1.5 shrink-0">
+          <div class="w-9 h-9 rounded-xl bg-black border border-white/15 flex items-center justify-center p-1.5 shrink-0 shadow-lg">
             <img src="/brand-assets/logo_thumbnail.svg" alt="Giantucchi" class="w-6 h-6" />
           </div>
-          <span class="text-base font-bold text-white tracking-tight">Giantucchi</span>
+          <div class="flex flex-col">
+            <span class="text-base font-bold text-white tracking-tight">AIRM by Giantucchi</span>
+            <span class="text-[10px] text-purple-400 font-semibold">Tecnología de IA &amp; CRM Omnicanal</span>
+          </div>
         </div>
+        
         <p class="text-slate-400 text-xs sm:text-sm leading-relaxed max-w-sm">
-          Líderes en transformación digital, automatización, inteligencia artificial y tecnología empresarial para Perú y Latinoamérica.
+          Plataforma tecnológica de automatización conversacional y ventas inteligentes con IA para empresas en Perú y Latinoamérica.
         </p>
-        <div class="pt-2 text-xs text-slate-400 space-y-1">
-          <p><strong class="text-white"><%= @company_name %></strong> · RUC <%= @company_ruc %></p>
-          <p><%= @company_address %></p>
+
+        <!-- Official Merchant Details (Culqi Requirement) -->
+        <div class="pt-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1.5 text-xs text-slate-300">
+          <div class="flex items-center gap-2 text-white font-bold pb-1 border-b border-white/5">
+            <span>🏢 Datos de la Tienda Virtual (Perú)</span>
+          </div>
+          <p><strong class="text-white">Razón Social:</strong> <%= @company_name %></p>
+          <p><strong class="text-white">RUC:</strong> <%= @company_ruc %></p>
+          <p><strong class="text-white">Dirección Fiscal:</strong> <%= @company_address %></p>
+          <p><strong class="text-white">Horario de Atención:</strong> <%= @company_hours %></p>
+          <p><strong class="text-white">Tiempo de Entrega Digital:</strong> <%= @delivery_time %></p>
         </div>
       </div>
 
-      <!-- Column 2: Soluciones -->
+      <!-- Column 3: Soluciones & Catálogo -->
       <div>
-        <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4">Soluciones</h3>
+        <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4">Catálogo &amp; Soluciones</h3>
         <ul class="space-y-2.5 text-slate-400">
-          <li><a href="https://giantucchi.com" target="_blank" class="hover:text-white transition-colors">Automatización de Procesos</a></li>
-          <li><a href="https://giantucchi.com" target="_blank" class="hover:text-white transition-colors">BPO y Contact Center</a></li>
-          <li><a href="/" class="hover:text-white transition-colors text-white font-medium">AIRM (AI CRM)</a></li>
-          <li><a href="https://giantucchi.com" target="_blank" class="hover:text-white transition-colors">Growth Engine & Analítica</a></li>
-          <li><a href="https://giantucchi.com" target="_blank" class="hover:text-white transition-colors">Consultoría Tecnológica</a></li>
+          <li><a href="#productos" class="hover:text-white transition-colors text-white font-medium">🛒 Catálogo de Planes (Soles S/)</a></li>
+          <li><a href="#productos" class="hover:text-white transition-colors">Piloto Recepcionista IA (3 Días)</a></li>
+          <li><a href="#productos" class="hover:text-white transition-colors">AIRM Starter CRM</a></li>
+          <li><a href="#productos" class="hover:text-white transition-colors">Mantenimiento &amp; Continuidad 24/7</a></li>
+          <li><a href="#productos" class="hover:text-white transition-colors">AIRM Professional &amp; Copiloto IA</a></li>
+          <li><a href="#productos" class="hover:text-white transition-colors">Implementación Integral &amp; Setup</a></li>
         </ul>
       </div>
 
-      <!-- Column 3: Recursos y Ayuda -->
+      <!-- Column 4: Información Legal (Culqi & Indecopi) -->
       <div>
-        <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4">Recursos</h3>
+        <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4">Información Legal</h3>
         <ul class="space-y-2.5 text-slate-400">
+          <li>
+            <a href="/libro-reclamaciones" class="text-amber-300 hover:text-amber-200 font-bold flex items-center gap-1.5">
+              <span>📖 Libro de Reclamaciones</span>
+            </a>
+          </li>
+          <li>
+            <a href="/devoluciones" class="hover:text-white transition-colors font-medium text-slate-300">
+              Política de Devoluciones &amp; Cancelación
+            </a>
+          </li>
+          <li><a href="/terms" class="hover:text-white transition-colors">Términos y Condiciones</a></li>
+          <li><a href="/privacy" class="hover:text-white transition-colors">Políticas de Privacidad</a></li>
           <li><a href="<%= @help_url %>" target="_blank" class="hover:text-white transition-colors text-cyan-400 font-medium">Centro de Ayuda (/hc)</a></li>
-          <li><a href="/status" class="hover:text-white transition-colors">Estado del Sistema</a></li>
-          <li><a href="/#features" class="hover:text-white transition-colors">Capacidades de IA</a></li>
-          <li><a href="/#canales" class="hover:text-white transition-colors">Canales Integrados</a></li>
-          <li><a href="https://giantucchi.com" target="_blank" class="hover:text-white transition-colors">Portal Corporativo</a></li>
+          <li><a href="/status" class="hover:text-white transition-colors">Estado del Sistema (99.9%)</a></li>
         </ul>
+
+        <!-- Libro de Reclamaciones Visual Badge -->
+        <div class="mt-4">
+          <a href="https://giantucchi.com/libro-reclamaciones/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 transition-all text-[11px] font-bold">
+            <span class="text-base">📖</span>
+            <div class="flex flex-col text-left">
+              <span>Libro de Reclamaciones</span>
+              <span class="text-[9px] font-normal text-amber-400/80">Conforme a la Ley N° 29571</span>
+            </div>
+          </a>
+        </div>
       </div>
 
-      <!-- Column 4: Contacto Oficial -->
+      <!-- Column 5: Contacto Oficial & Pasarela -->
       <div>
-        <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4">Contacto</h3>
-        <ul class="space-y-3 text-slate-400">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-white mb-4">Contacto Oficial</h3>
+        <ul class="space-y-3 text-slate-400 mb-6">
           <li class="flex items-center gap-2">
             <span>📍</span>
             <span>Miraflores, Lima, Perú</span>
           </li>
           <li class="flex items-center gap-2">
             <span>📞</span>
-            <a href="tel:<%= @company_phone.gsub(' ', '') %>" class="hover:text-white transition-colors"><%= @company_phone %></a>
+            <a href="tel:<%= @company_phone.gsub(' ', '') %>" class="hover:text-white transition-colors text-white font-medium"><%= @company_phone %></a>
           </li>
           <li class="flex items-center gap-2">
             <span>✉️</span>
-            <a href="mailto:<%= @company_email %>" class="hover:text-white transition-colors"><%= @company_email %></a>
+            <a href="mailto:<%= @company_email %>" class="hover:text-white transition-colors text-cyan-400"><%= @company_email %></a>
+          </li>
+          <li class="flex items-center gap-2">
+            <span>🕒</span>
+            <span><%= @company_hours %></span>
           </li>
         </ul>
+
+        <!-- Payment Security Badges -->
+        <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5 space-y-2">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Medios de Pago Seguros</span>
+          <div class="flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-white">
+            <span class="px-2 py-0.5 rounded bg-purple-900/60 border border-purple-500/30 text-purple-200">Culqi</span>
+            <span class="px-2 py-0.5 rounded bg-white text-[#1a1f71]">Visa</span>
+            <span class="px-2 py-0.5 rounded bg-white text-[#eb001b]">MC</span>
+            <span class="px-2 py-0.5 rounded bg-white text-[#006fcf]">AMEX</span>
+            <span class="px-2 py-0.5 rounded bg-purple-800 text-white">Yape</span>
+          </div>
+          <span class="text-[9px] text-emerald-400 font-semibold block flex items-center gap-1">
+            <span>🔒</span> Conexión Cifrada SSL 256-bit
+          </span>
+        </div>
       </div>
+
     </div>
 
     <!-- Bottom Legal Bar -->
     <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-xs text-slate-500 text-center md:text-left">
-        © 2024–2026 <%= @company_name %>. Todos los derechos reservados.
+        © 2024–2026 <%= @company_name %> · RUC <%= @company_ruc %>. Todos los derechos reservados.
       </p>
       <div class="flex flex-wrap justify-center items-center gap-6 text-xs text-slate-400">
         <a href="/terms" class="hover:text-white transition-colors">Términos de Servicio</a>
         <a href="/privacy" class="hover:text-white transition-colors">Políticas de Privacidad</a>
+        <a href="/devoluciones" class="hover:text-white transition-colors">Política de Devoluciones</a>
+        <a href="/libro-reclamaciones" class="hover:text-amber-400 text-amber-300 font-semibold transition-colors">📖 Libro de Reclamaciones</a>
         <a href="<%= @help_url %>" target="_blank" class="hover:text-white transition-colors">Centro de Ayuda</a>
         <a href="/status" class="hover:text-white transition-colors">Estado del Sistema</a>
       </div>
@@ -592,8 +863,274 @@
   </div>
 </footer>
 
+<!-- MODAL DE CHECKOUT DIRECTO CULQI (Proceso de Compra Observado por Culqi) -->
+<div id="checkout-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+  <div class="relative w-full max-w-lg rounded-3xl bg-[#0b0f19] border border-white/15 p-6 sm:p-8 shadow-2xl text-slate-200 max-h-[90vh] overflow-y-auto">
+    
+    <!-- Close Button -->
+    <button type="button" onclick="closePurchaseModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-lg transition-colors">
+      ✕
+    </button>
+
+    <!-- Modal Header -->
+    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
+      <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xl shrink-0">
+        🛒
+      </div>
+      <div>
+        <h3 class="text-lg font-black text-white">Proceso de Compra Seguro</h3>
+        <p class="text-xs text-slate-400">Pasarela autorizada Culqi • Transacción encriptada</p>
+      </div>
+    </div>
+
+    <!-- Product Summary Card -->
+    <div class="p-4 rounded-2xl bg-white/[0.03] border border-white/10 mb-6 flex gap-4 items-center">
+      <img id="modal-product-img" src="/products/pilot-ia.svg" alt="Producto Seleccionado" class="w-20 h-20 rounded-xl object-cover border border-white/10 bg-black shrink-0" />
+      <div class="flex-1 min-w-0">
+        <span class="text-[10px] font-bold text-purple-400 uppercase tracking-wider block">Producto / Servicio:</span>
+        <h4 id="modal-product-title" class="text-sm font-bold text-white truncate">Piloto Recepcionista IA</h4>
+        <div class="flex items-baseline gap-2 mt-1">
+          <span id="modal-product-price" class="text-xl font-black text-amber-400">S/ 18.00</span>
+          <span id="modal-product-period" class="text-[11px] text-slate-400">(pago único por 3 días)</span>
+        </div>
+        <span class="text-[10px] text-slate-400 block mt-0.5">🚀 Entrega digital: 24 a 72 hrs hábiles</span>
+      </div>
+    </div>
+
+    <!-- Buyer Information Form -->
+    <form id="checkout-form" onsubmit="event.preventDefault(); executeCulqiPayment();" class="space-y-4">
+      <div>
+        <label for="buyer-name" class="block text-xs font-semibold text-slate-300 mb-1">Nombre completo / Razón Social *</label>
+        <input type="text" id="buyer-name" required placeholder="Ej. Juan Pérez / Empresa SAC" class="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors placeholder:text-slate-500" />
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label for="buyer-email" class="block text-xs font-semibold text-slate-300 mb-1">Correo electrónico *</label>
+          <input type="email" id="buyer-email" required placeholder="ejemplo@empresa.com" class="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors placeholder:text-slate-500" />
+        </div>
+        <div>
+          <label for="buyer-phone" class="block text-xs font-semibold text-slate-300 mb-1">Teléfono / WhatsApp *</label>
+          <input type="tel" id="buyer-phone" required placeholder="+51 987 654 321" class="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white text-xs focus:outline-none focus:border-purple-500 transition-colors placeholder:text-slate-500" />
+        </div>
+      </div>
+
+      <!-- Legal Checkbox (Mandatory Culqi Requirement) -->
+      <div class="pt-2">
+        <label class="flex items-start gap-2.5 cursor-pointer">
+          <input type="checkbox" id="terms-check" required checked class="mt-0.5 rounded border-white/20 bg-white/10 text-purple-600 focus:ring-0" />
+          <span class="text-[11px] text-slate-300 leading-snug">
+            He leído y acepto los <a href="/terms" target="_blank" class="text-cyan-400 underline">Términos de Servicio</a>, la <a href="/privacy" target="_blank" class="text-cyan-400 underline">Política de Privacidad</a> y la <a href="/devoluciones" target="_blank" class="text-cyan-400 underline">Política de Devoluciones</a> (comprendo que los recursos de software y tokens de IA no son reembolsables tras la activación digital).
+          </span>
+        </label>
+      </div>
+
+      <!-- Submit Payment Button -->
+      <div class="pt-3">
+        <button type="submit" id="btn-pay-culqi" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-lg shadow-purple-600/30 flex items-center justify-center gap-2 transition-all">
+          <span>💳 Pagar con Culqi (Tarjeta / Yape)</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Payment Badges in Modal -->
+    <div class="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center justify-center gap-3 text-[10px] text-slate-400">
+      <span class="flex items-center gap-1 text-emerald-400 font-semibold">🔒 SSL 256-bit</span>
+      <span>•</span>
+      <span class="text-purple-300 font-bold">Culqi Pagos</span>
+      <span>•</span>
+      <span>Visa / Mastercard / Amex</span>
+      <span>•</span>
+      <span class="text-purple-300">Yape</span>
+    </div>
+
+  </div>
+</div>
+
 <script>
-  // Interactive Simulation for Live Demo
+  // Culqi Products Dictionary
+  const CULQI_PRODUCTS = {
+    pilot_3_days: {
+      id: 'pilot_3_days',
+      name: 'Piloto Recepcionista IA (3 Días de Validación)',
+      image: '/products/pilot-ia.svg',
+      pricePEN: 18.00,
+      priceCentsPEN: 1800,
+      priceUSD: 5.00,
+      period: 'pago único por 3 días'
+    },
+    starter_crm: {
+      id: 'starter_crm',
+      name: 'Plan AIRM Starter CRM (3 Asesores)',
+      image: '/products/starter-crm.svg',
+      pricePEN: 149.00,
+      priceCentsPEN: 14900,
+      priceUSD: 39.00,
+      period: 'por mes'
+    },
+    monthly_maintenance: {
+      id: 'monthly_maintenance',
+      name: 'Mantenimiento & Continuidad Operativa (IA 24/7)',
+      image: '/products/maintenance-cloud.svg',
+      pricePEN: 300.00,
+      priceCentsPEN: 30000,
+      priceUSD: 79.00,
+      period: 'por mes'
+    },
+    pro_automation: {
+      id: 'pro_automation',
+      name: 'Plan AIRM Professional & Copiloto IA',
+      image: '/products/pro-automation.svg',
+      pricePEN: 499.00,
+      priceCentsPEN: 49900,
+      priceUSD: 129.00,
+      period: 'por mes'
+    },
+    full_setup: {
+      id: 'full_setup',
+      name: 'Implementación Integral & Setup Onboarding',
+      image: '/products/setup-onboarding.svg',
+      pricePEN: 1500.00,
+      priceCentsPEN: 150000,
+      priceUSD: 399.00,
+      period: 'pago único'
+    }
+  };
+
+  let activeProduct = CULQI_PRODUCTS.pilot_3_days;
+  let activeCurrency = 'PEN';
+  let culqiLoaded = false;
+
+  // Currency Switcher
+  function switchCurrency(code) {
+    activeCurrency = code;
+    const penBtn = document.getElementById('cur-btn-pen');
+    const usdBtn = document.getElementById('cur-btn-usd');
+
+    if (code === 'PEN') {
+      penBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-purple-600 text-white shadow-md';
+      usdBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all';
+    } else {
+      usdBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-purple-600 text-white shadow-md';
+      penBtn.className = 'px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition-all';
+    }
+
+    document.querySelectorAll('.price-val').forEach(el => {
+      el.textContent = code === 'PEN' ? el.getAttribute('data-pen') : el.getAttribute('data-usd');
+    });
+
+    document.querySelectorAll('.alt-price').forEach(el => {
+      el.textContent = code === 'PEN' ? el.getAttribute('data-pen') : el.getAttribute('data-usd');
+    });
+  }
+
+  // Load Culqi Script
+  function loadCulqiScript(callback) {
+    if (window.Culqi) {
+      callback();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.culqi.com/js/v4';
+    script.async = true;
+    script.onload = () => {
+      culqiLoaded = true;
+      callback();
+    };
+    script.onerror = () => {
+      console.error('Error al cargar Culqi Checkout v4');
+    };
+    document.head.appendChild(script);
+  }
+
+  // Open Checkout Modal
+  function openPurchaseModal(productId) {
+    activeProduct = CULQI_PRODUCTS[productId] || CULQI_PRODUCTS.pilot_3_days;
+    
+    document.getElementById('modal-product-img').src = activeProduct.image;
+    document.getElementById('modal-product-title').textContent = activeProduct.name;
+    document.getElementById('modal-product-price').textContent = 'S/ ' + activeProduct.pricePEN.toFixed(2);
+    document.getElementById('modal-product-period').textContent = '(' + activeProduct.period + ')';
+
+    document.getElementById('checkout-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    // Preload Culqi script in background
+    loadCulqiScript(() => {});
+  }
+
+  // Close Checkout Modal
+  function closePurchaseModal() {
+    document.getElementById('checkout-modal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+  }
+
+  // Execute Culqi Payment
+  function executeCulqiPayment() {
+    const name = document.getElementById('buyer-name').value.trim();
+    const email = document.getElementById('buyer-email').value.trim();
+    const phone = document.getElementById('buyer-phone').value.trim();
+    const terms = document.getElementById('terms-check').checked;
+
+    if (!name || !email || !phone) {
+      alert('Por favor complete todos los datos requeridos.');
+      return;
+    }
+
+    if (!terms) {
+      alert('Debe aceptar los Términos y la Política de Devoluciones.');
+      return;
+    }
+
+    loadCulqiScript(() => {
+      try {
+        window.Culqi.publicKey = "<%= @culqi_public_key %>";
+
+        window.Culqi.settings({
+          title: activeProduct.name,
+          currency: 'PEN',
+          amount: activeProduct.priceCentsPEN
+        });
+
+        window.Culqi.options({
+          lang: 'es',
+          installments: true,
+          paymentMethods: {
+            tarjeta: true,
+            yape: true,
+            billetera: true,
+            bancaMovil: true,
+            agente: true,
+            cuotealo: false
+          }
+        });
+
+        window.culqi = function() {
+          if (window.Culqi.token) {
+            alert('¡Pago procesado con éxito! Se ha enviado la confirmación al correo: ' + email);
+            closePurchaseModal();
+          } else if (window.Culqi.order) {
+            alert('¡Orden generada con éxito! ID: ' + window.Culqi.order.id);
+            closePurchaseModal();
+          } else if (window.Culqi.error) {
+            alert('Aviso de pago: ' + (window.Culqi.error.user_message || window.Culqi.error.message));
+          }
+          window.Culqi.close();
+        };
+
+        window.Culqi.open();
+      } catch (err) {
+        console.error('Error al inicializar Culqi:', err);
+      }
+    });
+  }
+
+  // Close modal on escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closePurchaseModal();
+  });
+
+  // Demo status text
   (function() {
     const statuses = [
       "Escaneando intención...",

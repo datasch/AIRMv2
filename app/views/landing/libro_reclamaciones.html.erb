@@ -1,0 +1,94 @@
+<% content_for :title, "Libro de Reclamaciones Virtual — Giantucchi Inc EIRL" %>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-28 text-slate-300">
+  <div class="mb-10 text-center">
+    <a href="/" class="inline-flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 mb-6 transition-colors">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span>Volver a la página principal</span>
+    </a>
+    
+    <!-- Indecopi Badge -->
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold mb-4 uppercase tracking-wider">
+      <span>📖 Conforme a la Ley N° 29571 • Indecopi</span>
+    </div>
+
+    <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+      Libro de Reclamaciones Virtual
+    </h1>
+    <p class="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
+      Conforme a lo establecido en el Código de Protección y Defensa del Consumidor del Perú, ponemos a disposición de nuestros clientes y usuarios nuestra Hoja de Reclamación Virtual.
+    </p>
+  </div>
+
+  <!-- Provider Legal Box -->
+  <div class="p-6 sm:p-8 rounded-3xl bg-white/[0.03] border border-white/10 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs">
+    <div>
+      <span class="text-purple-400 font-bold uppercase tracking-wider block mb-1">Razón Social del Proveedor</span>
+      <h3 class="text-lg font-bold text-white"><%= @company_name %></h3>
+      <p class="text-slate-400 mt-0.5">RUC: <strong class="text-white"><%= @company_ruc %></strong></p>
+      <p class="text-slate-400"><%= @company_address %></p>
+    </div>
+    <div class="sm:text-right space-y-1">
+      <p class="text-slate-400">Atención oficial al cliente:</p>
+      <p class="text-white font-semibold"><%= @company_phone %></p>
+      <p><a href="mailto:<%= @company_support_email %>" class="text-cyan-400 hover:underline"><%= @company_support_email %></a></p>
+      <p class="text-slate-400"><%= @company_hours %></p>
+    </div>
+  </div>
+
+  <!-- Centralized Book Notification Card -->
+  <div class="glass-card rounded-3xl p-8 sm:p-12 border border-white/10 space-y-6">
+    <div class="flex items-center gap-4">
+      <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-2xl shrink-0">
+        📖
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-white">Registro Centralizado de Reclamos y Quejas</h2>
+        <p class="text-slate-400 text-xs sm:text-sm mt-0.5">
+          Para garantizar una trazabilidad transparente y respuesta oportuna en un plazo no mayor a quince (15) días hábiles, nuestro libro opera a través del portal centralizado de Giantucchi.
+        </p>
+      </div>
+    </div>
+
+    <!-- Differences explanation -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+      <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1 text-xs">
+        <span class="font-bold text-amber-300">Reclamo:</span>
+        <p class="text-slate-400">
+          Disconformidad relacionada directamente a los productos de software o servicios contratados (ej. fallas en la activación, discrepancias en facturación).
+        </p>
+      </div>
+      <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1 text-xs">
+        <span class="font-bold text-cyan-300">Queja:</span>
+        <p class="text-slate-400">
+          Malestar o descontento respecto a la atención al público recibida por parte de nuestros asesores comerciales o canales de soporte.
+        </p>
+      </div>
+    </div>
+
+    <!-- Official Access Button -->
+    <div class="pt-4 border-t border-white/10 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <p class="text-xs text-slate-400">
+          Al enviar tu reclamo, se generará una copia electrónica automática remitida a tu correo personal.
+        </p>
+      </div>
+      <a href="https://giantucchi.com/libro-reclamaciones/" target="_blank" rel="noopener noreferrer" class="btn-primary !bg-amber-400 !text-slate-950 font-bold hover:!bg-amber-300 w-full sm:w-auto justify-center">
+        <span>Abrir Hoja de Reclamación Oficial</span>
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+        </svg>
+      </a>
+    </div>
+
+    <!-- Direct Email Fallback -->
+    <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-xs text-slate-400 space-y-2 mt-4">
+      <p class="font-bold text-white">Canal alternativo de atención directa:</p>
+      <p>
+        También puedes remitir tu requerimiento o incidencia detallada al correo <a href="mailto:<%= @company_support_email %>" class="text-cyan-400 hover:underline"><%= @company_support_email %></a> con el asunto <code class="bg-black/60 px-2 py-0.5 rounded text-amber-300">RECLAMO - [Nombre de tu Empresa / DNI]</code> indicando fecha de contratación, descripción de los hechos y pedido concreto.
+      </p>
+    </div>
+  </div>
+</div>

@@ -12,6 +12,10 @@ class LandingController < ActionController::Base
 
   def status; end
 
+  def devoluciones; end
+
+  def libro_reclamaciones; end
+
   private
 
   def set_shared_variables
@@ -26,5 +30,9 @@ class LandingController < ActionController::Base
     @company_address = 'Av. Larco 1052, Miraflores, Lima, Perú'
     @company_phone = '+51 913 086 096'
     @company_email = 'hola@giantucchi.com'
+    @company_support_email = 'soporte@giantucchi.com'
+    @company_hours = 'Lunes a Viernes de 9:00 AM a 6:00 PM (GMT-5)'
+    @delivery_time = 'Activación y aprovisionamiento digital en 24 a 72 horas hábiles tras la confirmación del pago'
+    @culqi_public_key = ENV.fetch('CULQI_PUBLIC_KEY', 'pk_live_airm_default')
   end
 end

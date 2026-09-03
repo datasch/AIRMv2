@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-grad-3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0718"/>
+      <stop offset="50%" stop-color="#130d2a"/>
+      <stop offset="100%" stop-color="#05030d"/>
+    </linearGradient>
+    <linearGradient id="purple-pink-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+    <filter id="glow-3" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="600" height="400" rx="16" fill="url(#bg-grad-3)"/>
+  <rect width="598" height="398" x="1" y="1" rx="15" fill="none" stroke="rgba(139, 92, 246, 0.3)" stroke-width="2"/>
+
+  <circle cx="180" cy="180" r="120" fill="#8b5cf6" opacity="0.12" filter="url(#glow-3)"/>
+  <circle cx="420" cy="220" r="100" fill="#ec4899" opacity="0.12" filter="url(#glow-3)"/>
+
+  <!-- Server Racks / Cloud Architecture Graphic -->
+  <g transform="translate(130, 65)">
+    <!-- Cloud base -->
+    <rect width="340" height="230" rx="16" fill="#0f0c24" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+    
+    <!-- Top Header Bar -->
+    <rect width="340" height="36" rx="16" fill="#090717"/>
+    <rect y="20" width="340" height="16" fill="#090717"/>
+    <circle cx="20" cy="18" r="4.5" fill="#10b981"/>
+    <text x="34" y="21" fill="#10b981" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="700">INFRAESTRUCTURA ACTIVA • 99.9% UPTIME</text>
+    <text x="320" y="21" fill="#94a3b8" font-family="'Plus Jakarta Sans', sans-serif" font-size="8.5" text-anchor="end">24/7 Monitoreo</text>
+
+    <!-- Server Module 1: Cloud AI Engine -->
+    <g transform="translate(20, 48)">
+      <rect width="300" height="50" rx="10" fill="#18133b" stroke="rgba(139, 92, 246, 0.3)"/>
+      <circle cx="24" cy="25" r="12" fill="#8b5cf6" opacity="0.2"/>
+      <text x="24" y="29" fill="#c084fc" font-size="12" text-anchor="middle">⚡</text>
+      <text x="48" y="22" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700">Motor de Inteligencia Artificial (Tokens)</text>
+      <text x="48" y="36" fill="#94a3b8" font-family="'Plus Jakarta Sans', sans-serif" font-size="8">Tokens mensuales cubiertos • Sin límites de consultas</text>
+      <circle cx="280" cy="25" r="5" fill="#10b981"/>
+    </g>
+
+    <!-- Server Module 2: High-Availability Database -->
+    <g transform="translate(20, 106)">
+      <rect width="300" height="50" rx="10" fill="#18133b" stroke="rgba(255, 255, 255, 0.08)"/>
+      <circle cx="24" cy="25" r="12" fill="#ec4899" opacity="0.2"/>
+      <text x="24" y="29" fill="#f472b6" font-size="12" text-anchor="middle">🗄️</text>
+      <text x="48" y="22" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700">Servidores Dedicados en la Nube</text>
+      <text x="48" y="36" fill="#94a3b8" font-family="'Plus Jakarta Sans', sans-serif" font-size="8">PostgreSQL + Redis + Backups diarios automatizados</text>
+      <circle cx="280" cy="25" r="5" fill="#10b981"/>
+    </g>
+
+    <!-- Server Module 3: Continuous Calibration & Support -->
+    <g transform="translate(20, 164)">
+      <rect width="300" height="50" rx="10" fill="#18133b" stroke="rgba(255, 255, 255, 0.08)"/>
+      <circle cx="24" cy="25" r="12" fill="#06b6d4" opacity="0.2"/>
+      <text x="24" y="29" fill="#38bdf8" font-size="12" text-anchor="middle">🛠️</text>
+      <text x="48" y="22" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="700">Calibración Continua de Inventario</text>
+      <text x="48" y="36" fill="#94a3b8" font-family="'Plus Jakarta Sans', sans-serif" font-size="8">Hasta 2 actualizaciones de precios y promociones al mes</text>
+      <circle cx="280" cy="25" r="5" fill="#10b981"/>
+    </g>
+  </g>
+
+  <!-- Top Badge -->
+  <g transform="translate(370, 25)">
+    <rect width="180" height="34" rx="17" fill="url(#purple-pink-grad)"/>
+    <text x="90" y="21" fill="#ffffff" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" font-weight="800" text-anchor="middle">MANTENIMIENTO MENSUAL</text>
+  </g>
+
+  <!-- Left Stats Card -->
+  <g transform="translate(30, 140)">
+    <rect width="115" height="56" rx="12" fill="rgba(15, 23, 42, 0.95)" stroke="rgba(139, 92, 246, 0.3)"/>
+    <text x="57" y="20" fill="#94a3b8" font-family="'Plus Jakarta Sans', sans-serif" font-size="8" text-anchor="middle">Disponibilidad</text>
+    <text x="57" y="42" fill="#10b981" font-family="'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" text-anchor="middle">99.9%</text>
+  </g>
+
+  <!-- Price Tag -->
+  <g transform="translate(425, 280)">
+    <rect width="145" height="54" rx="12" fill="rgba(15, 23, 42, 0.95)" stroke="rgba(236, 72, 153, 0.4)"/>
+    <text x="72" y="20" fill="#94a3b8" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" text-anchor="middle">Inversión Mensual</text>
+    <text x="72" y="44" fill="#f472b6" font-family="'Plus Jakarta Sans', sans-serif" font-size="18" font-weight="900" text-anchor="middle">S/ 300.00 <tspan font-size="10" font-weight="500">/mes</tspan></text>
+  </g>
+
+  <text x="300" y="380" fill="#64748b" font-family="'Plus Jakarta Sans', sans-serif" font-size="10" text-anchor="middle" font-weight="600">Continuidad Operativa • Soporte de Ingeniería • Servidores Cloud 24/7</text>
+</svg>

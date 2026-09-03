@@ -107,19 +107,25 @@
         </p>
       </section>
 
-      <!-- 6. Facturación, Planes y Cancelación -->
+      <!-- 6. Facturación, Métodos de Pago y Pasarela Culqi -->
       <section class="space-y-4">
-        <h2 class="text-xl font-bold text-white">6. Planes, Pagos y Políticas de Cancelación</h2>
+        <h2 class="text-xl font-bold text-white">6. Facturación, Pasarela de Pagos Culqi y Tiempos de Activación</h2>
         <p>
-          Las suscripciones a AIRM se facturan por períodos mensuales o anuales por adelantado. El cliente puede cancelar su suscripción en cualquier momento desde el panel de ajustes o contactando al soporte comercial antes de la siguiente fecha de renovación.
+          Las transacciones comerciales y suscripciones de la tienda virtual de AIRM son procesadas de manera segura a través de la pasarela autorizada <strong>Culqi</strong> (Compañía Incubadora de Soluciones Móviles S.A.C.), cumpliendo con los estándares internacionales de seguridad PCI-DSS.
         </p>
+        <ul class="list-disc list-inside space-y-2 text-slate-300 pl-2">
+          <li><strong>Medios de Pago Aceptados:</strong> Tarjetas de crédito y débito nacionales e internacionales (Visa, Mastercard, American Express, Diners Club) y billeteras móviles autorizadas (Yape).</li>
+          <li><strong>Moneda de Facturación:</strong> Los precios están expresados de manera visible en <strong>Soles (PEN S/)</strong> para transacciones dentro del territorio peruano, con importes equivalentes referenciales en Dólares Americanos (USD).</li>
+          <li><strong>Tiempo de Entrega y Activación Digital:</strong> <%= @delivery_time %>. Tras el pago exitoso, el cliente recibe en su correo la confirmación de la orden y las credenciales de acceso al entorno AIRM.</li>
+          <li><strong>Política de No Devolución y Cancelación:</strong> Conforme se detalla en nuestra <a href="/devoluciones" class="text-cyan-400 font-bold hover:underline">Política de Devoluciones y Cancelaciones</a>, al tratarse de software intangible y consumo en tiempo real de recursos computacionales de servidores 24/7 y tokens de IA, no proceden reembolsos una vez activado el plan. El cliente puede cancelar la renovación de su plan recurrente en cualquier momento sin penalidad comunicándose con 3 días hábiles de anticipación.</li>
+        </ul>
       </section>
 
       <!-- 7. Jurisdicción y Ley Aplicable -->
       <section class="space-y-4 border-t border-white/10 pt-6">
         <h2 class="text-xl font-bold text-white">7. Legislación Aplicable y Resolución de Disputas</h2>
         <p>
-          Estos términos se rigen por las leyes vigentes de la República del Perú. Cualquier controversia será resuelta prioritariamente mediante trato directo de buena fe o sometida a la jurisdicción de los jueces y tribunales de la ciudad de Lima, Perú.
+          Estos términos se rigen por las leyes vigentes de la República del Perú y las normas de protección al consumidor fiscalizadas por el <strong>Indecopi</strong> (Ley N° 29571). Ponemos a disposición de nuestros clientes nuestro <a href="/libro-reclamaciones" class="text-amber-400 font-bold hover:underline">Libro de Reclamaciones Virtual</a> para cualquier disconformidad o requerimiento formal.
         </p>
       </section>
     </div>
@@ -131,11 +137,13 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
     <div class="flex items-center gap-3">
       <span class="font-extrabold text-white text-sm">AIRM</span>
-      <span>© 2024–2026 <%= @company_name %>. Todos los derechos reservados.</span>
+      <span>© 2024–2026 <%= @company_name %> · RUC <%= @company_ruc %>. Todos los derechos reservados.</span>
     </div>
-    <div class="flex items-center gap-6">
+    <div class="flex flex-wrap items-center gap-6">
       <a href="/terms" class="text-white hover:underline">Términos de Servicio</a>
       <a href="/privacy" class="hover:text-white transition-colors">Políticas de Privacidad</a>
+      <a href="/devoluciones" class="hover:text-white transition-colors">Política de Devoluciones</a>
+      <a href="/libro-reclamaciones" class="hover:text-amber-400 text-amber-300 font-semibold transition-colors">📖 Libro de Reclamaciones</a>
       <a href="<%= @help_url %>" target="_blank" class="hover:text-white transition-colors">Centro de Ayuda</a>
       <a href="/status" class="hover:text-white transition-colors">Estado del Sistema</a>
     </div>

@@ -19,6 +19,12 @@ Rails.application.routes.draw do
     get '/terminos-condiciones', to: 'landing#terms'
     get '/privacy', to: 'landing#privacy'
     get '/politicas-privacidad', to: 'landing#privacy'
+    get '/devoluciones', to: 'landing#devoluciones'
+    get '/politica-de-devoluciones', to: 'landing#devoluciones'
+    get '/refund-policy', to: 'landing#devoluciones'
+    get '/libro-reclamaciones', to: 'landing#libro_reclamaciones'
+    get '/productos', to: 'landing#index', anchor: 'productos'
+    get '/catalogo', to: 'landing#index', anchor: 'productos'
     get '/status', to: 'landing#status'
     get '/estado', to: 'landing#status'
 
