@@ -51,15 +51,15 @@ class Api::V1::Accounts::Captain::AssistantsController < Api::V1::Accounts::Base
     if response.is_a?(Hash)
       normalized_text = response['response'].presence || response['content'].presence || response[:response].presence || response[:content].presence
 
-      if is_greeting && (normalized_text.blank? || normalized_text == 'conversation_handoff' || response['handoff_tool_called'])
+      if normalized_text == 'Processed by agent' || normalized_text.blank? || (is_greeting && (normalized_text == 'conversation_handoff' || response['handoff_tool_called']))
         product = @assistant.product_name.presence || @assistant.account.name
         normalized_text = "¡Hola! Soy #{@assistant.name}, tu asistente virtual en #{product}. ¿En qué te puedo ayudar hoy?"
         response['error'] = false
         response['handoff_tool_called'] = false
       end
 
-      response['response'] ||= normalized_text
-      response['content'] ||= normalized_text
+      response['response'] = normalized_text
+      response['content'] = normalized_text
     end
 
     render json: response
@@ -130,6 +130,8 @@ class Api::V1::Accounts::Captain::AssistantsController < Api::V1::Accounts::Base
   end
 
   def summary_stats
+    return {} if params[:stats].blank?
+
     params.require(:stats).permit(
       conversations_handled: %i[current],
       hours_saved: %i[current],
@@ -138,6 +140,8 @@ class Api::V1::Accounts::Captain::AssistantsController < Api::V1::Accounts::Base
       reopen_rate: %i[current trend],
       knowledge: %i[coverage approved documents]
     ).to_h.deep_symbolize_keys
+  rescue ActionController::ParameterMissing
+    {}
   end
 
   def summary_cache_key(range)

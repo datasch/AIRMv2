@@ -78,7 +78,7 @@ features:
         gpt-5.1,
         gpt-5.2,
       ]
-    default: gpt-4.1
+    default: gpt-5-mini
     internal: true
   editor:
     models:
@@ -93,7 +93,7 @@ features:
         gemini-3-flash,
         gemini-3-pro,
       ]
-    default: gpt-4.1-mini
+    default: gpt-5-mini
   assistant:
     models:
       [
@@ -107,7 +107,7 @@ features:
         gemini-3-flash,
         gemini-3-pro,
       ]
-    default: gpt-4.1
+    default: gpt-5-mini
   copilot:
     models:
       [
@@ -121,11 +121,11 @@ features:
         gemini-3-flash,
         gemini-3-pro,
       ]
-    default: gpt-4.1
+    default: gpt-5-mini
   label_suggestion:
     models:
       [gpt-4.1-nano, gpt-4.1-mini, gpt-5-mini, gemini-3-flash, claude-haiku-4.5]
-    default: gpt-4.1-mini
+    default: gpt-5-mini
   document_faq_generation:
     models:
       [
@@ -139,7 +139,7 @@ features:
         gemini-3-flash,
         gemini-3-pro,
       ]
-    default: gpt-4.1-mini
+    default: gpt-5-mini
   conversation_faq_generation:
     models:
       [
@@ -153,7 +153,7 @@ features:
         gemini-3-flash,
         gemini-3-pro,
       ]
-    default: gpt-5.2
+    default: gpt-5-mini
   conversation_faq_matching:
     models:
       [
@@ -167,10 +167,10 @@ features:
         gemini-3-flash,
         gemini-3-pro,
       ]
-    default: gpt-4.1-mini
+    default: gpt-5-mini
   pdf_faq_generation:
     models: [gpt-4.1-mini, gpt-5-mini, gpt-4.1, gpt-5.1, gpt-5.2]
-    default: gpt-4.1-mini
+    default: gpt-5-mini
   help_center_article_generation:
     models:
       [
@@ -184,14 +184,14 @@ features:
         gemini-3-flash,
         gemini-3-pro,
       ]
-    default: gpt-5.2
+    default: gpt-5-mini
   onboarding_content_generation:
     models:
       [gpt-4.1, gpt-4.1-mini, gpt-5-mini, gpt-5.1, gpt-5.2]
-    default: gpt-4.1
+    default: gpt-5-mini
   help_center_query_translation:
     models: [gpt-4.1-nano, gpt-4.1-mini, gpt-5-mini]
-    default: gpt-4.1-nano
+    default: gpt-5-mini
   audio_transcription:
     models: [gpt-4o-mini-transcribe, whisper-1]
     default: gpt-4o-mini-transcribe

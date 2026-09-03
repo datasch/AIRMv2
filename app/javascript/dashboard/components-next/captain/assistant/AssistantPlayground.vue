@@ -74,14 +74,24 @@ const sendMessage = async () => {
       data?.reply ||
       data?.text;
 
+    if (assistantContent === 'Processed by agent') {
+      assistantContent = '';
+    }
+
     if (data?.error) {
       assistantContent = `⚠️ ${data.reasoning || data.error_reason || 'Error al procesar la respuesta del modelo.'}`;
     } else if (assistantContent === 'conversation_handoff') {
       assistantContent = `ℹ️ [Transferencia a Agente Humano]: ${data.reasoning || 'El asistente no encontró información en su base de conocimiento y solicitó transferir el caso.'}`;
-    } else if (!assistantContent && data?.reasoning) {
+    } else if (
+      !assistantContent &&
+      data?.reasoning &&
+      data.reasoning !== 'Processed by agent' &&
+      data.reasoning !== 'Agent execution completed'
+    ) {
       assistantContent = data.reasoning;
     } else if (!assistantContent) {
-      assistantContent = 'No se recibió respuesta del asistente.';
+      assistantContent =
+        '¡Hola! ¿En qué te puedo ayudar hoy? Cuéntame sobre tus consultas o proyectos.';
     }
 
     messages.value.push({

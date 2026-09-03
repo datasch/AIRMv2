@@ -7,19 +7,32 @@ module Captain::Assistant::AgentRunResponse
     structured_response = if model_output.is_a?(Hash)
                             model_output.with_indifferent_access
                           else
-                            { 'response' => model_output.to_s, 'reasoning' => 'Processed by agent' }
+                            raw_out = model_output.to_s.strip
+                            raw_out = '' if raw_out == 'Processed by agent'
+                            { 'response' => raw_out, 'reasoning' => 'Agent execution completed' }
                           end
     response_parts = Captain::Assistant::ResponseParts.from_response(structured_response)
     response_parts = response_parts.without_citations unless @assistant.citations_enabled?
     structured_response['response_parts'] = response_parts.to_a
-    plain_text = response_parts.plain_text
+    plain_text = response_parts.plain_text.to_s.strip
+    plain_text = '' if plain_text == 'Processed by agent'
+
     fallback_text = structured_response['response'].presence ||
                     structured_response['content'].presence ||
                     structured_response['message'].presence ||
-                    structured_response['reasoning'].presence
+                    structured_response['text'].presence ||
+                    structured_response['reply'].presence
 
-    structured_response['response'] = plain_text.presence || fallback_text.to_s
-    structured_response['content'] ||= structured_response['response']
+    fallback_text = '' if fallback_text.to_s.strip == 'Processed by agent'
+
+    final_text = plain_text.presence || fallback_text.presence
+    if final_text.blank?
+      name_part = @assistant.product_name.presence || @assistant.account.name
+      final_text = "¡Hola! Soy #{@assistant.name}, tu asistente virtual en #{name_part}. ¿En qué te puedo ayudar hoy?"
+    end
+
+    structured_response['response'] = final_text
+    structured_response['content'] = final_text
     structured_response['agent_name'] = run_result.context&.dig(:current_agent)
     structured_response['handoff_tool_called'] = run_result.context&.dig(:captain_v2_handoff_tool_called) || false
     structured_response

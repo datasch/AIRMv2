@@ -14,10 +14,12 @@ class Captain::Assistant::ResponseParts
            response[:content].presence ||
            response[:message].presence ||
            response[:text].presence ||
-           response[:reply].presence ||
-           response[:reasoning].presence
+           response[:reply].presence
 
-    new([{ text: text.to_s, citation_indexes: [] }])
+    text_str = text.to_s.strip
+    text_str = '' if text_str == 'Processed by agent'
+
+    new([{ text: text_str, citation_indexes: [] }])
   end
 
   def initialize(response_parts)
