@@ -21,27 +21,12 @@
       </div>
     </a>
 
-    <!-- Nav Links (Desktop) -->
-    <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
-      <a href="#features" class="hover:text-white transition-colors">Características</a>
-      <a href="#demo" class="hover:text-white transition-colors">Simulador</a>
-      <a href="#canales" class="hover:text-white transition-colors">Canales</a>
-      <a href="#productos" class="hover:text-white transition-colors font-bold text-white">Catálogo &amp; Precios</a>
-      <a href="#faq" class="hover:text-white transition-colors">Preguntas</a>
-      <a href="/libro-reclamaciones" class="hover:text-amber-400 text-amber-300 font-semibold transition-colors flex items-center gap-1">📖 Libro Reclamaciones</a>
-    </nav>
-
-    <!-- CTAs & Language -->
+    <!-- CTAs -->
     <div class="flex items-center gap-3">
-      <!-- Language Pill -->
-      <div class="hidden sm:flex items-center gap-1 p-0.5 rounded-lg border border-white/10 bg-white/[0.03]">
-        <span class="px-2 py-0.5 text-xs font-bold rounded bg-white/10 text-white">ES</span>
-      </div>
-
       <a href="<%= @login_url %>" class="px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-300 hover:text-white transition-colors">
         Iniciar Sesión
       </a>
-      <a href="<%= @login_url %>" class="btn-primary text-xs sm:text-sm">
+      <a href="<%= @signup_url %>" class="btn-primary text-xs sm:text-sm">
         <span>Comenzar Ahora</span>
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
