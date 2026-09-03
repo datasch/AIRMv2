@@ -838,7 +838,7 @@
             <span class="px-2 py-0.5 rounded bg-white text-[#006fcf]">AMEX</span>
             <span class="px-2 py-0.5 rounded bg-purple-800 text-white">Yape</span>
           </div>
-          <span class="text-[9px] text-emerald-400 font-semibold block flex items-center gap-1">
+          <span class="text-[9px] text-emerald-400 font-semibold flex items-center gap-1">
             <span>🔒</span> Conexión Cifrada SSL 256-bit
           </span>
         </div>
@@ -864,7 +864,7 @@
 </footer>
 
 <!-- MODAL DE CHECKOUT DIRECTO CULQI (Proceso de Compra Observado por Culqi) -->
-<div id="checkout-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+<div id="checkout-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md">
   <div class="relative w-full max-w-lg rounded-3xl bg-[#0b0f19] border border-white/15 p-6 sm:p-8 shadow-2xl text-slate-200 max-h-[90vh] overflow-y-auto">
     
     <!-- Close Button -->
@@ -1052,7 +1052,9 @@
     document.getElementById('modal-product-price').textContent = 'S/ ' + activeProduct.pricePEN.toFixed(2);
     document.getElementById('modal-product-period').textContent = '(' + activeProduct.period + ')';
 
-    document.getElementById('checkout-modal').classList.remove('hidden');
+    const modal = document.getElementById('checkout-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
 
     // Preload Culqi script in background
@@ -1061,7 +1063,9 @@
 
   // Close Checkout Modal
   function closePurchaseModal() {
-    document.getElementById('checkout-modal').classList.add('hidden');
+    const modal = document.getElementById('checkout-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
     document.body.style.overflow = 'auto';
   }
 
