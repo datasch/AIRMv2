@@ -3,10 +3,10 @@ class Captain::Tools::HandoffTool < Captain::Tools::BasePublicTool
   # paths emit the remaining categories, such as usage limits and pending clarification.
   REASON_CATEGORIES = %w[customer_request missing_knowledge unsupported_request policy_restriction tool_failure].freeze
 
-  description 'Hand off the conversation to a human agent when unable to assist further'
+  description 'Hand off the conversation to a human agent ONLY when the customer explicitly asks for human support or when a lead is qualified for sales handoff. Do NOT call this tool for general exploratory questions or service inquiries.'
   params do
-    string :reason, description: 'The reason why handoff is needed (optional)', required: false
-    string :reason_category, enum: REASON_CATEGORIES, description: 'Reporting category for why the handoff is needed'
+    string :reason, description: 'The reason why handoff is needed, including qualification summary', required: false
+    string :reason_category, enum: REASON_CATEGORIES, description: 'Category: customer_request when asked by user, unsupported_request when beyond capabilities'
   end
 
   # Agents::ToolWrapper reads `tool.class.params`, while ruby_llm treats a

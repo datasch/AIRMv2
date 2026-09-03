@@ -51,11 +51,15 @@ class Api::V1::Accounts::Captain::AssistantsController < Api::V1::Accounts::Base
     if response.is_a?(Hash)
       normalized_text = response['response'].presence || response['content'].presence || response[:response].presence || response[:content].presence
 
-      if normalized_text == 'Processed by agent' || normalized_text.blank? || (is_greeting && (normalized_text == 'conversation_handoff' || response['handoff_tool_called']))
+      if is_greeting && (normalized_text == 'conversation_handoff' || response['handoff_tool_called'] || normalized_text.blank?)
         product = @assistant.product_name.presence || @assistant.account.name
-        normalized_text = "¡Hola! Soy #{@assistant.name}, tu asistente virtual en #{product}. ¿En qué te puedo ayudar hoy?"
+        normalized_text = "¡Hola! Soy #{@assistant.name}, tu asistente en #{product}. ¿En qué puedo colaborar hoy: información sobre nuestros servicios, cotizaciones o agendar una llamada?"
         response['error'] = false
         response['handoff_tool_called'] = false
+      elsif normalized_text == 'Processed by agent' || normalized_text.blank?
+        product = @assistant.product_name.presence || @assistant.account.name
+        normalized_text = "En #{product} brindamos soluciones de desarrollo de software, agentes de inteligencia artificial para WhatsApp y plataformas CRM omnicanal. ¿En qué solución o proyecto te gustaría que te asesoremos?"
+        response['error'] = false
       end
 
       response['response'] = normalized_text

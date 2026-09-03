@@ -25,10 +25,19 @@ module Captain::Assistant::AgentRunResponse
 
     fallback_text = '' if fallback_text.to_s.strip == 'Processed by agent'
 
+    history = Array(run_result.context&.dig(:conversation_history))
+    is_initial_turn = history.empty? || history.size <= 1
+
     final_text = plain_text.presence || fallback_text.presence
     if final_text.blank?
       name_part = @assistant.product_name.presence || @assistant.account.name
-      final_text = "¡Hola! Soy #{@assistant.name}, tu asistente virtual en #{name_part}. ¿En qué te puedo ayudar hoy?"
+      if run_result.context&.dig(:captain_v2_handoff_tool_called)
+        final_text = "Para brindarte atención especializada y revisar los detalles exactos, te transfiero con uno de nuestros asesores humanos. En breve te contactaremos por aquí."
+      elsif is_initial_turn
+        final_text = "¡Hola! Soy #{@assistant.name}, tu asistente en #{name_part}. ¿En qué puedo colaborar hoy: información sobre nuestros servicios, cotizaciones o agendamiento?"
+      else
+        final_text = "En #{name_part} ofrecemos soluciones de desarrollo de software, asistentes virtuales con inteligencia artificial para WhatsApp y CRM omnicanal. ¿Qué requerimiento específico te gustaría cotizar o conocer más a fondo?"
+      end
     end
 
     structured_response['response'] = final_text
