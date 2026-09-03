@@ -66,19 +66,45 @@ class Captain::Conversation::ResponseBuilderJob < ApplicationJob
     Captain::Assistant::AgentRunnerService.new(**runner_args)
   end
 
+  GREETING_WORDS = [
+    'hola', 'buenas', 'buenos dias', 'buenos días', 'buenas tardes',
+    'buenas noches', 'saludos', 'que tal', 'qué tal', 'hey', 'hi', 'hello'
+  ].freeze
+
   def process_response
     # The V2 runner rescues its own generation errors and signals them via an error
     # response instead of raising, so the failure event must be emitted here — the
     # top-level handle_error path only sees exceptions raised outside the runner.
     record_v2_response_failure(@response['error_reason']) if v2_generation_errored?
 
-    if v2_handoff_tool_fired?
+    if customer_sent_greeting_only?
+      ensure_greeting_response
+      process_standard_response if conversation_pending?
+    elsif v2_handoff_tool_fired?
       process_v2_handoff_response
     elsif v1_handoff_requested?
       process_v1_handoff_request
     elsif conversation_pending?
       process_standard_response
     end
+  end
+
+  def customer_sent_greeting_only?
+    last_msg = @conversation.messages.where(message_type: :incoming).last&.content.to_s.strip
+    clean = last_msg.downcase.gsub(/[^a-záéíóúüñ\s]/, '').strip
+    GREETING_WORDS.include?(clean)
+  end
+
+  def ensure_greeting_response
+    clean_text = @response['response'].to_s.strip
+    return if clean_text.present? && clean_text != 'conversation_handoff'
+
+    name_part = @assistant.product_name.presence || @assistant.account.name
+    greeting = "¡Hola! Soy #{@assistant.name}, tu asistente virtual en #{name_part}. ¿En qué puedo ayudarte hoy?"
+    @response['response'] = greeting
+    @response['content'] = greeting
+    @response['action'] = 'continue'
+    @response['handoff_tool_called'] = false
   end
 
   def process_v1_handoff_request

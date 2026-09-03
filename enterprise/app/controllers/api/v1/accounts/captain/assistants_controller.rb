@@ -27,7 +27,16 @@ class Api::V1::Accounts::Captain::AssistantsController < Api::V1::Accounts::Base
     head :no_content
   end
 
+  GREETING_WORDS = [
+    'hola', 'buenas', 'buenos dias', 'buenos días', 'buenas tardes',
+    'buenas noches', 'saludos', 'que tal', 'qué tal', 'hey', 'hi', 'hello'
+  ].freeze
+
   def playground
+    current_message = playground_params[:message_content].to_s.strip
+    clean_msg = current_message.downcase.gsub(/[^a-záéíóúüñ\s]/, '').strip
+    is_greeting = GREETING_WORDS.include?(clean_msg)
+
     response = if captain_v2_enabled?
                  Captain::Assistant::AgentRunnerService.new(assistant: @assistant, source: 'playground').generate_response(
                    message_history: playground_message_history
@@ -41,6 +50,14 @@ class Api::V1::Accounts::Captain::AssistantsController < Api::V1::Accounts::Base
 
     if response.is_a?(Hash)
       normalized_text = response['response'].presence || response['content'].presence || response[:response].presence || response[:content].presence
+
+      if is_greeting && (normalized_text.blank? || normalized_text == 'conversation_handoff' || response['handoff_tool_called'])
+        product = @assistant.product_name.presence || @assistant.account.name
+        normalized_text = "¡Hola! Soy #{@assistant.name}, tu asistente virtual en #{product}. ¿En qué te puedo ayudar hoy?"
+        response['error'] = false
+        response['handoff_tool_called'] = false
+      end
+
       response['response'] ||= normalized_text
       response['content'] ||= normalized_text
     end
