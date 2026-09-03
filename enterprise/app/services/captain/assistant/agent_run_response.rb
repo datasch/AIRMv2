@@ -12,7 +12,14 @@ module Captain::Assistant::AgentRunResponse
     response_parts = Captain::Assistant::ResponseParts.from_response(structured_response)
     response_parts = response_parts.without_citations unless @assistant.citations_enabled?
     structured_response['response_parts'] = response_parts.to_a
-    structured_response['response'] = response_parts.plain_text
+    plain_text = response_parts.plain_text
+    fallback_text = structured_response['response'].presence ||
+                    structured_response['content'].presence ||
+                    structured_response['message'].presence ||
+                    structured_response['reasoning'].presence
+
+    structured_response['response'] = plain_text.presence || fallback_text.to_s
+    structured_response['content'] ||= structured_response['response']
     structured_response['agent_name'] = run_result.context&.dig(:current_agent)
     structured_response['handoff_tool_called'] = run_result.context&.dig(:captain_v2_handoff_tool_called) || false
     structured_response

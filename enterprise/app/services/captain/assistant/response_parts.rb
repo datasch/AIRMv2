@@ -10,7 +10,14 @@ class Captain::Assistant::ResponseParts
     response = response.with_indifferent_access
     return new(response[:response_parts]) if response.key?(:response_parts)
 
-    new([{ text: response[:response], citation_indexes: [] }])
+    text = response[:response].presence ||
+           response[:content].presence ||
+           response[:message].presence ||
+           response[:text].presence ||
+           response[:reply].presence ||
+           response[:reasoning].presence
+
+    new([{ text: text.to_s, citation_indexes: [] }])
   end
 
   def initialize(response_parts)
