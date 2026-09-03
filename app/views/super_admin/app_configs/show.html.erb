@@ -2,10 +2,23 @@
   <%= t('super_admin.settings.configure', default: 'Configurar') %> - <%= @config.titleize %>
 <% end %>
 
-<header class="main-content__header" role="banner">
-  <h1 class="main-content__page-title" id="page-title">
-    <%= content_for(:title) %>
-  </h1>
+<header class="flex px-6 sm:px-8 py-5 items-center justify-between border-b border-slate-200 dark:border-slate-800/80 bg-white/60 dark:bg-[#0c0d14]/70 backdrop-blur-md sticky top-0 z-10 transition-colors" role="banner">
+  <div class="flex items-center gap-4 min-w-0">
+    <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 shadow-2xs">
+      <svg width="20" height="20" class="fill-current"><use xlink:href="#icon-gear" /></svg>
+    </div>
+    <div class="flex flex-col justify-center min-w-0">
+      <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white truncate" id="page-title">
+        <%= content_for(:title) %>
+      </h1>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 m-0 truncate">
+        Ajustes del módulo y variables de entorno del sistema.
+      </p>
+    </div>
+  </div>
+  <a href="<%= super_admin_settings_url %>" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-2xs">
+    <span>← Volver a Configuración</span>
+  </a>
 </header>
 
 <style>
@@ -14,64 +27,71 @@
 }
 </style>
 
-<section class="main-content__body">
-  <%= form_with url: super_admin_app_config_url(config: @config) , method: :post do |form| %>
-    <% @allowed_configs.each do |key| %>
-      <div class="flex mb-8">
-        <div class="field-unit__label">
-          <%= form.label "app_config[#{key}]", @installation_configs[key]&.dig('display_title') || key %>
-        </div>
-        <div class="-mt-2 field-unit__field ">
-          <% if @installation_configs[key]&.dig('type') == 'boolean' %>
-            <%= form.select "app_config[#{key}]",
-              [[t('super_admin.settings.true_val', default: "Verdadero"), true], [t('super_admin.settings.false_val', default: "Falso"), false]],
-              { selected: ActiveModel::Type::Boolean.new.cast(@app_config[key]) },
-              class: "mt-2 border border-slate-100 p-1 rounded-md"
-            %>
-          <% elsif @installation_configs[key]&.dig('type') == 'code' %>
-            <%= form.text_area "app_config[#{key}]",
-                value: @app_config[key],
-                rows: 12,
-                wrap: 'off',
-                class: "mt-2 border font-mono text-xs border-slate-100 p-1 rounded-md overflow-scroll"
-            %>
-          <% elsif @installation_configs[key]&.dig('type') == 'secret' %>
-            <div class="relative">
-              <%= form.password_field "app_config[#{key}]",
-                  id: "app_config_#{key}",
-                  value: @app_config[key],
-                  class: "mt-2 border border-slate-100 p-1.5 pr-8 rounded-md w-full"
+<section class="main-content__body px-6 sm:px-8 py-8 max-w-4xl">
+  <%= form_with url: super_admin_app_config_url(config: @config), method: :post, class: "space-y-6" do |form| %>
+    <div class="p-6 rounded-2xl bg-white dark:bg-[#141622] border border-slate-200/80 dark:border-slate-800/80 shadow-2xs space-y-6 transition-colors">
+      <% @allowed_configs.each do |key| %>
+        <div class="flex flex-col sm:flex-row sm:items-start gap-3 pb-6 border-b border-slate-100 dark:border-slate-800/60 last:border-0 last:pb-0">
+          <div class="sm:w-1/3 pt-1">
+            <%= form.label "app_config[#{key}]", @installation_configs[key]&.dig('display_title') || key, class: "block text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider" %>
+            <% if @installation_configs[key]&.dig('description').present? %>
+              <p class="pt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-normal mb-0">
+                <%= @installation_configs[key]&.dig('description') %>
+              </p>
+            <% end %>
+          </div>
+          <div class="sm:w-2/3">
+            <% if @installation_configs[key]&.dig('type') == 'boolean' %>
+              <%= form.select "app_config[#{key}]",
+                [[t('super_admin.settings.true_val', default: "Verdadero"), true], [t('super_admin.settings.false_val', default: "Falso"), false]],
+                { selected: ActiveModel::Type::Boolean.new.cast(@app_config[key]) },
+                class: "w-full text-xs px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-purple-500"
               %>
-              <button
-                type="button"
-                class="absolute reset-base !bg-white top-1/2 !outline-0 !text-n-slate-11 -translate-y-1/2 right-2 p-1 hover:!bg-n-slate-5 rounded-sm toggle-password"
-                data-target="app_config_<%= key %>"
-              >
-                <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 5C5.63636 5 2 12 2 12C2 12 5.63636 19 12 19C18.3636 19 22 12 22 12C22 12 18.3636 5 12 5Z"/>
-                  <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"/>
-                </svg>
-              </button>
-            </div>
-          <% elsif @installation_configs[key]&.dig('type') == 'select' && @installation_configs[key]&.dig('options').present? %>
-            <%= form.select "app_config[#{key}]",
-              @installation_configs[key]['options'].map { |val, label| [label, val] },
-              { selected: @app_config[key] },
-              class: "mt-2 border border-slate-100 p-1 rounded-md"
-            %>
-        <% else %>
-          <%= form.text_field "app_config[#{key}]", value: @app_config[key] %>
-        <% end %>
-          <%if @installation_configs[key]&.dig('description').present? %>
-            <p class="pt-2 text-xs italic text-slate-400">
-              <%= @installation_configs[key]&.dig('description') %>
-            </p>
-          <% end %>
+            <% elsif @installation_configs[key]&.dig('type') == 'code' %>
+              <%= form.text_area "app_config[#{key}]",
+                  value: @app_config[key],
+                  rows: 8,
+                  wrap: 'off',
+                  class: "w-full text-xs font-mono px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-purple-500"
+              %>
+            <% elsif @installation_configs[key]&.dig('type') == 'secret' %>
+              <div class="relative">
+                <%= form.password_field "app_config[#{key}]",
+                    id: "app_config_#{key}",
+                    value: @app_config[key],
+                    class: "w-full text-xs px-3 py-2.5 pr-10 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-purple-500 font-mono"
+                %>
+                <button
+                  type="button"
+                  class="absolute top-1/2 -translate-y-1/2 right-2 p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors focus:outline-none toggle-password"
+                  data-target="app_config_<%= key %>"
+                  title="Ver / Ocultar"
+                >
+                  <svg class="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5C5.63636 5 2 12 2 12C2 12 5.63636 19 12 19C18.3636 19 22 12 22 12C22 12 18.3636 5 12 5Z"/>
+                    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"/>
+                  </svg>
+                </button>
+              </div>
+            <% elsif @installation_configs[key]&.dig('type') == 'select' && @installation_configs[key]&.dig('options').present? %>
+              <%= form.select "app_config[#{key}]",
+                @installation_configs[key]['options'].map { |val, label| [label, val] },
+                { selected: @app_config[key] },
+                class: "w-full text-xs px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-purple-500"
+              %>
+            <% else %>
+              <%= form.text_field "app_config[#{key}]", value: @app_config[key], class: "w-full text-xs px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-slate-100 focus:outline-none focus:border-purple-500" %>
+            <% end %>
+          </div>
         </div>
-      </div>
-    <% end %>
-    <div class="form-actions">
-      <%= form.submit t('super_admin.actions.submit', default: 'Guardar Cambios') %>
+      <% end %>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-2">
+      <a href="<%= super_admin_settings_url %>" class="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+        Cancelar
+      </a>
+      <%= form.submit t('super_admin.actions.submit', default: 'Guardar Cambios'), class: "px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md shadow-purple-600/20 transition-all cursor-pointer border-0" %>
     </div>
   <% end %>
 </section>

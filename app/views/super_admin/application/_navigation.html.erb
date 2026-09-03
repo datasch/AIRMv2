@@ -16,26 +16,26 @@ This partial is used to display the navigation in Administrate.
   }
 %>
 
-<div class="border-slate-200 dark:border-slate-800/80 border-r w-64 flex-shrink-0 justify-between h-full min-h-screen flex flex-col bg-slate-50/50 dark:bg-[#0c0d12] transition-colors duration-150" role="navigation">
-  <div>
-    <!-- Brand Header -->
-    <div class="flex items-center mx-4 mb-4 border-slate-200 dark:border-slate-800/80 border-b py-5">
-      <%= link_to image_tag('/brand-assets/logo_thumbnail.svg', alt: 'AIRM Super Admin', class: 'size-10 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 shrink-0'), super_admin_root_url %>
-      <div class="flex flex-col ml-3 min-w-0">
-        <div class="flex items-center gap-1.5">
-          <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">AIRM</span>
-          <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-            v<%= Chatwoot.config[:version] %>
-          </span>
-        </div>
-        <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 font-medium truncate">
-          <%= t('super_admin.navigation.super_admin_console', default: 'Consola Super Admin') %>
-        </div>
+<div class="border-slate-200 dark:border-slate-800/80 border-r w-64 flex-shrink-0 h-screen sticky top-0 flex flex-col bg-slate-50/80 dark:bg-[#0c0d12] transition-colors duration-150 z-20" role="navigation">
+  <!-- Brand Header (Fixed Top) -->
+  <div class="flex items-center px-4 border-slate-200 dark:border-slate-800/80 border-b py-4 shrink-0">
+    <%= link_to image_tag('/brand-assets/logo_thumbnail.svg', alt: 'AIRM Super Admin', class: 'size-10 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 shrink-0'), super_admin_root_url %>
+    <div class="flex flex-col ml-3 min-w-0">
+      <div class="flex items-center gap-1.5">
+        <span class="text-sm font-bold text-slate-900 dark:text-white tracking-tight">AIRM</span>
+        <span class="inline-flex items-center px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          v<%= Chatwoot.config[:version] %>
+        </span>
+      </div>
+      <div class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 font-medium truncate">
+        <%= t('super_admin.navigation.super_admin_console', default: 'Consola Super Admin') %>
       </div>
     </div>
+  </div>
 
-    <!-- Main Links -->
-    <ul class="my-2 space-y-0.5">
+  <!-- Main Links (Scrollable Middle Section) -->
+  <div class="flex-1 overflow-y-auto px-1 py-3 space-y-0.5">
+    <ul class="space-y-0.5">
       <%= render partial: "nav_item", locals: { icon: 'icon-grid-line', url: super_admin_root_url, label: t('super_admin.navigation.dashboard', default: 'Panel Principal') } %>
       <% Administrate::Namespace.new(namespace).resources.each do |resource| %>
         <% next if ["account_users", "access_tokens", "installation_configs", "dashboard", "devise/sessions", "app_configs", "instance_statuses", "settings", "push_diagnostics"].include? resource.resource %>
@@ -51,9 +51,9 @@ This partial is used to display the navigation in Administrate.
     </ul>
   </div>
 
-  <!-- Bottom Actions & Theme Switcher -->
-  <div class="border-t border-slate-200 dark:border-slate-800/80 pt-2 pb-4">
-    <ul class="my-2 space-y-0.5">
+  <!-- Bottom Actions & Theme Switcher (Fixed Bottom) -->
+  <div class="border-t border-slate-200 dark:border-slate-800/80 pt-2 pb-3 shrink-0 bg-slate-50/90 dark:bg-[#0c0d12]/95 backdrop-blur-sm px-1">
+    <ul class="space-y-0.5">
       <%= render partial: "nav_item", locals: { icon: 'icon-mist-fill', url: sidekiq_web_url, label: t('super_admin.navigation.sidekiq', default: 'Panel de Sidekiq') } %>
       <%= render partial: "nav_item", locals: { icon: 'icon-health-book-line', url: super_admin_instance_status_url, label: t('super_admin.navigation.instance_health', default: 'Estado de la Instancia') } %>
       <%= render partial: "nav_item", locals: { icon: 'icon-mail-send-fill', url: super_admin_push_diagnostics_url, label: t('super_admin.navigation.push_diagnostics', default: 'Diagnóstico Push') } %>
@@ -62,7 +62,7 @@ This partial is used to display the navigation in Administrate.
     </ul>
 
     <!-- Dark / Light Theme Toggle -->
-    <div class="px-4 mt-3 pt-3 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between">
+    <div class="px-3 mt-2 pt-2 border-t border-slate-200/60 dark:border-slate-800/60 flex items-center justify-between">
       <span class="text-xs font-medium text-slate-500 dark:text-slate-400">
         <%= t('super_admin.theme.label', default: 'Tema de Interfaz') %>
       </span>

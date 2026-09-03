@@ -1,107 +1,162 @@
 <% content_for(:title) do %>
   <%= t('super_admin.settings.title', default: 'Configuración') %>
 <% end %>
-<header class="flex px-8 py-4 items-center border-b border-n-weak" role="banner">
-  <div class="border border-n-weak mr-4 p-2 rounded-full">
-    <svg width="24" height="24"><use xlink:href="#icon-settings-2-line" /></svg>
-  </div>
-  <div class="flex flex-col h-14 justify-center">
-    <h1 class="text-base font-medium leading-6 text-n-slate-12" id="page-title">
-      <%= content_for(:title) %>
-    </h1>
-    <p class="text-sm font-normal leading-5 text-slate-500 m-0"><%= t('super_admin.settings.description', default: 'Actualice los ajustes de su instancia y acceda a la configuración del sistema') %></p>
+
+<header class="flex px-6 sm:px-8 py-5 items-center justify-between border-b border-slate-200 dark:border-slate-800/80 bg-white/60 dark:bg-[#0c0d14]/70 backdrop-blur-md sticky top-0 z-10 transition-colors" role="banner">
+  <div class="flex items-center gap-4 min-w-0">
+    <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 flex items-center justify-center text-slate-700 dark:text-slate-200 shrink-0 shadow-2xs">
+      <svg width="20" height="20" class="fill-current"><use xlink:href="#icon-settings-2-line" /></svg>
+    </div>
+    <div class="flex flex-col justify-center min-w-0">
+      <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white truncate" id="page-title">
+        <%= content_for(:title) %>
+      </h1>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 m-0 truncate">
+        <%= t('super_admin.settings.description', default: 'Actualice los ajustes de su instancia y acceda a la configuración del sistema.') %>
+      </p>
+    </div>
   </div>
 </header>
-<section class="main-content__body px-8">
+
+<section class="main-content__body px-6 sm:px-8 py-6">
   <% if Redis::Alfred.get(Redis::Alfred::CHATWOOT_INSTALLATION_CONFIG_RESET_WARNING) %>
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-5" role="alert">
-    <strong class="font-bold">¡Alerta!</strong>
-    <span class="block sm:inline">Se han detectado cambios no autorizados. Para soporte contacte a:</span><span class="inline rounded-full bg-red-200 px-2  text-white  ml-2">support@giantucchi.com</span>
+    <div class="bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 px-4 py-3 rounded-2xl relative mb-6 text-xs flex items-center gap-2" role="alert">
+      <strong class="font-bold">¡Alerta!</strong>
+      <span>Se han detectado cambios no autorizados. Para soporte contacte a:</span>
+      <span class="inline-flex rounded-full bg-red-500/20 px-2 py-0.5 text-red-700 dark:text-red-300 font-mono">support@giantucchi.com</span>
     </div>
   <% end %>
 
-  <div class="bg-white py-2 px-4 xl:px-0">
+  <div class="space-y-6">
     <%= javascript_include_tag "secretField" %>
-    <div class="flex items-center mb-6">
-      <h4 class="text-sm font-medium leading-5 h-5 text-n-slate-12 mr-4"><%= t('super_admin.settings.installation_identifier', default: 'Identificador de Instalación') %></h4>
-      <div data-secret-text="<%= ChatwootHub.installation_identifier %>" class="cell-data__secret-field text-sm leading-5 h-5 text-n-slate-11">
-        <span data-secret-masked="true" class="select-none"></span>
-        <button type="button" onclick="toggleSecretField(event)" data-secret-toggler class="inline-flex items-center justify-center h-5 w-5 p-0 rounded text-n-slate-11 hover:text-n-slate-12 transition-colors focus:outline-none">
-          <svg width="20" height="20" class="w-5 h-5 fill-current">
-            <use xlink:href="#eye-show" />
-          </svg>
-        </button>
-        <button type="button" onclick="copySecretField(event)" data-secret-copier class="inline-flex items-center justify-center h-5 w-5 p-0 rounded text-n-slate-11 hover:text-n-slate-12 transition-colors focus:outline-none">
-          <svg width="20" height="20" class="w-5 h-5 fill-current">
-            <use xlink:href="#icon-copy" />
-          </svg>
-        </button>
-      </div>
-    </div>
-    <% if ChatwootApp.enterprise? %>
-      <div class="flex p-4 outline outline-1 outline-n-container rounded-lg items-start md:items-center shadow-sm flex-col md:flex-row">
-        <div class="flex flex-col flex-grow gap-1">
-          <div class="flex items-center gap-2">
-            <h2 class="h-5 leading-5 text-n-slate-12 text-sm font-medium"><%= t('super_admin.settings.current_plan', default: 'Plan Actual') %></h2>
-            <a href="<%= refresh_super_admin_settings_url %>" class="inline-flex gap-1 text-xs font-medium items-center text-woot-500 hover:text-woot-700">
-              <svg width="16" height="16"><use xlink:href="#icon-refresh-line" /></svg>
-              <span><%= t('super_admin.actions.refresh', default: 'Actualizar') %></span>
-            </a>
-          </div>
-          <p class="text-n-slate-11 m-0 text-sm"><%= SuperAdmin::FeaturesHelper.plan_details.html_safe %></p>
+
+    <!-- Installation Identifier Card -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 sm:p-5 rounded-2xl bg-white dark:bg-[#141622] border border-slate-200/80 dark:border-slate-800/80 shadow-2xs transition-colors">
+      <div class="flex items-center gap-3.5">
+        <div class="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center text-sm font-bold shrink-0">
+          🔑
+        </div>
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <%= t('super_admin.settings.installation_identifier', default: 'Identificador de Instalación') %>
+          </h4>
+          <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">Identificador de hardware y despliegue del sistema</p>
         </div>
       </div>
-    <% end %>
-
-    <div class="flex p-4 outline outline-1 outline-n-container rounded-lg mt-4 items-start md:items-center shadow-sm flex-col md:flex-row">
-      <div class="flex flex-col flex-grow gap-1">
-        <h2 class="h-5 leading-5 text-n-slate-12 text-sm font-medium"><%= t('super_admin.settings.need_help', default: '¿Necesita ayuda?') %></h2>
-        <p class="text-n-slate-11 m-0 text-sm"><%= t('super_admin.settings.need_help_desc', default: 'Soporte y asistencia técnica de AIRM por Giantucchi.') %></p>
-      </div>
-      <a href="https://giantucchi.com" target="_blank" rel="noopener noreferrer">
-        <button class="flex mt-4 md:mt-0 gap-1 items-center bg-transparent shadow-sm h-9 bg-cyan-600 hover:bg-cyan-700 text-white border border-solid border-cyan-700 rounded font-medium p-2 focus:outline-none">
-          <svg class="h-4 w-4" width="24" height="24" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.209 3.103c-.495-1.004-1.926-1.004-2.421 0L8.43 7.88l-5.273.766c-1.107.161-1.55 1.522-.748 2.303l3.815 3.72-.9 5.25c-.19 1.103.968 1.944 1.959 1.424l4.715-2.48 4.716 2.48c.99.52 2.148-.32 1.96-1.424l-.902-5.25 3.816-3.72c.8-.78.359-2.142-.748-2.303l-5.273-.766-2.358-4.777ZM9.74 8.615l2.258-4.576 2.259 4.576a1.35 1.35 0 0 0 1.016.738l5.05.734-3.654 3.562a1.35 1.35 0 0 0-.388 1.195l.862 5.03-4.516-2.375a1.35 1.35 0 0 0-1.257 0l-4.516 2.374.862-5.029a1.35 1.35 0 0 0-.388-1.195l-3.654-3.562 5.05-.734c.44-.063.82-.34 1.016-.738ZM1.164 3.782a.75.75 0 0 0 .118 1.054l2.5 2a.75.75 0 1 0 .937-1.172l-2.5-2a.75.75 0 0 0-1.055.118Z" fill="currentColor"/><path d="M22.836 18.218a.75.75 0 0 0-.117-1.054l-2.5-2a.75.75 0 0 0-.938 1.172l2.5 2a.75.75 0 0 0 1.055-.117ZM1.282 17.164a.75.75 0 1 0 .937 1.172l2.5-2a.75.75 0 0 0-.937-1.172l-2.5 2ZM22.836 3.782a.75.75 0 0 1-.117 1.054l-2.5 2a.75.75 0 0 1-.938-1.172l2.5-2a.75.75 0 0 1 1.055.118Z"  fill="currentColor"/></svg>
-          <span class="px-1"><%= t('super_admin.settings.support', default: 'Soporte Giantucchi') %></span>
+      <div data-secret-text="<%= ChatwootHub.installation_identifier %>" class="cell-data__secret-field inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700/70 text-xs font-mono text-slate-800 dark:text-slate-200">
+        <span data-secret-masked="true" class="select-none tracking-widest"></span>
+        <button type="button" onclick="toggleSecretField(event)" data-secret-toggler class="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors focus:outline-none" title="Ver / Ocultar">
+          <svg width="16" height="16" class="w-4 h-4 fill-current"><use xlink:href="#eye-show" /></svg>
         </button>
-      </a>
+        <button type="button" onclick="copySecretField(event)" data-secret-copier class="p-1 rounded-md text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors focus:outline-none" title="Copiar al portapapeles">
+          <svg width="16" height="16" class="w-4 h-4 fill-current"><use xlink:href="#icon-copy" /></svg>
+        </button>
+      </div>
     </div>
-    <div class="mt-10 py-4">
-      <h3 class="h-5 leading-5 text-n-slate-12 font-medium text-base"><%= t('super_admin.settings.features', default: 'Módulos y Características') %></h3>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-2 gap-y-3">
-      <% SuperAdmin::FeaturesHelper.available_features.each do |feature, attrs| %>
-        <div class="group outline outline-1 outline-n-container p-4 rounded-lg relative shadow-sm">
-          <span class="<%= attrs[:enabled] ? 'bg-green-400 text-white': 'bg-slate-300 text-slate-800' %> absolute rounded-full p-1 inline-flex right-4 top-5">
-            <svg width="14" height="14"><use xlink:href="<%= attrs[:enabled] ? '#icon-tick-line': '#icon-lock-line' %>" /></svg>
-          </span>
-          <div class="visible <% if !attrs[:enabled] %> group-hover:invisible <% end %> flex items-center justify-center w-10 h-10 mb-2 border border-slate-100 border-solid text-slate-800 rounded-full">
-            <svg width="20" height="20"><use xlink:href="#<%= attrs[:icon] %>" /></svg>
-          </div>
-          <% if !attrs[:enabled] %>
-          <div class="flex h-9 absolute top-5 items-center invisible group-hover:visible">
-            <% if ChatwootApp.enterprise? %>
-              <%= render 'upgrade_button_enterprise' %>
-            <% else %>
-              <%= render 'upgrade_button_community' %>
-            <% end %>
-          </div>
-          <% end %>
-          <div class="flex items-center justify-between mb-1.5 mt-4">
-            <div class="flex items-center gap-2">
-              <h3 class="text-n-slate-12 font-medium"><%= attrs[:name] %></h3>
-              <% if attrs[:enterprise] %>
-                <span class="px-2 h-4 leading-4 rounded-xl text-green-800 font-medium bg-green-100/70 text-xxs">EE</span>
-              <% end %>
-              <% if attrs[:config_key].present? && attrs[:enabled] %>
-                <a class="inline-flex items-center justify-center h-5 w-5 hover:bg-slate-50 rounded-sm" href="/super_admin/app_config?config=<%= attrs[:config_key] %>">
-                  <svg width="18" height="18"><use xlink:href="#icon-gear" /></svg>
-                </a>
-              <% end %>
+
+    <!-- Top Two Cards: Plan Status & Help -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <% if ChatwootApp.enterprise? %>
+        <div class="p-5 rounded-2xl bg-white dark:bg-[#141622] border border-slate-200/80 dark:border-slate-800/80 shadow-2xs flex flex-col justify-between transition-colors">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
+                <h2 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight"><%= t('super_admin.settings.current_plan', default: 'Plan Actual') %></h2>
+              </div>
+              <a href="<%= refresh_super_admin_settings_url %>" class="inline-flex gap-1.5 text-xs font-semibold items-center text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors">
+                <svg width="14" height="14"><use xlink:href="#icon-refresh-line" /></svg>
+                <span><%= t('super_admin.actions.refresh', default: 'Actualizar') %></span>
+              </a>
+            </div>
+            <div class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mt-1">
+              <%= SuperAdmin::FeaturesHelper.plan_details.html_safe %>
             </div>
           </div>
-          <p class="text-n-slate-11 mb-0"><%= attrs[:description] %></p>
+          <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+            <span>Edición Enterprise: Desbloqueada</span>
+            <span class="font-semibold text-emerald-500">Activo</span>
+          </div>
         </div>
       <% end %>
+
+      <div class="p-5 rounded-2xl bg-white dark:bg-[#141622] border border-slate-200/80 dark:border-slate-800/80 shadow-2xs flex flex-col justify-between transition-colors">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-cyan-500 text-base">✨</span>
+            <h2 class="text-sm font-bold text-slate-900 dark:text-white tracking-tight"><%= t('super_admin.settings.need_help', default: '¿Necesita ayuda?') %></h2>
+          </div>
+          <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mt-1">
+            <%= t('super_admin.settings.need_help_desc', default: 'Soporte y asistencia técnica especializada de AIRM por Giantucchi.') %>
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
+          <span class="text-xs text-slate-400 dark:text-slate-500">Soporte Técnico Especializado</span>
+          <a href="https://giantucchi.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-xs shadow-sm transition-colors">
+            <span><%= t('super_admin.settings.support', default: 'Soporte Giantucchi') %></span>
+            <span>↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="pt-2">
+      <div class="mb-4">
+        <h3 class="text-base font-bold text-slate-900 dark:text-white tracking-tight">
+          <%= t('super_admin.settings.features', default: 'Módulos y Características') %>
+        </h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          Revise y gestione los módulos enterprise, modelos de IA y canales de comunicación configurados en la plataforma.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <% SuperAdmin::FeaturesHelper.available_features.each do |feature, attrs| %>
+          <div class="group p-5 rounded-2xl bg-white dark:bg-[#141622] border border-slate-200/80 dark:border-slate-800/80 hover:border-purple-500/40 dark:hover:border-purple-500/40 shadow-2xs hover:shadow-sm transition-all relative flex flex-col justify-between">
+            <div>
+              <!-- Top Card Bar -->
+              <div class="flex items-start justify-between mb-3.5">
+                <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 flex items-center justify-center">
+                  <svg width="20" height="20" class="fill-current"><use xlink:href="#<%= attrs[:icon] %>" /></svg>
+                </div>
+                <span class="<%= attrs[:enabled] ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' : 'bg-slate-200/70 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-300 dark:border-slate-700' %> border rounded-full p-1.5 inline-flex">
+                  <svg width="12" height="12"><use xlink:href="<%= attrs[:enabled] ? '#icon-tick-line': '#icon-lock-line' %>" /></svg>
+                </span>
+              </div>
+
+              <!-- Feature Title & Badges -->
+              <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white"><%= attrs[:name] %></h4>
+                <% if attrs[:enterprise] %>
+                  <span class="px-1.5 py-0.2 rounded-md text-[10px] font-extrabold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 tracking-wider">EE</span>
+                <% end %>
+                <% if attrs[:config_key].present? && attrs[:enabled] %>
+                  <a class="p-1 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ml-auto" href="/super_admin/app_config?config=<%= attrs[:config_key] %>" title="Configurar">
+                    <svg width="15" height="15" class="fill-current"><use xlink:href="#icon-gear" /></svg>
+                  </a>
+                <% end %>
+              </div>
+
+              <!-- Description -->
+              <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-0">
+                <%= attrs[:description] %>
+              </p>
+            </div>
+
+            <!-- Upgrade Button if Disabled -->
+            <% if !attrs[:enabled] %>
+              <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60">
+                <% if ChatwootApp.enterprise? %>
+                  <%= render 'upgrade_button_enterprise' %>
+                <% else %>
+                  <%= render 'upgrade_button_community' %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 </section>
