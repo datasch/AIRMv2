@@ -70,7 +70,7 @@
     },
     "EMAIL": {
       "LABEL": "E-mail",
-      "PLACEHOLDER": "Introduzca su dirección de correo electrónico de trabajo. Por ejemplo, bruce{'@'}wayne{'.'}empresas",
+      "PLACEHOLDER": "Introduce tu dirección de correo electrónico",
       "ERROR": "Por favor, introduzca una dirección de correo válida"
     },
     "PASSWORD": {
