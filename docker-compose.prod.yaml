@@ -49,7 +49,7 @@ services:
       - 'OPENAI_API_KEY=${OPENAI_API_KEY:-}'
       - 'CAPTAIN_OPEN_AI_API_KEY=${CAPTAIN_OPEN_AI_API_KEY:-}'
       - 'CAPTAIN_OPEN_AI_MODEL=${CAPTAIN_OPEN_AI_MODEL:-gpt-5-mini}'
-      - 'CAPTAIN_OPEN_AI_ENDPOINT=${CAPTAIN_OPEN_AI_ENDPOINT:-https://api.openai.com/}'
+      - 'CAPTAIN_OPEN_AI_ENDPOINT=${CAPTAIN_OPEN_AI_ENDPOINT:-https://api.openai.com/v1}'
       - 'CULQI_PUBLIC_KEY=${CULQI_PUBLIC_KEY:-}'
       - 'CULQI_SECRET_KEY=${CULQI_SECRET_KEY:-}'
     volumes:
@@ -114,7 +114,7 @@ services:
       - 'OPENAI_API_KEY=${OPENAI_API_KEY:-}'
       - 'CAPTAIN_OPEN_AI_API_KEY=${CAPTAIN_OPEN_AI_API_KEY:-}'
       - 'CAPTAIN_OPEN_AI_MODEL=${CAPTAIN_OPEN_AI_MODEL:-gpt-5-mini}'
-      - 'CAPTAIN_OPEN_AI_ENDPOINT=${CAPTAIN_OPEN_AI_ENDPOINT:-https://api.openai.com/}'
+      - 'CAPTAIN_OPEN_AI_ENDPOINT=${CAPTAIN_OPEN_AI_ENDPOINT:-https://api.openai.com/v1}'
       - 'CULQI_PUBLIC_KEY=${CULQI_PUBLIC_KEY:-}'
       - 'CULQI_SECRET_KEY=${CULQI_SECRET_KEY:-}'
     volumes:

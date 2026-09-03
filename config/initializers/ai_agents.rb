@@ -11,7 +11,8 @@ Rails.application.config.after_initialize do
     Agents.configure do |config|
       config.openai_api_key = api_key
       if api_endpoint.present?
-        api_base = "#{api_endpoint.chomp('/')}/v1"
+        api_base = api_endpoint.chomp('/')
+        api_base = "#{api_base}/v1" unless api_base.end_with?('/v1')
         config.openai_api_base = api_base
       end
       config.default_model = model

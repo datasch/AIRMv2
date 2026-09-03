@@ -58,7 +58,7 @@ class Api::V1::Accounts::Captain::AssistantsController < Api::V1::Accounts::Base
         response['handoff_tool_called'] = false
       elsif normalized_text == 'Processed by agent' || normalized_text.blank?
         product = @assistant.product_name.presence || @assistant.account.name
-        normalized_text = "En #{product} brindamos soluciones de desarrollo de software, agentes de inteligencia artificial para WhatsApp y plataformas CRM omnicanal. ¿En qué solución o proyecto te gustaría que te asesoremos?"
+        normalized_text = "En #{product} estamos a tu disposición para ayudarte con cualquier consulta o información sobre nuestros servicios. ¿En qué podemos asesorarte el día de hoy?"
         response['error'] = false
       end
 

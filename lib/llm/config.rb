@@ -34,7 +34,11 @@ module Llm::Config
     def configure_ruby_llm
       RubyLLM.configure do |config|
         config.openai_api_key = system_api_key if system_api_key.present?
-        config.openai_api_base = openai_endpoint.chomp('/') if openai_endpoint.present?
+        if openai_endpoint.present?
+          endpoint = openai_endpoint.chomp('/')
+          endpoint = "#{endpoint}/v1" unless endpoint.end_with?('/v1')
+          config.openai_api_base = endpoint
+        end
         config.model_registry_file = Rails.root.join('config/llm_models.json').to_s
         config.logger = Rails.logger
       end

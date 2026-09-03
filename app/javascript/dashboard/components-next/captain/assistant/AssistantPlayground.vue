@@ -92,8 +92,8 @@ const sendMessage = async () => {
     } else if (!assistantContent) {
       assistantContent =
         messages.value.length <= 2
-          ? '¡Hola! ¿En qué te puedo ayudar hoy? Cuéntame sobre tus consultas o proyectos.'
-          : 'Ofrecemos desarrollo de software, agentes de inteligencia artificial para WhatsApp y plataformas CRM omnicanal. ¿En qué requerimiento o proyecto te gustaría que te apoyemos?';
+          ? '¡Hola! ¿En qué te puedo ayudar hoy?'
+          : '¿En qué más te puedo colaborar el día de hoy?';
     }
 
     messages.value.push({

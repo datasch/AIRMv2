@@ -36,7 +36,7 @@ module Captain::Assistant::AgentRunResponse
       elsif is_initial_turn
         final_text = "¡Hola! Soy #{@assistant.name}, tu asistente en #{name_part}. ¿En qué puedo colaborar hoy: información sobre nuestros servicios, cotizaciones o agendamiento?"
       else
-        final_text = "En #{name_part} ofrecemos soluciones de desarrollo de software, asistentes virtuales con inteligencia artificial para WhatsApp y CRM omnicanal. ¿Qué requerimiento específico te gustaría cotizar o conocer más a fondo?"
+        final_text = "En #{name_part} estamos atentos para ayudarte y responder cualquier consulta sobre nuestros servicios. ¿En qué podemos asesorarte el día de hoy?"
       end
     end
 
