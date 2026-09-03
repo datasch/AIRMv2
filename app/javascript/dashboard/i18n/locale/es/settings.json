@@ -380,7 +380,7 @@
     "ACTIVE": "Activo",
     "COMPANIES": "Empresas",
     "ALL_COMPANIES": "Todas las empresas",
-    "CAPTAIN": "Agente de IA",
+    "CAPTAIN": "Agente IAN",
     "CALLS": "Llamadas VoIP",
     "CAPTAIN_ASSISTANTS": "Recepcionistas & Agentes",
     "CAPTAIN_OVERVIEW": "Panel del Agente",
@@ -390,7 +390,7 @@
     "CAPTAIN_SCENARIOS": "Comportamiento & Reglas",
     "CAPTAIN_PLAYGROUND": "Simulador de Chat en Vivo",
     "CAPTAIN_INBOXES": "Canales (WhatsApp / Web)",
-    "CAPTAIN_SETTINGS": "Configuración del Agente",
+    "CAPTAIN_SETTINGS": "Configuración de IAN",
     "HOME": "Inicio",
     "AGENTS": "Equipo Humano",
     "AGENT_BOTS": "Bots",
@@ -585,11 +585,11 @@
     }
   },
   "CAPTAIN_SETTINGS": {
-    "TITLE": "Ajustes de Capitán",
-    "DESCRIPTION": "Configure los modelos de IA y funciones para Capitán. Capitán funciona con facturación basada en créditos, se le cobrarán créditos por cada acción según el modelo seleccionado.",
-    "LOADING": "Cargando configuración de Capitán...",
-    "LINK_TEXT": "Más información sobre los créditos de Capitán",
-    "NOT_ENABLED": "Capitán no está habilitado para su cuenta. Actualice su plan para acceder a las funciones de Capitán.",
+    "TITLE": "Ajustes de IAN AI",
+    "DESCRIPTION": "Configure los modelos de IA y funciones para IAN. IAN funciona con facturación basada en créditos, se le cobrarán créditos por cada acción según el modelo seleccionado.",
+    "LOADING": "Cargando configuración de IAN...",
+    "LINK_TEXT": "Más información sobre los créditos de IAN",
+    "NOT_ENABLED": "IAN no está habilitado para su cuenta. Actualice su plan para acceder a las funciones de IAN.",
     "MODEL_CONFIG": {
       "TITLE": "Configuración de modelos",
       "DESCRIPTION": "Seleccione modelos de IA para diferentes funciones.",
@@ -661,12 +661,12 @@
       "BUTTON_TXT": "Ir al portal de facturación"
     },
     "CAPTAIN": {
-      "TITLE": "Capitán",
-      "DESCRIPTION": "Gestione el uso y los créditos para Capitán AI.",
+      "TITLE": "IAN",
+      "DESCRIPTION": "Gestione el uso y los créditos para IAN AI.",
       "BUTTON_TXT": "Comprar más créditos",
       "DOCUMENTS": "Documentos",
       "RESPONSES": "Respuestas",
-      "UPGRADE": "Capitán no está disponible en el plan gratuito, actualice su suscripción ahora para tener acceso a asistentes, copiloto y más.",
+      "UPGRADE": "IAN no está disponible en el plan gratuito, actualice su suscripción ahora para tener acceso a asistentes, copiloto y más.",
       "REFRESH_CREDITS": "Actualizar"
     },
     "CHAT_WITH_US": {
@@ -678,7 +678,7 @@
     "TOPUP": {
       "BUY_CREDITS": "Comprar más créditos",
       "MODAL_TITLE": "Comprar créditos de IA",
-      "MODAL_DESCRIPTION": "Compre créditos adicionales para Capitán AI.",
+      "MODAL_DESCRIPTION": "Compre créditos adicionales para IAN AI.",
       "CREDITS": "CRÉDITOS",
       "ONE_TIME": "pago único",
       "POPULAR": "Más popular",

@@ -402,19 +402,39 @@
     "OVERVIEW": {
       "HEADER": "Agent Overview",
       "IAN_HERO": {
-        "TITLE": "Ian · Commercial AI Agent",
-        "STATUS": "Operating 24/7",
-        "DESCRIPTION": "Giantucchi AI Agent trained to qualify leads, answer property and product inquiries, and automatically schedule sales appointments.",
-        "MODEL": "Model: GPT-4o Mini / Gemini",
-        "RAG": "RAG & Secure Knowledge",
+        "TITLE": "IAN · Autonomous Neural Core",
+        "STATUS": "Neural Active 24/7",
+        "DESCRIPTION": "Giantucchi AI Agent with neural architecture for dynamic reasoning, lead qualification, and real-time omnichannel support.",
+        "MODEL": "Engine: GPT-5 Mini (AIRM v5)",
+        "RAG": "Neural Memory & RAG",
+        "AUTOSERVICE_BADGE": "3-Step Self-Service Flow",
+        "CREATE_NEW_AGENT": "+ Create New Agent",
+        "STEP_1_NUM": "01",
+        "STEP_1_TITLE": "1. Train the Neural Brain",
+        "STEP_1_SUBTITLE": "Knowledge Base",
+        "STEP_1_DESC": "Upload technical brochures, PDF files or add FAQs.",
+        "STEP_1_ACTION_PDF": "Upload PDF Files",
+        "STEP_1_ACTION_FAQ": "Manage FAQs",
+        "STEP_2_NUM": "02",
+        "STEP_2_TITLE": "2. Test in Simulator",
+        "STEP_2_SUBTITLE": "Live Playground",
+        "STEP_2_DESC": "Chat with IAN in real-time to check tone, reasoning and accuracy.",
+        "STEP_2_ACTION": "Test Live",
+        "STEP_3_NUM": "03",
+        "STEP_3_TITLE": "3. Activate on Channels",
+        "STEP_3_SUBTITLE": "Instant Deployment",
+        "STEP_3_DESC": "Connect WhatsApp (QR / Cloud API) or Web Chat to serve 24/7.",
+        "STEP_3_ACTION": "Connect Channels",
         "DOCS": "Files & PDF Knowledge",
         "DOCS_DESC": "Upload brochures and catalog",
         "PROMPT": "Behavior & Prompt",
-        "PROMPT_DESC": "Rules and Ian's personality",
+        "PROMPT_DESC": "Rules and IAN's personality",
         "PLAYGROUND": "Live Simulator",
         "PLAYGROUND_DESC": "Test real-time responses",
         "INBOXES": "WhatsApp Channels",
-        "INBOXES_DESC": "Link customer support numbers"
+        "INBOXES_DESC": "Link customer support numbers",
+        "ADVANCED_LABEL": "Advanced IAN Agent settings:",
+        "TOOLS_LABEL": "Tools & APIs"
       },
       "WELCOME": {
         "LABEL": "AI Agent Summary & Performance",
@@ -537,23 +557,23 @@
       "MESSAGE_PLACEHOLDER": "Type your message...",
       "HEADER": "Playground",
       "DESCRIPTION": "Use this playground to send messages to your assistant and check if it responds accurately, quickly, and in the tone you expect.",
-      "CREDIT_NOTE": "Messages sent here will count toward your Captain credits."
+      "CREDIT_NOTE": "Messages sent here will count toward your IAN credits."
     },
     "PAYWALL": {
-      "TITLE": "Upgrade to use Captain AI",
-      "AVAILABLE_ON": "Captain is not available on the free plan.",
-      "UPGRADE_PROMPT": "Upgrade your plan to get access to our assistants, copilot and more.",
+      "TITLE": "Upgrade to use IAN AI",
+      "AVAILABLE_ON": "IAN is not available on the free plan.",
+      "UPGRADE_PROMPT": "Upgrade your plan to get access to IAN agents, copilot and more.",
       "UPGRADE_NOW": "Upgrade now",
       "CANCEL_ANYTIME": "You can change or cancel your plan anytime"
     },
     "ENTERPRISE_PAYWALL": {
-      "AVAILABLE_ON": "Captain AI is only available in the Enterprise plans.",
-      "UPGRADE_PROMPT": "Upgrade your plan to get access to our assistants, copilot and more.",
+      "AVAILABLE_ON": "IAN AI is only available in the Enterprise plans.",
+      "UPGRADE_PROMPT": "Upgrade your plan to get access to IAN agents, copilot and more.",
       "ASK_ADMIN": "Please reach out to your administrator for the upgrade."
     },
     "BANNER": {
-      "RESPONSES": "You've used over 80% of your response limit. To continue using Captain AI, please upgrade.",
-      "DOCUMENTS": "Document limit reached. Upgrade to continue using Captain AI."
+      "RESPONSES": "You've used over 80% of your response limit. To continue using IAN AI, please upgrade.",
+      "DOCUMENTS": "Document limit reached. Upgrade to continue using IAN AI."
     },
     "FORM": {
       "CANCEL": "Cancel",

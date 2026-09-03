@@ -402,19 +402,39 @@
     "OVERVIEW": {
       "HEADER": "Panel del Agente",
       "IAN_HERO": {
-        "TITLE": "Ian · Asistente Comercial IA",
-        "STATUS": "Operando 24/7",
-        "DESCRIPTION": "Agente de inteligencia artificial de Giantucchi entrenado para calificar prospectos, responder consultas con tus fichas técnicas y agendar citas comerciales automáticamente.",
-        "MODEL": "Modelo: GPT-4o Mini / Gemini",
-        "RAG": "RAG & Inventario Seguro",
+        "TITLE": "IAN · Núcleo Neuronal Autónomo",
+        "STATUS": "Neurona Activa 24/7",
+        "DESCRIPTION": "Agente de inteligencia artificial de Giantucchi con arquitectura neuronal para razonamiento dinámico, calificación de prospectos y atención omnicanal en tiempo real.",
+        "MODEL": "Motor: GPT-5 Mini (AIRM v5)",
+        "RAG": "Memoria Neuronal & RAG",
+        "AUTOSERVICE_BADGE": "Flujo de Autoservicio en 3 Pasos",
+        "CREATE_NEW_AGENT": "+ Crear Nuevo Agente",
+        "STEP_1_NUM": "01",
+        "STEP_1_TITLE": "1. Entrena la Neurona",
+        "STEP_1_SUBTITLE": "Base de Conocimiento",
+        "STEP_1_DESC": "Sube tus fichas técnicas en PDF o crea respuestas frecuentes.",
+        "STEP_1_ACTION_PDF": "Subir Fichas PDF",
+        "STEP_1_ACTION_FAQ": "Gestionar FAQs",
+        "STEP_2_NUM": "02",
+        "STEP_2_TITLE": "2. Prueba en el Simulador",
+        "STEP_2_SUBTITLE": "Zona de Pruebas en Vivo",
+        "STEP_2_DESC": "Chatea con IAN para comprobar su tono, razonamiento y precisión.",
+        "STEP_2_ACTION": "Probar en Vivo",
+        "STEP_3_NUM": "03",
+        "STEP_3_TITLE": "3. Activa en tus Canales",
+        "STEP_3_SUBTITLE": "Despliegue Inmediato",
+        "STEP_3_DESC": "Conecta WhatsApp (QR / Cloud API) o Web para atender 24/7.",
+        "STEP_3_ACTION": "Conectar Canales",
         "DOCS": "Archivos & Fichas PDF",
         "DOCS_DESC": "Subir brochures e inventario",
         "PROMPT": "Comportamiento & Prompt",
-        "PROMPT_DESC": "Reglas y personalidad de Ian",
+        "PROMPT_DESC": "Reglas y personalidad de IAN",
         "PLAYGROUND": "Simulador en Vivo",
         "PLAYGROUND_DESC": "Probar respuestas en tiempo real",
         "INBOXES": "Canales de WhatsApp",
-        "INBOXES_DESC": "Vincular números de atención"
+        "INBOXES_DESC": "Vincular números de atención",
+        "ADVANCED_LABEL": "Configuración avanzada del Agente IAN:",
+        "TOOLS_LABEL": "Herramientas & APIs"
       },
       "WELCOME": {
         "LABEL": "Métricas y Rendimiento del Agente de IA",
@@ -537,22 +557,22 @@
       "MESSAGE_PLACEHOLDER": "Escribe tu mensaje...",
       "HEADER": "Zona de pruebas",
       "DESCRIPTION": "Usa esta zona de pruebas para enviar mensajes a tu asistente y comprobar si responde con precisión, rapidez y con el tono que esperas.",
-      "CREDIT_NOTE": "Los mensajes enviados aquí contarán para tus créditos de Captain."
+      "CREDIT_NOTE": "Los mensajes enviados aquí contarán para tus créditos de IAN."
     },
     "PAYWALL": {
-      "TITLE": "Actualiza para usar Captain AI",
-      "AVAILABLE_ON": "Captain no está disponible en el plan gratuito.",
-      "UPGRADE_PROMPT": "Actualiza tu plan para obtener acceso a nuestros asistentes, Copilot y más.",
+      "TITLE": "Actualiza para usar IAN AI",
+      "AVAILABLE_ON": "IAN no está disponible en el plan gratuito.",
+      "UPGRADE_PROMPT": "Actualiza tu plan para obtener acceso a los agentes IAN, Copilot y más.",
       "UPGRADE_NOW": "Actualizar ahora",
       "CANCEL_ANYTIME": "Puede cambiar o cancelar su plan en cualquier momento"
     },
     "ENTERPRISE_PAYWALL": {
-      "AVAILABLE_ON": "Captain AI solo está disponible en los planes Enterprise.",
-      "UPGRADE_PROMPT": "Actualiza tu plan para obtener acceso a nuestros asistentes, Copilot y más.",
+      "AVAILABLE_ON": "IAN AI solo está disponible en los planes Enterprise.",
+      "UPGRADE_PROMPT": "Actualiza tu plan para obtener acceso a los agentes IAN, Copilot y más.",
       "ASK_ADMIN": "Por favor, comuníquese con su administrador para la actualización."
     },
     "BANNER": {
-      "RESPONSES": "Has usado más del 80 % de tu límite de respuestas. Para seguir usando Captain AI, actualiza tu plan.",
+      "RESPONSES": "Has usado más del 80 % de tu límite de respuestas. Para seguir usando IAN AI, actualiza tu plan.",
       "DOCUMENTS": "Se alcanzó el límite de documentos. Actualiza para seguir usando Captain AI."
     },
     "FORM": {
@@ -667,11 +687,11 @@
         "VIEW_CONNECTED_INBOXES": "Ver bandejas conectadas"
       },
       "EMPTY_STATE": {
-        "TITLE": "No hay asistentes disponibles",
-        "SUBTITLE": "Cree un asistente para brindar respuestas rápidas y precisas a sus usuarios. Puede aprender de sus artículos de ayuda y conversaciones anteriores.",
+        "TITLE": "No hay agentes disponibles",
+        "SUBTITLE": "Cree un agente IAN para brindar respuestas rápidas, inteligentes y precisas a sus usuarios. Aprende de sus fichas PDF y conversaciones.",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "Asistente de Capitán",
-          "NOTE": "El Asistente de Capitán interactúa directamente con los clientes, aprende de sus documentos de ayuda y conversaciones pasadas, y ofrece respuestas instantáneas y precisas. Maneja las consultas iniciales antes de transferir a un agente cuando sea necesario."
+          "TITLE": "Asistente IAN",
+          "NOTE": "El Asistente IAN interactúa directamente con los clientes, aprende de sus fichas técnicas, catálogos PDF y respuestas frecuentes, ofreciendo respuestas instantáneas, inteligentes y precisas."
         }
       },
       "GUARDRAILS": {
@@ -963,8 +983,8 @@
         "FILTERED_TITLE": "No hay documentos coincidentes",
         "FILTERED_SUBTITLE": "Intente cambiar la fuente, el estado o el término de búsqueda.",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "Documentos de Capitán",
-          "NOTE": "Un documento en Capitán sirve como recurso de conocimiento para el asistente. Al conectar su centro de ayuda o guías, Capitán analiza el contenido y proporciona respuestas precisas a los clientes."
+          "TITLE": "Documentos de IAN",
+          "NOTE": "Un documento en IAN sirve como recurso de conocimiento para el asistente. Al conectar sus guías y fichas técnicas en PDF, IAN analiza el contenido y proporciona respuestas precisas a los clientes."
         }
       }
     },
@@ -976,8 +996,8 @@
         "TITLE": "No hay herramientas personalizadas",
         "SUBTITLE": "Cree herramientas personalizadas para conectar a su asistente con APIs y servicios externos, permitiéndole consultar datos y ejecutar acciones en su nombre.",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "Herramientas personalizadas",
-          "NOTE": "Las herramientas personalizadas permiten a su asistente interactuar con APIs y servicios externos. Cree herramientas para obtener datos, realizar acciones o integrarse con sus sistemas."
+          "TITLE": "Herramientas de IAN",
+          "NOTE": "Las herramientas de IAN permiten a su asistente interactuar con APIs y servicios externos para obtener datos y realizar acciones en su nombre."
         }
       },
       "FORM_DESCRIPTION": "Configure su herramienta personalizada para conectarse con APIs externas",
@@ -1003,14 +1023,14 @@
         "ERROR_MESSAGE": "No se pudo eliminar la herramienta personalizada"
       },
       "PAYWALL": {
-        "TITLE": "Actualiza para usar herramientas con Capitán",
-        "AVAILABLE_ON": "Las herramientas de Capitán solo están disponibles en los planes Business y Enterprise.",
+        "TITLE": "Actualiza para usar herramientas con IAN",
+        "AVAILABLE_ON": "Las herramientas de IAN solo están disponibles en los planes Business y Enterprise.",
         "UPGRADE_PROMPT": "",
         "UPGRADE_NOW": "Abrir facturación",
         "CANCEL_ANYTIME": ""
       },
       "ENTERPRISE_PAYWALL": {
-        "AVAILABLE_ON": "Las herramientas de Capitán solo están disponibles en planes de pago.",
+        "AVAILABLE_ON": "Las herramientas de IAN solo están disponibles en planes de pago.",
         "UPGRADE_PROMPT": "Actualice a un plan de pago para usar esta función.",
         "ASK_ADMIN": "Por favor, comuníquese con su administrador para la actualización."
       },
@@ -1163,8 +1183,8 @@
         "SUBTITLE": "Las FAQs ayudan a su asistente a brindar respuestas rápidas y precisas a sus clientes. Pueden generarse automáticamente desde su contenido o añadirse manualmente.",
         "CLEAR_SEARCH": "Limpiar filtros",
         "FEATURE_SPOTLIGHT": {
-          "TITLE": "FAQs de Capitán",
-          "NOTE": "Capitán detecta preguntas comunes de los clientes (frecuentes o faltantes en su base de conocimiento) y genera sugerencias de FAQ para mejorar el soporte. Puede revisar cada una y aprobarla o rechazarla."
+          "TITLE": "FAQs de IAN",
+          "NOTE": "IAN detecta preguntas comunes de los clientes (frecuentes o faltantes en su base de conocimiento) y genera sugerencias de FAQ para mejorar el soporte. Puede revisar cada una y aprobarla o rechazarla."
         }
       }
     },
@@ -1181,7 +1201,7 @@
       "SAVE": "Guardar cambios",
       "DETAILS": {
         "TITLE": "Revisar sugerencia de FAQ",
-        "DESCRIPTION": "Capitán agrupó {count} conversación en esta sugerencia. Revisa las pruebas y perfecciona la FAQ antes de aprobarla. | Capitán agrupó {count} conversaciones en esta sugerencia. Revisa las pruebas y perfecciona la FAQ antes de aprobarla.",
+        "DESCRIPTION": "IAN agrupó {count} conversación en esta sugerencia. Revisa las pruebas y perfecciona la FAQ antes de aprobarla. | IAN agrupó {count} conversaciones en esta sugerencia. Revisa las pruebas y perfecciona la FAQ antes de aprobarla.",
         "SOURCES": "Conversaciones de origen",
         "SOURCE_PROGRESS": "{visible} de {total}",
         "NO_SOURCES": "No se encontraron conversaciones de origen accesibles.",
@@ -1193,7 +1213,7 @@
         "CLEAR_SEARCH": "Borrar búsqueda"
       },
       "SUCCESS": {
-        "APPROVED": "La FAQ se aprobó y se añadió al conocimiento de Capitán.",
+        "APPROVED": "La FAQ se aprobó y se añadió al conocimiento de IAN.",
         "DISMISSED": "Sugerencia descartada.",
         "SAVED": "Sugerencia actualizada."
       },
