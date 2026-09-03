@@ -119,3 +119,15 @@ Practical checklist for any change impacting core logic or public APIs
 ## Branding / White-labeling note
 
 - For user-facing strings that currently contain "Chatwoot" but should adapt to branded/self-hosted installs, prefer applying `replaceInstallationName` from `shared/composables/useBranding` in the UI layer (for example tooltip and suggestion labels) instead of adding hardcoded brand-specific copy.
+
+## Captain AI & Assistant Guidelines (AIRM v5)
+
+- **Default Model:** Always use `gpt-5-mini` across all LLM constants, feature routers, and container configurations (`CAPTAIN_OPEN_AI_MODEL=gpt-5-mini`).
+- **Conversational Greetings Guardrail:** Never trigger `conversation_handoff` on simple greetings, pleasantries, or conversation starters ("hola", "buenas", "saludos"). The assistant must always greet warmly, introduce itself, and invite the customer to state their inquiry.
+- **Handoff Conditions:** Handoff to human agents is strictly reserved for:
+  1. Explicit customer request for human assistance ("quiero hablar con un asesor/persona").
+  2. Accepted offer to connect with human support or confirmed schedule/appointment booking.
+  3. Formally matched Scenario / Guardrail conditions requiring escalation after qualification.
+- **WhatsApp Encryption Logs:** Logs with `_chains`, `currentRatchet`, `ephemeralKeyPair`, `rootKey` belong to the Baileys/Signal Protocol in Evolution API, NOT Asterisk VoIP.
+- **Corporate Memory:** System architecture insights and permanent agent rules are mirrored in Supabase table `ai_corporate_memory` (category: `guideline`).
+
