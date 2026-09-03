@@ -14,9 +14,50 @@ class LandingController < ActionController::Base
 
   def devoluciones; end
 
-  def libro_reclamaciones; end
+  def libro_reclamaciones
+    @claim = ConsumerClaim.new
+  end
+
+  def create_claim
+    @claim = ConsumerClaim.new(claim_params)
+
+    if @claim.save
+      @success = true
+      Rails.logger.info "[Libro de Reclamaciones] Nuevo #{@claim.claim_type} registrado con ticket #{@claim.ticket_code} por #{@claim.full_name} (#{@claim.email})"
+      flash.now[:notice] = "Su #{@claim.claim_type} ha sido registrado exitosamente con el código #{@claim.ticket_code}."
+    else
+      @success = false
+      flash.now[:alert] = "Por favor complete todos los campos obligatorios: #{@claim.errors.full_messages.join(', ')}"
+    end
+
+    respond_to do |format|
+      format.html { render :libro_reclamaciones }
+      format.json do
+        if @claim.persisted?
+          render json: { success: true, ticket_code: @claim.ticket_code, message: 'Reclamación registrada exitosamente' }
+        else
+          render json: { success: false, errors: @claim.errors.full_messages }, status: :unprocessable_entity
+        end
+      end
+    end
+  rescue StandardError => e
+    Rails.logger.error "[Libro de Reclamaciones] Error: #{e.message}"
+    @success = false
+    flash.now[:alert] = "Ocurrió un error al registrar la reclamación: #{e.message}"
+    render :libro_reclamaciones, status: :unprocessable_entity
+  end
 
   private
+
+  def claim_params
+    params.require(:consumer_claim).permit(
+      :claim_type, :document_type, :document_number,
+      :first_name, :last_name, :phone, :email, :address,
+      :department, :province, :district, :is_minor, :parent_name,
+      :good_type, :amount_claimed, :currency, :product_description,
+      :details, :consumer_order
+    )
+  end
 
   def set_shared_variables
     @brand_name = GlobalConfig.get_value('BRAND_NAME') || 'AIRM'

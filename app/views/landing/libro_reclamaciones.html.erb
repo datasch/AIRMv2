@@ -1,94 +1,359 @@
-<% content_for :title, "Libro de Reclamaciones Virtual — Giantucchi Inc EIRL" %>
+<% content_for :title, "Libro de Reclamaciones Virtual — #{ @company_name }" %>
 
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-28 text-slate-300">
-  <div class="mb-10 text-center">
-    <a href="/" class="inline-flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 mb-6 transition-colors">
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-slate-300">
+  
+  <!-- Back Link -->
+  <div class="mb-8">
+    <a href="/" class="inline-flex items-center gap-2 text-xs font-semibold text-purple-400 hover:text-purple-300 transition-colors">
       <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
       </svg>
-      <span>Volver a la página principal</span>
+      <span>Volver a la página principal de AIRM</span>
     </a>
-    
-    <!-- Indecopi Badge -->
-    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold mb-4 uppercase tracking-wider">
-      <span>📖 Conforme a la Ley N° 29571 • Indecopi</span>
-    </div>
-
-    <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
-      Libro de Reclamaciones Virtual
-    </h1>
-    <p class="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto">
-      Conforme a lo establecido en el Código de Protección y Defensa del Consumidor del Perú, ponemos a disposición de nuestros clientes y usuarios nuestra Hoja de Reclamación Virtual.
-    </p>
   </div>
 
-  <!-- Provider Legal Box -->
-  <div class="p-6 sm:p-8 rounded-3xl bg-white/[0.03] border border-white/10 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs">
-    <div>
-      <span class="text-purple-400 font-bold uppercase tracking-wider block mb-1">Razón Social del Proveedor</span>
-      <h3 class="text-lg font-bold text-white"><%= @company_name %></h3>
-      <p class="text-slate-400 mt-0.5">RUC: <strong class="text-white"><%= @company_ruc %></strong></p>
-      <p class="text-slate-400"><%= @company_address %></p>
-    </div>
-    <div class="sm:text-right space-y-1">
-      <p class="text-slate-400">Atención oficial al cliente:</p>
-      <p class="text-white font-semibold"><%= @company_phone %></p>
-      <p><a href="mailto:<%= @company_support_email %>" class="text-cyan-400 hover:underline"><%= @company_support_email %></a></p>
-      <p class="text-slate-400"><%= @company_hours %></p>
-    </div>
-  </div>
-
-  <!-- Centralized Book Notification Card -->
-  <div class="glass-card rounded-3xl p-8 sm:p-12 border border-white/10 space-y-6">
-    <div class="flex items-center gap-4">
-      <div class="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-2xl shrink-0">
-        📖
-      </div>
-      <div>
-        <h2 class="text-xl font-bold text-white">Registro Centralizado de Reclamos y Quejas</h2>
-        <p class="text-slate-400 text-xs sm:text-sm mt-0.5">
-          Para garantizar una trazabilidad transparente y respuesta oportuna en un plazo no mayor a quince (15) días hábiles, nuestro libro opera a través del portal centralizado de Giantucchi.
+  <% if @success && @claim.present? %>
+    <!-- ===============================================================
+         PANTALLA DE ÉXITO: CONSTANCIA OFICIAL DE HOJA DE RECLAMACIÓN
+         =============================================================== -->
+    <div class="rounded-3xl bg-[#0d121f] border-2 border-emerald-500/50 p-6 sm:p-10 shadow-2xl relative overflow-hidden print:bg-white print:text-black print:border-black">
+      
+      <div class="text-center pb-6 border-b border-white/10 print:border-black/20">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-3xl mx-auto mb-3">
+          ✓
+        </div>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-2">
+          Hoja de Reclamación Registrada Exitosamente
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-black text-white print:text-black">
+          Hoja de Reclamación N° <span class="text-amber-400 print:text-black"><%= @claim.ticket_code %></span>
+        </h1>
+        <p class="text-xs text-slate-400 print:text-slate-600 mt-1">
+          Fecha y Hora de Registro: <strong><%= @claim.formatted_date %></strong> • Conforme a la Ley N° 29571 (Indecopi)
         </p>
       </div>
-    </div>
 
-    <!-- Differences explanation -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-      <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1 text-xs">
-        <span class="font-bold text-amber-300">Reclamo:</span>
-        <p class="text-slate-400">
-          Disconformidad relacionada directamente a los productos de software o servicios contratados (ej. fallas en la activación, discrepancias en facturación).
+      <!-- Legal Summary Box -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6 text-xs">
+        <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 print:border-black/10">
+          <span class="text-purple-400 font-bold uppercase tracking-wider block mb-1">Datos del Proveedor</span>
+          <p class="font-bold text-white print:text-black"><%= @company_name %></p>
+          <p class="text-slate-400 print:text-slate-700">RUC: <%= @company_ruc %></p>
+          <p class="text-slate-400 print:text-slate-700"><%= @company_address %></p>
+          <p class="text-slate-400 print:text-slate-700">Correo: <%= @company_support_email %></p>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 print:border-black/10">
+          <span class="text-purple-400 font-bold uppercase tracking-wider block mb-1">Datos del Consumidor Reclamante</span>
+          <p class="font-bold text-white print:text-black"><%= @claim.full_name %></p>
+          <p class="text-slate-400 print:text-slate-700"><%= @claim.document_type %>: <%= @claim.document_number %></p>
+          <p class="text-slate-400 print:text-slate-700">Teléfono: <%= @claim.phone %></p>
+          <p class="text-slate-400 print:text-slate-700">Correo: <%= @claim.email %></p>
+          <p class="text-slate-400 print:text-slate-700">Dirección: <%= @claim.address %></p>
+        </div>
+      </div>
+
+      <!-- Details of claim -->
+      <div class="space-y-4 text-xs border-t border-white/10 pt-4 print:border-black/20">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <span class="text-slate-400 font-semibold block">Naturaleza:</span>
+            <span class="font-bold uppercase text-amber-300 print:text-black"><%= @claim.claim_type.capitalize %></span>
+          </div>
+          <div>
+            <span class="text-slate-400 font-semibold block">Bien Contratado:</span>
+            <span class="font-bold uppercase text-white print:text-black"><%= @claim.good_type.capitalize %></span>
+          </div>
+          <div>
+            <span class="text-slate-400 font-semibold block">Monto Reclamado:</span>
+            <span class="font-bold text-white print:text-black">
+              <%= @claim.amount_claimed.present? ? "S/ #{@claim.amount_claimed}" : "No especificado" %>
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <span class="text-slate-400 font-semibold block mb-1">Descripción del Producto/Servicio:</span>
+          <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-slate-200 print:text-black">
+            <%= simple_format(@claim.product_description) %>
+          </div>
+        </div>
+
+        <div>
+          <span class="text-slate-400 font-semibold block mb-1">Detalle de los Hechos (Reclamo o Queja):</span>
+          <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-slate-200 print:text-black">
+            <%= simple_format(@claim.details) %>
+          </div>
+        </div>
+
+        <div>
+          <span class="text-slate-400 font-semibold block mb-1">Pedido Concreto del Consumidor:</span>
+          <div class="p-3 rounded-xl bg-white/[0.02] border border-white/5 text-slate-200 print:text-black">
+            <%= simple_format(@claim.consumer_order) %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legal Notice & Timeline -->
+      <div class="mt-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-200 space-y-1 print:text-black print:border-black/20">
+        <p class="font-bold">⚖️ Base Legal y Plazo de Respuesta (Indecopi):</p>
+        <p>
+          De conformidad con el Código de Protección y Defensa del Consumidor (Ley N° 29571) y el D.S. N° 011-2011-PCM, <strong><%= @company_name %></strong> dará respuesta formal a su reclamación a la dirección de correo electrónico consignada en un plazo máximo e improrrogable de <strong>quince (15) días hábiles</strong>.
         </p>
       </div>
-      <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1 text-xs">
-        <span class="font-bold text-cyan-300">Queja:</span>
-        <p class="text-slate-400">
-          Malestar o descontento respecto a la atención al público recibida por parte de nuestros asesores comerciales o canales de soporte.
-        </p>
+
+      <!-- Print & Return Buttons -->
+      <div class="mt-6 pt-6 border-t border-white/10 flex flex-wrap gap-3 items-center justify-between print:hidden">
+        <button type="button" onclick="window.print();" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-2 transition-all">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          <span>Imprimir / Guardar Constancia en PDF</span>
+        </button>
+
+        <a href="/libro-reclamaciones" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition-all">
+          Registrar otra reclamación
+        </a>
       </div>
     </div>
 
-    <!-- Official Access Button -->
-    <div class="pt-4 border-t border-white/10 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div>
-        <p class="text-xs text-slate-400">
-          Al enviar tu reclamo, se generará una copia electrónica automática remitida a tu correo personal.
-        </p>
-      </div>
-      <a href="https://giantucchi.com/libro-reclamaciones/" target="_blank" rel="noopener noreferrer" class="btn-primary !bg-amber-400 !text-slate-950 font-bold hover:!bg-amber-300 w-full sm:w-auto justify-center">
-        <span>Abrir Hoja de Reclamación Oficial</span>
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-        </svg>
-      </a>
-    </div>
+  <% else %>
 
-    <!-- Direct Email Fallback -->
-    <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-xs text-slate-400 space-y-2 mt-4">
-      <p class="font-bold text-white">Canal alternativo de atención directa:</p>
-      <p>
-        También puedes remitir tu requerimiento o incidencia detallada al correo <a href="mailto:<%= @company_support_email %>" class="text-cyan-400 hover:underline"><%= @company_support_email %></a> con el asunto <code class="bg-black/60 px-2 py-0.5 rounded text-amber-300">RECLAMO - [Nombre de tu Empresa / DNI]</code> indicando fecha de contratación, descripción de los hechos y pedido concreto.
+    <!-- ===============================================================
+         FORMULARIO OFICIAL DE HOJA DE RECLAMACIÓN
+         =============================================================== -->
+    <div class="mb-10 text-center">
+      <!-- Indecopi Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold mb-4 uppercase tracking-wider">
+        <span>📖 Conforme a la Ley N° 29571 • Indecopi</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight mb-4">
+        Libro de Reclamaciones Virtual
+      </h1>
+      <p class="text-slate-400 text-xs sm:text-sm max-w-2xl mx-auto">
+        Conforme a lo establecido en el Código de Protección y Defensa del Consumidor del Perú, ponemos a disposición de nuestros usuarios nuestra Hoja de Reclamación Virtual.
       </p>
     </div>
-  </div>
+
+    <!-- Provider Legal Box -->
+    <div class="p-6 sm:p-8 rounded-3xl bg-white/[0.03] border border-white/10 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-xs">
+      <div>
+        <span class="text-purple-400 font-bold uppercase tracking-wider block mb-1">Razón Social del Proveedor</span>
+        <h3 class="text-lg font-bold text-white"><%= @company_name %></h3>
+        <p class="text-slate-400 mt-0.5">RUC: <strong class="text-white"><%= @company_ruc %></strong></p>
+        <p class="text-slate-400"><%= @company_address %></p>
+      </div>
+      <div class="sm:text-right space-y-1">
+        <p class="text-slate-400">Atención oficial al cliente:</p>
+        <p class="text-white font-semibold"><%= @company_phone %></p>
+        <p><a href="mailto:<%= @company_support_email %>" class="text-cyan-400 hover:underline"><%= @company_support_email %></a></p>
+        <p class="text-slate-400"><%= @company_hours %></p>
+      </div>
+    </div>
+
+    <!-- Legal Concepts Explanation -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+      <div class="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/20 text-xs space-y-1">
+        <span class="font-bold text-amber-300 flex items-center gap-1.5">
+          <span>⚠️</span> ¿Qué es un Reclamo?
+        </span>
+        <p class="text-slate-300 text-[11px] leading-relaxed">
+          Disconformidad relacionada directamente con los productos o servicios contratados (ej. problemas de activación, discrepancias en facturación o fallas en el software).
+        </p>
+      </div>
+      <div class="p-4 rounded-2xl bg-cyan-500/5 border border-cyan-500/20 text-xs space-y-1">
+        <span class="font-bold text-cyan-300 flex items-center gap-1.5">
+          <span>💬</span> ¿Qué es una Queja?
+        </span>
+        <p class="text-slate-300 text-[11px] leading-relaxed">
+          Malestar o descontento respecto a la atención al público brindada por nuestros asesores comerciales o canales de soporte (trato, demoras en contestar).
+        </p>
+      </div>
+    </div>
+
+    <% if flash[:alert] %>
+      <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs mb-6 font-semibold flex items-center gap-2">
+        <span>❌</span>
+        <span><%= flash[:alert] %></span>
+      </div>
+    <% end %>
+
+    <!-- Form Container -->
+    <div class="rounded-3xl bg-[#090d16] border border-white/10 p-6 sm:p-10 shadow-2xl">
+      <%= form_with model: @claim, url: '/libro-reclamaciones', method: :post, local: true, class: "space-y-8" do |f| %>
+
+        <!-- SECCIÓN 1: Identificación del Consumidor -->
+        <div>
+          <div class="flex items-center gap-2 pb-3 mb-4 border-b border-white/10">
+            <span class="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center">1</span>
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Identificación del Consumidor Reclamante</h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Tipo de Documento *</label>
+              <%= f.select :document_type, options_for_select([['DNI - Documento Nacional de Identidad', 'DNI'], ['CE - Carné de Extranjería', 'CE'], ['RUC', 'RUC'], ['Pasaporte', 'PASAPORTE']], @claim.document_type), {}, class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500" %>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Número de Documento *</label>
+              <%= f.text_field :document_number, required: true, placeholder: "Ej. 74839201", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Teléfono / Celular *</label>
+              <%= f.text_field :phone, required: true, placeholder: "+51 987 654 321", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Nombres *</label>
+              <%= f.text_field :first_name, required: true, placeholder: "Ej. Juan Carlos", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Apellidos *</label>
+              <%= f.text_field :last_name, required: true, placeholder: "Ej. Pérez Quispe", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Correo Electrónico (donde se remitirá la respuesta) *</label>
+              <%= f.email_field :email, required: true, placeholder: "juan.perez@empresa.com", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Domicilio / Dirección Física *</label>
+              <%= f.text_field :address, required: true, placeholder: "Av. Principal 123, Dpto 402", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Departamento</label>
+              <%= f.text_field :department, placeholder: "Lima", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Provincia</label>
+              <%= f.text_field :province, placeholder: "Lima", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Distrito</label>
+              <%= f.text_field :district, placeholder: "Miraflores", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+          </div>
+
+          <!-- Minor Checkbox -->
+          <div class="mt-4 pt-2">
+            <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+              <%= f.check_box :is_minor, id: "is-minor-toggle", onchange: "document.getElementById('parent-box').classList.toggle('hidden', !this.checked)", class: "rounded border-white/20 bg-white/10 text-purple-600 focus:ring-0" %>
+              <span>¿El reclamante es menor de edad?</span>
+            </label>
+            <div id="parent-box" class="mt-3 hidden text-xs">
+              <label class="block font-semibold text-slate-300 mb-1">Nombre completo del Padre, Madre o Apoderado</label>
+              <%= f.text_field :parent_name, placeholder: "Nombres y Apellidos del tutor legal", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: Identificación del Bien Contratado -->
+        <div>
+          <div class="flex items-center gap-2 pb-3 mb-4 border-b border-white/10">
+            <span class="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center">2</span>
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Identificación del Bien Contratado</h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-2">Tipo de Bien *</label>
+              <div class="flex items-center gap-4 py-2">
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <%= f.radio_button :good_type, 'servicio', checked: true, class: "text-purple-600 focus:ring-0 bg-white/10 border-white/20" %>
+                  <span>Servicio (SaaS / IA)</span>
+                </label>
+                <label class="inline-flex items-center gap-2 cursor-pointer">
+                  <%= f.radio_button :good_type, 'producto', class: "text-purple-600 focus:ring-0 bg-white/10 border-white/20" %>
+                  <span>Producto</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Monto Reclamado (Opcional)</label>
+              <%= f.number_field :amount_claimed, step: '0.01', placeholder: "S/ 0.00", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1">Moneda</label>
+              <%= f.select :currency, options_for_select([['Soles (PEN)', 'PEN'], ['Dólares Americanos (USD)', 'USD']], 'PEN'), {}, class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500" %>
+            </div>
+          </div>
+
+          <div class="mt-4 text-xs">
+            <label class="block font-semibold text-slate-300 mb-1">Descripción del Producto o Servicio Contratado *</label>
+            <%= f.text_area :product_description, required: true, rows: 2, placeholder: "Indique el plan contratado (ej. Implementación Agente IA, Plan Starter, Plan Team Growth, etc.) o número de pedido Culqi.", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 3: Detalle de la Reclamación -->
+        <div>
+          <div class="flex items-center gap-2 pb-3 mb-4 border-b border-white/10">
+            <span class="w-6 h-6 rounded-full bg-purple-600 text-white font-bold text-xs flex items-center justify-center">3</span>
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Detalle de la Reclamación y Pedido</h3>
+          </div>
+
+          <div class="mb-4 text-xs">
+            <label class="block font-semibold text-slate-300 mb-2">Tipo de Reclamación *</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label class="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 flex items-start gap-3 cursor-pointer hover:border-amber-400/50 transition-colors">
+                <%= f.radio_button :claim_type, 'reclamo', checked: true, class: "mt-0.5 text-purple-600 focus:ring-0 bg-white/10 border-white/20" %>
+                <div>
+                  <strong class="text-amber-300 block font-bold">RECLAMO</strong>
+                  <span class="text-[11px] text-slate-400 leading-snug block mt-0.5">Disconformidad relacionada directamente a los productos o servicios contratados.</span>
+                </div>
+              </label>
+
+              <label class="p-3.5 rounded-xl bg-white/[0.03] border border-white/10 flex items-start gap-3 cursor-pointer hover:border-cyan-400/50 transition-colors">
+                <%= f.radio_button :claim_type, 'queja', class: "mt-0.5 text-purple-600 focus:ring-0 bg-white/10 border-white/20" %>
+                <div>
+                  <strong class="text-cyan-300 block font-bold">QUEJA</strong>
+                  <span class="text-[11px] text-slate-400 leading-snug block mt-0.5">Malestar o descontento respecto a la atención al cliente recibida.</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="text-xs mb-4">
+            <label class="block font-semibold text-slate-300 mb-1">Detalle de la Reclamación (Hechos) *</label>
+            <%= f.text_area :details, required: true, rows: 4, placeholder: "Explique detalladamente los hechos suscitados que fundamentan su reclamo o queja...", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+          </div>
+
+          <div class="text-xs">
+            <label class="block font-semibold text-slate-300 mb-1">Pedido Concreto del Consumidor *</label>
+            <%= f.text_area :consumer_order, required: true, rows: 3, placeholder: "Indique de manera clara y precisa qué solución solicita a la empresa...", class: "w-full px-3.5 py-2.5 rounded-xl bg-white/[0.05] border border-white/10 text-white focus:outline-none focus:border-purple-500 placeholder:text-slate-500" %>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 4: Declaración Jurada y Envío -->
+        <div class="pt-4 border-t border-white/10 space-y-4">
+          <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-300">
+            <input type="checkbox" required checked class="mt-0.5 rounded border-white/20 bg-white/10 text-purple-600 focus:ring-0" />
+            <span class="text-[11px] leading-relaxed">
+              Declaro que los datos consignados en la presente Hoja de Reclamación son verdaderos y acepto que la respuesta formal sea notificada válidamente al correo electrónico consignado, en cumplimiento de lo establecido en el Código de Protección y Defensa del Consumidor (Ley N° 29571).
+            </span>
+          </label>
+
+          <button type="submit" class="btn-primary w-full justify-center !py-4 text-sm font-black !bg-gradient-to-r !from-amber-400 !to-amber-500 !text-slate-950 hover:!from-amber-300 hover:!to-amber-400 shadow-xl shadow-amber-500/20 transition-all">
+            <span>📖 Enviar Hoja de Reclamación Oficial</span>
+          </button>
+        </div>
+
+      <% end %>
+    </div>
+
+  <% end %>
+
 </div>

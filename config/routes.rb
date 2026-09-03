@@ -23,6 +23,9 @@ Rails.application.routes.draw do
     get '/politica-de-devoluciones', to: 'landing#devoluciones'
     get '/refund-policy', to: 'landing#devoluciones'
     get '/libro-reclamaciones', to: 'landing#libro_reclamaciones'
+    get '/libro-de-reclamaciones', to: 'landing#libro_reclamaciones'
+    post '/libro-reclamaciones', to: 'landing#create_claim'
+    post '/libro-de-reclamaciones', to: 'landing#create_claim'
     get '/productos', to: 'landing#index', anchor: 'productos'
     get '/catalogo', to: 'landing#index', anchor: 'productos'
     get '/status', to: 'landing#status'
@@ -772,6 +775,7 @@ Rails.application.routes.draw do
       end
       resources :platform_apps, only: [:index, :new, :create, :show, :edit, :update, :destroy]
       resources :platform_banners
+      resources :consumer_claims, only: [:index, :show, :edit, :update, :destroy]
       resource :instance_status, only: [:show]
 
       resource :settings, only: [:show] do

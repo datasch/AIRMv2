@@ -766,6 +766,9 @@ es:
       platform_banner:
         one: 'Banner de Plataforma'
         other: 'Banners de Plataforma'
+      consumer_claim:
+        one: 'Hoja de Reclamación'
+        other: 'Libro de Reclamaciones'
       access_token:
         one: 'Token de Acceso'
         other: 'Tokens de Acceso'

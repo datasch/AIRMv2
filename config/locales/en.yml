@@ -786,6 +786,9 @@ en:
       platform_banner:
         one: 'Platform Banner'
         other: 'Platform Banners'
+      consumer_claim:
+        one: 'Consumer Claim'
+        other: 'Consumer Claims'
       access_token:
         one: 'Access Token'
         other: 'Access Tokens'
