@@ -30,6 +30,8 @@ master.key
 # Ignore env files
 .env
 
+airm-comercial-remotion/
+
 public/uploads
 public/packs*
 public/assets/administrate*
