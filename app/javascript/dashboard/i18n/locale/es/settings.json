@@ -49,7 +49,22 @@
       "CALLING": "Marcando...",
       "CALL_ENDED": "Llamada finalizada",
       "DIAL_PLACEHOLDER": "Ingresa número telefónico...",
-      "CALL": "Llamar"
+      "CALL": "Llamar",
+      "HANGUP": "Colgar llamada",
+      "CANCEL_CALL": "Colgar / Cancelar llamada",
+      "DIALING": "Marcando / Timbrando...",
+      "DISPOSITION_TITLE": "Tipificación de Llamada",
+      "DISPOSITION_LABEL": "Resultado de la llamada:",
+      "DISPOSITION_PLACEHOLDER": "Seleccionar estado...",
+      "EFFECTIVE_BADGE": "Efectiva (>= 6s)",
+      "TEST_BADGE": "Prueba (2 a 5s)",
+      "INEFFECTIVE_BADGE": "No efectiva",
+      "COMMERCIAL_GROUP": "Comercial (Llamadas Efectivas)",
+      "CASUISTICS_GROUP": "Seguimiento / Casuísticas",
+      "NOT_EFFECTIVE_HINT": "(No efectiva)",
+      "SYNC_CONVERSATION": "Guardar también en conversación",
+      "SAVE_DISPOSITION": "Guardar Tipificación",
+      "SKIP": "Omitir"
     }
   },
   "PROFILE_SETTINGS": {
@@ -432,6 +447,8 @@
     "REPORTS_LABEL": "Etiquetas",
     "REPORTS_INBOX": "Bandeja de entrada",
     "REPORTS_TEAM": "Equipo",
+    "CLICK_TO_CALL": "Click-to-call",
+    "DATABASE_REPORTS": "Base de Datos",
     "AGENT_ASSIGNMENT": "Asignación de agentes",
     "SET_AVAILABILITY_TITLE": "Ponte como",
     "SET_YOUR_AVAILABILITY": "Establecer su disponibilidad",

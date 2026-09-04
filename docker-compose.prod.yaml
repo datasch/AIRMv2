@@ -54,6 +54,7 @@ services:
       - 'CULQI_SECRET_KEY=${CULQI_SECRET_KEY:-}'
     volumes:
       - 'storage_data:/app/storage'
+      - 'asterisk_spool:/var/spool/asterisk/monitor:ro'
     depends_on:
       airm_postgres:
         condition: service_healthy
@@ -119,6 +120,7 @@ services:
       - 'CULQI_SECRET_KEY=${CULQI_SECRET_KEY:-}'
     volumes:
       - 'storage_data:/app/storage'
+      - 'asterisk_spool:/var/spool/asterisk/monitor:ro'
     depends_on:
       airm_postgres:
         condition: service_healthy
@@ -214,6 +216,7 @@ services:
       - '10000-10050:10000-10050/udp'
     volumes:
       - 'asterisk_etc:/etc/asterisk'
+      - 'asterisk_spool:/var/spool/asterisk/monitor'
   qdrant:
     image: 'qdrant/qdrant:latest'
     restart: always
@@ -234,5 +237,6 @@ volumes:
   storage_data: null
   evolution_instances_data: null
   asterisk_etc: null
+  asterisk_spool: null
   qdrant_data: null
   qdrant_snapshots: null

@@ -23,6 +23,8 @@ import CsatResponses from './CsatResponses.vue';
 import BotReports from './BotReports.vue';
 import LiveReports from './LiveReports.vue';
 import SLAReports from './SLAReports.vue';
+import ClickToCallReports from './ClickToCallReports.vue';
+import DatabaseReports from './DatabaseReports.vue';
 
 const meta = {
   featureFlag: FEATURE_FLAGS.REPORTS,
@@ -151,6 +153,18 @@ export default {
           name: 'bot_reports',
           meta,
           component: BotReports,
+        },
+        {
+          path: 'click_to_call',
+          name: 'click_to_call_reports',
+          meta,
+          component: ClickToCallReports,
+        },
+        {
+          path: 'database',
+          name: 'database_reports',
+          meta,
+          component: DatabaseReports,
         },
       ],
     },

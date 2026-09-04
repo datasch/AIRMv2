@@ -323,6 +323,9 @@ Rails.application.routes.draw do
             post :call_status
             post :log_call
             post :call_contact
+            get :click_to_call_reports
+            get :database_reports
+            get 'recordings/:id', action: :recording, as: :recording
           end
           resources :inboxes, only: [:index, :show, :create, :update, :destroy] do
             get :assignable_agents, on: :member

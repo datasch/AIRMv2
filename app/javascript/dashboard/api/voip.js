@@ -40,13 +40,32 @@ class VoipAPI extends ApiClient {
     });
   }
 
-  logCall({ conversationId, phoneNumber, durationSeconds, status }) {
+  logCall({
+    conversationId,
+    phoneNumber,
+    durationSeconds,
+    status,
+    callId,
+    disposition,
+    updateConversationTipificacion,
+  }) {
     return axios.post(`${this.url}/log_call`, {
       conversation_id: conversationId,
       phone_number: phoneNumber,
       duration_seconds: durationSeconds,
       status,
+      call_id: callId,
+      disposition,
+      update_conversation_tipificacion: updateConversationTipificacion,
     });
+  }
+
+  getClickToCallReports(params = {}) {
+    return axios.get(`${this.url}/click_to_call_reports`, { params });
+  }
+
+  getDatabaseReports(params = {}) {
+    return axios.get(`${this.url}/database_reports`, { params });
   }
 }
 

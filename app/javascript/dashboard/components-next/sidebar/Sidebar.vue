@@ -355,6 +355,16 @@ const newReportRoutes = () => [
     to: accountScopedRoute('team_reports_index'),
     activeOn: ['team_reports_show'],
   },
+  {
+    name: 'Click to Call',
+    label: t('SIDEBAR.CLICK_TO_CALL'),
+    to: accountScopedRoute('click_to_call_reports'),
+  },
+  {
+    name: 'Database Reports',
+    label: t('SIDEBAR.DATABASE_REPORTS'),
+    to: accountScopedRoute('database_reports'),
+  },
 ];
 
 const reportRoutes = computed(() => newReportRoutes());

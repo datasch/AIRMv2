@@ -12,7 +12,7 @@ export const voipState = reactive({
   registrationError: null,
   activeCalls: [],
   currentSession: null,
-  callState: 'idle', // 'idle' | 'calling' | 'ringing' | 'connected' | 'ended'
+  callState: 'idle', // 'idle' | 'calling' | 'ringing' | 'connected' | 'ended' | 'disposition'
   remoteNumber: '',
   remoteDisplayName: '',
   callDuration: 0,
@@ -20,6 +20,10 @@ export const voipState = reactive({
   isOnHold: false,
   isDialerOpen: false,
   conversationId: null,
+  callId: null,
+  lastCallDuration: 0,
+  lastCallStatus: 'completed',
+  lastCallCategory: 'ineffective',
 });
 
 let ua = null;
@@ -36,6 +40,13 @@ const ensureAudioElement = () => {
   return remoteAudioElement;
 };
 
+const stopRemoteAudio = () => {
+  if (remoteAudioElement) {
+    remoteAudioElement.pause();
+    remoteAudioElement.srcObject = null;
+  }
+};
+
 const startDurationTimer = () => {
   clearInterval(durationTimer);
   voipState.callDuration = 0;
@@ -49,34 +60,74 @@ const stopDurationTimer = () => {
 };
 
 const handleCallTermination = status => {
+  if (
+    voipState.callState === 'idle' ||
+    voipState.callState === 'ended' ||
+    voipState.callState === 'disposition'
+  ) {
+    return;
+  }
+
   const finalDuration = voipState.callDuration;
   const phoneNumber = voipState.remoteNumber;
   const convId = voipState.conversationId;
+  const currentCallId = voipState.callId;
 
   stopDurationTimer();
-  voipState.callState = 'ended';
+  stopRemoteAudio();
   voipState.currentSession = null;
   voipState.isMuted = false;
   voipState.isOnHold = false;
+  voipState.lastCallDuration = finalDuration;
+  voipState.lastCallStatus = status;
+
+  // Clasificación de efectividad según reglas de negocio:
+  // Efectiva: >= 6 segundos
+  // Prueba: entre 2 y 5 segundos (> 1 y <= 5)
+  // No efectiva: < 2 segundos, buzón de voz o sin contacto
+  let category = 'ineffective';
+  if (finalDuration >= 6) {
+    category = 'effective';
+  } else if (finalDuration >= 2 && finalDuration <= 5) {
+    category = 'test';
+  }
+  voipState.lastCallCategory = category;
 
   VoipAPI.updateCallStatus({ event: 'ended', phoneNumber });
 
-  if (convId && phoneNumber) {
-    VoipAPI.logCall({
-      conversationId: convId,
-      phoneNumber,
-      durationSeconds: finalDuration,
-      status,
-    });
+  // Si se canceló durante el timbrado/marcado antes de contestar (duración 0)
+  if (status === 'cancelled' && finalDuration === 0) {
+    if (convId && phoneNumber) {
+      VoipAPI.logCall({
+        conversationId: convId,
+        phoneNumber,
+        durationSeconds: 0,
+        status: 'cancelled',
+        callId: currentCallId,
+        disposition: 'Llamada cancelada',
+        updateConversationTipificacion: false,
+      }).catch(() => {});
+    }
+    voipState.callState = 'idle';
+    voipState.remoteNumber = '';
+    voipState.callId = null;
+    return;
   }
 
-  setTimeout(() => {
-    if (voipState.callState === 'ended') {
-      voipState.callState = 'idle';
-      voipState.remoteNumber = '';
-      voipState.conversationId = null;
-    }
-  }, 2500);
+  // Si hubo llamada a un contacto o número, pasar a pantalla de tipificación
+  if (phoneNumber) {
+    voipState.callState = 'disposition';
+  } else {
+    voipState.callState = 'ended';
+    setTimeout(() => {
+      if (voipState.callState === 'ended') {
+        voipState.callState = 'idle';
+        voipState.remoteNumber = '';
+        voipState.conversationId = null;
+        voipState.callId = null;
+      }
+    }, 2000);
+  }
 };
 
 const bindSessionEvents = session => {
@@ -110,7 +161,9 @@ const bindSessionEvents = session => {
       phoneNumber: voipState.remoteNumber,
     });
     if (session.connection) {
-      const streams = session.connection.getRemoteStreams ? session.connection.getRemoteStreams() : [];
+      const streams = session.connection.getRemoteStreams
+        ? session.connection.getRemoteStreams()
+        : [];
       if (streams.length > 0) attachMedia(streams[0]);
     }
   });
@@ -118,7 +171,9 @@ const bindSessionEvents = session => {
   session.on('confirmed', () => {
     voipState.callState = 'connected';
     if (session.connection) {
-      const streams = session.connection.getRemoteStreams ? session.connection.getRemoteStreams() : [];
+      const streams = session.connection.getRemoteStreams
+        ? session.connection.getRemoteStreams()
+        : [];
       if (streams.length > 0) attachMedia(streams[0]);
     }
   });
@@ -233,19 +288,21 @@ export const makeCall = async (
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(track => track.stop());
     } catch (micErr) {
-      console.warn('[VoIP] Microphone access error:', micErr);
+      // Ignore mic pre-warm error
     }
   }
 
   const cleanNumber = targetNumber.toString().replace(/[^0-9+]/g, '');
   const callerId = customCallerId || voipState.caller_id;
+  const callId = `call_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
 
+  voipState.callId = callId;
   voipState.remoteNumber = cleanNumber;
   voipState.conversationId = conversationId;
   voipState.callState = 'calling';
   voipState.isDialerOpen = true;
 
-  const extraHeaders = [];
+  const extraHeaders = [`X-Call-ID: ${callId}`];
   if (callerId) {
     extraHeaders.push(`X-Caller-ID: ${callerId}`);
     extraHeaders.push(
@@ -278,11 +335,90 @@ export const answerCall = () => {
 };
 
 export const hangupCall = () => {
-  if (voipState.currentSession) {
-    voipState.currentSession.terminate();
-  } else {
+  const wasCalling =
+    voipState.callState === 'calling' || voipState.callState === 'ringing';
+  const session = voipState.currentSession;
+
+  if (session) {
+    try {
+      session.terminate({
+        status_code: 487,
+        reason_phrase: 'Request Terminated',
+      });
+    } catch (err) {
+      // Session already ended or cancelled
+    }
+  }
+
+  // Si se cuelga durante el timbrado/marcado antes de contestar, cancelar y detener inmediatamente sin esperar
+  if (wasCalling) {
+    handleCallTermination('cancelled');
+  } else if (!session) {
     handleCallTermination('ended');
   }
+};
+
+export const submitCallDisposition = async ({
+  disposition,
+  updateConversationTipificacion = false,
+}) => {
+  const convId = voipState.conversationId;
+  const phoneNumber = voipState.remoteNumber;
+  const durationSeconds = voipState.lastCallDuration;
+  const status = voipState.lastCallStatus || 'completed';
+  const callId = voipState.callId;
+
+  if (phoneNumber) {
+    try {
+      await VoipAPI.logCall({
+        conversationId: convId,
+        phoneNumber,
+        durationSeconds,
+        status,
+        callId,
+        disposition,
+        updateConversationTipificacion,
+      });
+    } catch (err) {
+      // Best-effort call logging
+    }
+  }
+
+  voipState.callState = 'idle';
+  voipState.remoteNumber = '';
+  voipState.callId = null;
+  voipState.conversationId = null;
+  voipState.isDialerOpen = false;
+};
+
+export const skipCallDisposition = async () => {
+  const convId = voipState.conversationId;
+  const phoneNumber = voipState.remoteNumber;
+  const durationSeconds = voipState.lastCallDuration;
+  const status = voipState.lastCallStatus || 'completed';
+  const callId = voipState.callId;
+
+  if (phoneNumber) {
+    try {
+      await VoipAPI.logCall({
+        conversationId: convId,
+        phoneNumber,
+        durationSeconds,
+        status,
+        callId,
+        disposition: null,
+        updateConversationTipificacion: false,
+      });
+    } catch (err) {
+      // Best-effort call logging
+    }
+  }
+
+  voipState.callState = 'idle';
+  voipState.remoteNumber = '';
+  voipState.callId = null;
+  voipState.conversationId = null;
+  voipState.isDialerOpen = false;
 };
 
 export const toggleMute = () => {

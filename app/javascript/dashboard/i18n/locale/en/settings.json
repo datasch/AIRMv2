@@ -48,7 +48,22 @@
       "CALLING": "Calling...",
       "CALL_ENDED": "Call ended",
       "DIAL_PLACEHOLDER": "Enter number or extension...",
-      "CALL": "Call"
+      "CALL": "Call",
+      "HANGUP": "Hang Up",
+      "CANCEL_CALL": "Cancel Call",
+      "DIALING": "Dialing / Ringing...",
+      "DISPOSITION_TITLE": "Call Disposition",
+      "DISPOSITION_LABEL": "Call outcome:",
+      "DISPOSITION_PLACEHOLDER": "Select disposition...",
+      "EFFECTIVE_BADGE": "Effective (>= 6s)",
+      "TEST_BADGE": "Test (2 to 5s)",
+      "INEFFECTIVE_BADGE": "Ineffective",
+      "COMMERCIAL_GROUP": "Commercial (Effective Calls)",
+      "CASUISTICS_GROUP": "Follow-up / Situational",
+      "NOT_EFFECTIVE_HINT": "(Not effective)",
+      "SYNC_CONVERSATION": "Also save in conversation",
+      "SAVE_DISPOSITION": "Save Disposition",
+      "SKIP": "Skip"
     }
   },
   "PROFILE_SETTINGS": {
@@ -432,6 +447,8 @@
     "REPORTS_LABEL": "Labels",
     "REPORTS_INBOX": "Inbox",
     "REPORTS_TEAM": "Team",
+    "CLICK_TO_CALL": "Click-to-Call",
+    "DATABASE_REPORTS": "Database Reports",
     "AGENT_ASSIGNMENT": "Agent Assignment",
     "SET_AVAILABILITY_TITLE": "Set yourself as",
     "SET_YOUR_AVAILABILITY": "Set your availability",
