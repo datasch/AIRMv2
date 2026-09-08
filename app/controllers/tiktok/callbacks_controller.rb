@@ -16,7 +16,7 @@ class Tiktok::CallbacksController < ApplicationController
 
   def all_scopes_granted?
     granted_scopes = short_term_access_token[:scope].to_s.split(',')
-    (Tiktok::AuthClient::REQUIRED_SCOPES - granted_scopes).blank?
+    (Tiktok::AuthClient.required_scopes - granted_scopes).blank?
   end
 
   def process_successful_authorization

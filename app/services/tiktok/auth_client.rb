@@ -1,8 +1,19 @@
 class Tiktok::AuthClient
-  REQUIRED_SCOPES = %w[user.info.basic user.info.username user.info.stats user.info.profile user.account.type user.insights message.list.read
-                       message.list.send message.list.manage].freeze
+  DEFAULT_SCOPES = %w[user.info.basic user.info.profile user.info.stats].freeze
+  FULL_MESSAGING_SCOPES = %w[user.info.basic user.info.username user.info.stats user.info.profile user.account.type user.insights message.list.read
+                             message.list.send message.list.manage].freeze
+  REQUIRED_SCOPES = DEFAULT_SCOPES
 
   class << self
+    def required_scopes
+      configured = ENV['TIKTOK_SCOPES'].presence || GlobalConfigService.load('TIKTOK_SCOPES', nil)
+      if configured.present?
+        configured.to_s.split(',').map(&:strip).reject(&:blank?)
+      else
+        DEFAULT_SCOPES
+      end
+    end
+
     def authorize_url(state: nil)
       tiktok_client = ::OAuth2::Client.new(
         client_id,
@@ -19,7 +30,7 @@ class Tiktok::AuthClient
           response_type: 'code',
           client_key: client_id,
           redirect_uri: redirect_uri,
-          scope: REQUIRED_SCOPES.join(','),
+          scope: required_scopes.join(','),
           state: state
         }
       )
