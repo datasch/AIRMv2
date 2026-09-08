@@ -3,7 +3,7 @@ class Captain::Llm::ConversationFaqJob < MutexApplicationJob
 
   LOCK_TIMEOUT = 10.minutes
 
-  retry_on_lock_conflict wait: 30.seconds, attempts: 30
+  retry_on_lock_conflict wait: 30.seconds, attempts: 30, on_exhaustion: :discard_lock_conflict
 
   def perform(conversation, assistant)
     inbox = conversation.inbox
@@ -26,5 +26,9 @@ class Captain::Llm::ConversationFaqJob < MutexApplicationJob
       assistant_id: assistant.id,
       language: Captain::Llm::ConversationFaqService.language_for(conversation)
     )
+  end
+
+  def discard_lock_conflict(conversation, assistant)
+    Rails.logger.warn "[#{self.class.name}] Discarded job for conversation #{conversation.id} after exhausting lock attempts."
   end
 end
