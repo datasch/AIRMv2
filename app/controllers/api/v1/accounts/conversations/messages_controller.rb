@@ -17,7 +17,7 @@ class Api::V1::Accounts::Conversations::MessagesController < Api::V1::Accounts::
           mb.instance_variable_set(:@message, existing)
           mb.send(:process_attachments)
           if existing.save
-            ::ActionCableBroadcastJob.perform_later(existing.id)
+            Rails.configuration.dispatcher.dispatch(Events::Types::MESSAGE_UPDATED, existing)
           end
         end
 

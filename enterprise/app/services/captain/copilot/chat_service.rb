@@ -88,7 +88,7 @@ class Captain::Copilot::ChatService < Llm::BaseAiService
     {
       role: 'system',
       content: Captain::Llm::SystemPromptsService.copilot_response_generator(
-        @assistant.config['product_name'],
+        @assistant.config&.[]('product_name'),
         tools_summary,
         @assistant.config
       )
