@@ -52,3 +52,7 @@ Rails.application.configure do
   # Amazon SES ActionMailbox configuration
   config.action_mailbox.ses.subscribed_topic = ENV['ACTION_MAILBOX_SES_SNS_TOPIC'] if ENV['ACTION_MAILBOX_SES_SNS_TOPIC'].present?
 end
+
+ActiveSupport.on_load(:action_mailer) do
+  ActionMailer::MailDeliveryJob.discard_on ActiveJob::DeserializationError
+end
