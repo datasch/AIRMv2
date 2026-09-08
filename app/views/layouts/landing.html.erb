@@ -145,6 +145,49 @@
     ttq.load('DAFLIVBC77U208ULDNIG');
     ttq.page();
   }(window, document, 'ttq');
+
+  // Helper dual para medición sincronizada (Browser Pixel + Server Events API)
+  window.trackTikTokDualEvent = function(eventName, properties, userData) {
+    properties = properties || {};
+    userData = userData || {};
+
+    var eventId = properties.event_id || ('tt_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9));
+    properties.event_id = eventId;
+
+    // 1. Medición en navegador mediante Pixel
+    if (window.ttq && typeof window.ttq.track === 'function') {
+      try {
+        window.ttq.track(eventName, properties, { event_id: eventId });
+      } catch (e) {
+        console.warn('[TikTok Pixel] Error:', e);
+      }
+    }
+
+    // 2. Medición en servidor mediante Events API (resistente a bloqueadores)
+    try {
+      var payload = {
+        event_name: eventName,
+        event_id: eventId,
+        properties: properties,
+        user: userData
+      };
+      var jsonPayload = JSON.stringify(payload);
+      if (navigator.sendBeacon) {
+        var blob = new Blob([jsonPayload], { type: 'application/json' });
+        navigator.sendBeacon('/tracking/tiktok_event', blob);
+      } else {
+        fetch('/tracking/tiktok_event', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: jsonPayload,
+          keepalive: true
+        }).catch(function() {});
+      }
+    } catch (err) {
+      console.warn('[TikTok Events API] Error:', err);
+    }
+    return eventId;
+  };
   </script>
   <!-- TikTok Pixel Code End -->
 </head>

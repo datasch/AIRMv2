@@ -52,6 +52,9 @@ services:
       - 'CAPTAIN_OPEN_AI_ENDPOINT=${CAPTAIN_OPEN_AI_ENDPOINT:-https://api.openai.com/v1}'
       - 'CULQI_PUBLIC_KEY=${CULQI_PUBLIC_KEY:-}'
       - 'CULQI_SECRET_KEY=${CULQI_SECRET_KEY:-}'
+      - 'TIKTOK_PIXEL_ID=${TIKTOK_PIXEL_ID:-DAFLIVBC77U208ULDNIG}'
+      - 'TIKTOK_EVENTS_ACCESS_TOKEN=${TIKTOK_EVENTS_ACCESS_TOKEN:-6b62d698036e2e18dadd63131ae0d074be873eb2}'
+      - 'TIKTOK_TEST_EVENT_CODE=${TIKTOK_TEST_EVENT_CODE:-}'
     volumes:
       - 'storage_data:/app/storage'
       - 'asterisk_spool:/var/spool/asterisk/monitor:ro'
@@ -118,6 +121,9 @@ services:
       - 'CAPTAIN_OPEN_AI_ENDPOINT=${CAPTAIN_OPEN_AI_ENDPOINT:-https://api.openai.com/v1}'
       - 'CULQI_PUBLIC_KEY=${CULQI_PUBLIC_KEY:-}'
       - 'CULQI_SECRET_KEY=${CULQI_SECRET_KEY:-}'
+      - 'TIKTOK_PIXEL_ID=${TIKTOK_PIXEL_ID:-DAFLIVBC77U208ULDNIG}'
+      - 'TIKTOK_EVENTS_ACCESS_TOKEN=${TIKTOK_EVENTS_ACCESS_TOKEN:-6b62d698036e2e18dadd63131ae0d074be873eb2}'
+      - 'TIKTOK_TEST_EVENT_CODE=${TIKTOK_TEST_EVENT_CODE:-}'
     volumes:
       - 'storage_data:/app/storage'
       - 'asterisk_spool:/var/spool/asterisk/monitor:ro'

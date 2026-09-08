@@ -1331,6 +1331,28 @@
     modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
 
+    // Track ViewContent y AddToCart al seleccionar el producto e iniciar compra
+    if (typeof window.trackTikTokDualEvent === 'function') {
+      window.trackTikTokDualEvent('ViewContent', {
+        value: activeProduct.pricePEN,
+        currency: 'PEN',
+        content_id: activeProduct.id,
+        content_type: 'product',
+        content_name: activeProduct.name,
+        price: activeProduct.pricePEN
+      });
+
+      window.trackTikTokDualEvent('AddToCart', {
+        value: activeProduct.pricePEN,
+        currency: 'PEN',
+        content_id: activeProduct.id,
+        content_type: 'product',
+        content_name: activeProduct.name,
+        price: activeProduct.pricePEN,
+        quantity: 1
+      });
+    }
+
     // Preload Culqi script in background
     loadCulqiScript(() => {});
   }
@@ -1385,6 +1407,47 @@
     document.getElementById('btn-activate-account').href = signupUrl;
 
     successBox.classList.remove('hidden');
+
+    // Track CompletePayment y Purchase exitoso (Embudo E-Commerce)
+    if (typeof window.trackTikTokDualEvent === 'function') {
+      window.trackTikTokDualEvent('CompletePayment', {
+        value: product.pricePEN,
+        currency: 'PEN',
+        content_id: product.id,
+        content_type: 'product',
+        content_name: product.name,
+        price: product.pricePEN,
+        quantity: 1,
+        status: 'paid'
+      }, {
+        email: email
+      });
+
+      window.trackTikTokDualEvent('Purchase', {
+        value: product.pricePEN,
+        currency: 'PEN',
+        content_id: product.id,
+        content_type: 'product',
+        content_name: product.name,
+        price: product.pricePEN,
+        quantity: 1,
+        status: 'paid'
+      }, {
+        email: email
+      });
+
+      window.trackTikTokDualEvent('PlaceAnOrder', {
+        value: product.pricePEN,
+        currency: 'PEN',
+        content_id: product.id,
+        content_type: 'product',
+        content_name: product.name,
+        price: product.pricePEN,
+        status: 'paid'
+      }, {
+        email: email
+      });
+    }
   }
 
   // Execute Culqi Payment
@@ -1402,6 +1465,41 @@
     if (!terms) {
       alert('Debe aceptar los Términos y la Política de Devoluciones.');
       return;
+    }
+
+    // Track InitiateCheckout, Lead y ClickButton en la acción de pago
+    if (typeof window.trackTikTokDualEvent === 'function') {
+      window.trackTikTokDualEvent('InitiateCheckout', {
+        value: activeProduct.pricePEN,
+        currency: 'PEN',
+        content_id: activeProduct.id,
+        content_type: 'product',
+        content_name: activeProduct.name,
+        price: activeProduct.pricePEN,
+        quantity: 1
+      }, {
+        email: email,
+        phone: phone
+      });
+
+      window.trackTikTokDualEvent('ClickButton', {
+        value: activeProduct.pricePEN,
+        currency: 'PEN',
+        content_id: activeProduct.id,
+        content_name: 'Pagar con Culqi',
+        status: 'initiated'
+      });
+
+      window.trackTikTokDualEvent('Lead', {
+        value: activeProduct.pricePEN,
+        currency: 'PEN',
+        content_id: activeProduct.id,
+        content_name: activeProduct.name,
+        price: activeProduct.pricePEN
+      }, {
+        email: email,
+        phone: phone
+      });
     }
 
     loadCulqiScript(() => {
@@ -1468,5 +1566,29 @@
       }, 3000);
     }
   })();
+
+  // TikTok Events Tracking automático para botones CTA y visualización
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof window.trackTikTokDualEvent === 'function') {
+      // 1. ViewContent de la landing
+      window.trackTikTokDualEvent('ViewContent', {
+        content_name: 'AIRM Home Landing',
+        content_type: 'landing_page',
+        url: window.location.href
+      });
+
+      // 2. ClickButton en enlaces de WhatsApp, Demo y Navegación a Precios
+      document.querySelectorAll('a[href*="wa.me"], a[href*="whatsapp"], a[href="#precios"], a[href*="signup"], a[href*="login"]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var btnText = (this.textContent || '').trim().replace(/\s+/g, ' ').substring(0, 50);
+          window.trackTikTokDualEvent('ClickButton', {
+            content_name: btnText || 'Botón CTA',
+            url: this.href || window.location.href,
+            status: 'clicked'
+          });
+        });
+      });
+    }
+  });
 </script>
 

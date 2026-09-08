@@ -30,6 +30,7 @@ Rails.application.routes.draw do
     get '/catalogo', to: 'landing#index', anchor: 'productos'
     get '/status', to: 'landing#status'
     get '/estado', to: 'landing#status'
+    post '/tracking/tiktok_event', to: 'landing#track_tiktok_event'
     get '/auth/signup', to: redirect('/app/auth/signup')
     get '/signup', to: redirect('/app/auth/signup')
     get '/login', to: redirect('/app/login')

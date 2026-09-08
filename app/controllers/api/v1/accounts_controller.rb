@@ -37,6 +37,7 @@ class Api::V1::AccountsController < Api::BaseController
     ).perform
     enqueue_branding_enrichment
     if @user
+      track_tiktok_signup_event
       # Authenticated users (dashboard "add account") and api_only signups
       # need the full response with account_id. API-only deployments have no
       # frontend to handle the email confirmation flow, so they need auth
@@ -152,6 +153,30 @@ class Api::V1::AccountsController < Api::BaseController
       account: @account,
       account_user: @current_account_user
     }
+  end
+
+  def track_tiktok_signup_event
+    user_data = {
+      email: @user.email,
+      external_id: @user.id,
+      ip: request.remote_ip,
+      user_agent: request.user_agent,
+      ttp: cookies['_ttp'],
+      ttclid: params[:ttclid] || cookies['ttclid']
+    }
+
+    Tiktok::SendEventJob.perform_later(
+      event_name: 'CompleteRegistration',
+      properties: {
+        content_name: 'Registro de Cuenta AIRM',
+        status: 'completed',
+        account_id: @account&.id,
+        salesperson_name: @account&.custom_attributes&.[]('salesperson_name')
+      },
+      user_data: user_data
+    )
+  rescue StandardError => e
+    Rails.logger.error "[TikTok Signup Tracking] Error: #{e.message}"
   end
 end
 
