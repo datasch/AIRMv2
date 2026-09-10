@@ -137,6 +137,46 @@ services:
   evolution-api:
     image: 'evoapicloud/evolution-api:latest'
     restart: always
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        cat << 'EOF' > /tmp/patch_lid.js
+        const fs = require("fs");
+        const path = require("path");
+        function patch(dir) {
+          try {
+            if (!fs.existsSync(dir)) return;
+            const entries = fs.readdirSync(dir, { withFileTypes: true });
+            for (const entry of entries) {
+              const fullPath = path.join(dir, entry.name);
+              if (entry.isDirectory()) {
+                patch(fullPath);
+              } else if (entry.name.endsWith(".js") || entry.name.endsWith(".cjs")) {
+                try {
+                  let code = fs.readFileSync(fullPath, "utf8");
+                  if (code.includes("remoteJidAlt") || code.includes("phoneNumber.split")) {
+                    let patched = code.replace(
+                      /(\b[a-zA-Z0-9_]+)\.key\.remoteJidAlt(?!\s*\|\|\s*[a-zA-Z0-9_]+\.key\.remoteJid)/g,
+                      function(match, p1) {
+                        return "(" + p1 + ".key.remoteJidAlt || " + p1 + ".key.remoteJid)";
+                      }
+                    );
+                    patched = patched.split("phoneNumber.split").join("(phoneNumber||\"\").split");
+                    if (patched !== code) {
+                      fs.writeFileSync(fullPath, patched, "utf8");
+                      console.log("[LID-PATCH] Successfully patched: " + fullPath);
+                    }
+                  }
+                } catch (e) {}
+              }
+            }
+          } catch (e) {}
+        }
+        patch("/evolution/dist");
+        EOF
+        node /tmp/patch_lid.js
+        . ./Docker/scripts/deploy_database.sh && npm run start:prod
     expose:
       - '8080'
     ports:
@@ -155,11 +195,7 @@ services:
       - DATABASE_SAVE_MESSAGE_UPDATE=true
       - DATABASE_SAVE_DATA_CONTACTS=true
       - DATABASE_SAVE_DATA_CHATS=true
-      - CACHE_REDIS_ENABLED=true
-      - 'CACHE_REDIS_URI=redis://airm_redis:6379/1'
-      - CACHE_REDIS_PREFIX_KEY=evolution
-      - CACHE_REDIS_TTL=604800
-      - CACHE_REDIS_SAVE_IS_ON_ARG=true
+      - CACHE_REDIS_ENABLED=false
       - CHATWOOT_ENABLED=true
       - CHATWOOT_MESSAGE_READ=true
       - CHATWOOT_MESSAGE_DELETE=true

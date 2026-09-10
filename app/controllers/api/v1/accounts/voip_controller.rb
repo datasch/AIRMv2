@@ -360,8 +360,18 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
 
   def click_to_call_reports
     account = Current.account
-    since_date = params[:since].present? ? Time.zone.parse(params[:since]) : 30.days.ago.beginning_of_day
-    until_date = params[:until].present? ? Time.zone.parse(params[:until]) : Time.zone.now.end_of_day
+    reporting_tz = account.reporting_timezone.presence || 'America/Lima'
+
+    since_date = if params[:since].present?
+                   Time.zone.parse(params[:since]).in_time_zone(reporting_tz).beginning_of_day
+                 else
+                   30.days.ago.in_time_zone(reporting_tz).beginning_of_day
+                 end
+    until_date = if params[:until].present?
+                   Time.zone.parse(params[:until]).in_time_zone(reporting_tz).end_of_day
+                 else
+                   Time.current.in_time_zone(reporting_tz).end_of_day
+                 end
 
     calls_scope = account.voip_call_logs.where(created_at: since_date..until_date)
 
@@ -374,24 +384,28 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
     tmo_seconds = total_calls.positive? ? calls_scope.average(:duration_seconds).to_i : 0
     tmo_formatted = format('%02d:%02d', tmo_seconds / 60, tmo_seconds % 60)
 
-    # Agrupación por día
-    daily_stats = calls_scope.group('DATE(created_at)').count
-    effective_daily = calls_scope.effective.group('DATE(created_at)').count
+    # Agrupación por día en zona horaria de Lima
+    date_sql = "DATE(created_at AT TIME ZONE 'UTC' AT TIME ZONE '#{reporting_tz}')"
+    daily_stats = calls_scope.group(date_sql).count
+    effective_daily = calls_scope.effective.group(date_sql).count
     calls_by_day = daily_stats.map do |date, total|
       eff = effective_daily[date] || 0
       {
-        date: date.strftime('%Y-%m-%d'),
+        date: date.is_a?(Date) || date.is_a?(Time) ? date.strftime('%Y-%m-%d') : date.to_s,
         total: total,
         effective: eff,
+        ineffective: total - eff,
         effective_pct: total.positive? ? ((eff.to_f / total) * 100).round(1) : 0
       }
     end.sort_by { |d| d[:date] }
 
-    # Agrupación por hora (00..23)
-    hourly_stats = calls_scope.group("EXTRACT(HOUR FROM created_at)::int").count
+    # Agrupación por hora (00..23) en zona horaria de Lima
+    hour_sql = "EXTRACT(HOUR FROM created_at AT TIME ZONE 'UTC' AT TIME ZONE '#{reporting_tz}')::int"
+    hourly_stats = calls_scope.group(hour_sql).count
     calls_by_hour = (0..23).map do |hour|
       {
         hour: format('%02d:00', hour),
+        hour_number: hour,
         count: hourly_stats[hour] || 0
       }
     end
@@ -439,6 +453,7 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
         tmo_seconds: tmo_seconds,
         tmo_formatted: tmo_formatted
       },
+      reporting_timezone: reporting_tz,
       calls_by_day: calls_by_day,
       calls_by_hour: calls_by_hour,
       dispositions_summary: dispositions_summary,
@@ -455,7 +470,7 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
           call_category: c.call_category,
           disposition: c.disposition || 'Sin tipificar',
           recording_url: c.recording_url,
-          created_at: c.created_at.strftime('%d/%m/%Y %H:%M')
+          created_at: c.created_at.in_time_zone(reporting_tz).strftime('%d/%m/%Y %H:%M')
         }
       end
     }
