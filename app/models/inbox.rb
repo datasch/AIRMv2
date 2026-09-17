@@ -85,6 +85,7 @@ class Inbox < ApplicationRecord
 
   after_create_commit :dispatch_create_event
   after_update_commit :dispatch_update_event
+  after_update_commit :sync_evolution_api_inbox_name, if: :saved_change_to_name?
   after_destroy_commit :invalidate_filtered_unread_counts_after_destroy
 
   scope :order_by_name, -> { order('lower(name) ASC') }
@@ -275,6 +276,29 @@ class Inbox < ApplicationRecord
 
   def check_channel_type?
     ['Channel::Email', 'Channel::Api', 'Channel::WebWidget'].include?(channel_type)
+  end
+
+  def sync_evolution_api_inbox_name
+    return unless channel_type == 'Channel::Api'
+    return if channel.blank? || channel.webhook_url.blank?
+    return unless channel.webhook_url.include?('/chatwoot/webhook/')
+
+    instance_name = channel.webhook_url.split('/chatwoot/webhook/').last.split('?').first
+    return if instance_name.blank?
+
+    admin_user = account&.administrators&.first || account&.users&.first
+    token = admin_user&.access_token&.token || admin_user&.create_access_token&.token
+    return if token.blank?
+
+    Whatsapp::EvolutionService.new.configure_chatwoot(
+      instance_name: instance_name,
+      account_id: account_id,
+      user_token: token,
+      inbox_id: id,
+      name_inbox: name
+    )
+  rescue StandardError => e
+    Rails.logger.error "[Evolution API] Failed to sync inbox name: #{e.message}"
   end
 end
 
