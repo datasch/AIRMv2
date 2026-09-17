@@ -1172,20 +1172,20 @@
 
       <!-- Onboarding Call to Action -->
       <div class="pt-2 space-y-3">
-        <div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200 text-left flex items-start gap-2">
-          <span class="text-base">🚀</span>
+        <div class="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-200 text-left flex items-start gap-2.5">
+          <span class="text-lg">✉️</span>
           <p class="text-[11px] leading-relaxed">
-            <strong>Paso siguiente:</strong> Crea la contraseña para tu cuenta de AIRM. Te permitirá ingresar a tu panel de control, conectar tu WhatsApp y activar tu agente de IA.
+            <strong>¡Cuenta aprovisionada y activada con éxito!</strong> Hemos generado tu acceso y enviado las instrucciones de activación a <span id="success-buyer-email-notice" class="font-bold text-white"></span> para que definas tu contraseña.
           </p>
         </div>
 
-        <a id="btn-activate-account" href="/app/auth/signup" class="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm shadow-xl shadow-purple-600/30 flex items-center justify-center gap-2 transition-all">
-          <span>🚀 Crear Cuenta y Activar Acceso</span>
+        <a id="btn-activate-account" href="/app/login" class="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-sm shadow-xl shadow-purple-600/30 flex items-center justify-center gap-2 transition-all">
+          <span>🔐 Ir a Iniciar Sesión en AIRM</span>
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
         </a>
 
         <p class="text-[10px] text-slate-500 text-center">
-          También te enviamos una copia del comprobante y los accesos a tu correo.
+          Si no ves el correo en tu bandeja principal, por favor revisa tu carpeta de correo no deseado o spam.
         </p>
       </div>
     </div>
@@ -1399,12 +1399,46 @@
     const successBox = document.getElementById('checkout-success-container');
     document.getElementById('success-product-name').textContent = product.name;
     document.getElementById('success-product-price').textContent = 'S/ ' + product.pricePEN.toFixed(2);
-    document.getElementById('success-tx-code').textContent = refCode || ('CULQI-' + Date.now().toString(36).toUpperCase());
+    const txCode = refCode || ('CULQI-' + Date.now().toString(36).toUpperCase());
+    document.getElementById('success-tx-code').textContent = txCode;
     document.getElementById('success-buyer-email').textContent = email;
+    const emailNotice = document.getElementById('success-buyer-email-notice');
+    if (emailNotice) emailNotice.textContent = email;
 
-    // Direct account registration link with prefilled parameters
-    const signupUrl = '/app/auth/signup?email=' + encodeURIComponent(email) + '&name=' + encodeURIComponent(name) + '&plan=' + encodeURIComponent(product.id);
-    document.getElementById('btn-activate-account').href = signupUrl;
+    const activateBtn = document.getElementById('btn-activate-account');
+    activateBtn.href = '/app/login';
+
+    // Disparar aprovisionamiento automático inmediato en el backend
+    fetch('/webhooks/culqi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        object: 'event',
+        type: 'order.status.paid',
+        data: {
+          id: txCode,
+          amount: product.priceCentsPEN || Math.round(product.pricePEN * 100),
+          currency_code: 'PEN',
+          client_details: {
+            first_name: name,
+            email: email
+          },
+          metadata: {
+            company_name: name,
+            product_type: product.id,
+            plan: product.id
+          }
+        }
+      })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      if (data && data.activation_url) {
+        activateBtn.href = data.activation_url;
+        activateBtn.innerHTML = '<span>🚀 Definir Mi Contraseña y Acceder</span><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>';
+      }
+    })
+    .catch(function() {});
 
     successBox.classList.remove('hidden');
 
