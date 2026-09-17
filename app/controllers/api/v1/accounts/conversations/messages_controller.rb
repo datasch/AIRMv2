@@ -6,9 +6,10 @@ class Api::V1::Accounts::Conversations::MessagesController < Api::V1::Accounts::
   end
 
   def create
-    # Deduplicate incoming message if it has a source_id and was already ingested into the correct conversation
-    if params[:source_id].present? && params[:message_type].to_s == 'incoming'
-      existing = Current.account.messages.find_by(source_id: params[:source_id])
+    clean_source_id = params[:source_id].to_s.strip
+    # Deduplicate incoming message if it has a source_id and was already ingested into this conversation
+    if clean_source_id.present? && !clean_source_id.in?(['null', 'undefined']) && params[:message_type].to_s == 'incoming'
+      existing = @conversation.messages.find_by(source_id: clean_source_id)
       if existing.present?
         # Fix race condition: if webhook created the message first without attachments, process them now
         if params[:attachments].present? && existing.attachments.blank?
@@ -17,7 +18,12 @@ class Api::V1::Accounts::Conversations::MessagesController < Api::V1::Accounts::
           mb.instance_variable_set(:@message, existing)
           mb.send(:process_attachments)
           if existing.save
-            Rails.configuration.dispatcher.dispatch(Events::Types::MESSAGE_UPDATED, existing)
+            Rails.configuration.dispatcher.dispatch(
+              Events::Types::MESSAGE_UPDATED,
+              Time.zone.now,
+              message: existing,
+              performed_by: Current.executed_by
+            )
           end
         end
 

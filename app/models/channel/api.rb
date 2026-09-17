@@ -37,6 +37,19 @@ class Channel::Api < ApplicationRecord
     'API'
   end
 
+  def resolved_webhook_url
+    return webhook_url if webhook_url.blank?
+
+    # Route Evolution API webhooks directly to internal EVOLUTION_API_URL so it never fails on stale external or sslip.io hostnames
+    if webhook_url.include?('/chatwoot/webhook/') && ENV['EVOLUTION_API_URL'].present?
+      evolution_base = ENV['EVOLUTION_API_URL'].chomp('/')
+      instance_part = webhook_url.split('/chatwoot/webhook/').last
+      return "#{evolution_base}/chatwoot/webhook/#{instance_part}"
+    end
+
+    webhook_url
+  end
+
   private
 
   def logout_gowa_device
