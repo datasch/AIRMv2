@@ -32,13 +32,15 @@ class Captain::OpenAiMessageBuilderService
   end
 
   def attachment_parts(attachments)
-    image_attachments = attachments.where(file_type: :image)
+    attachment_list = attachments.to_a
+    image_attachments = attachment_list.select(&:image?)
     image_content = image_parts(image_attachments)
 
-    transcription = extract_audio_transcriptions(attachments)
+    transcription = extract_audio_transcriptions(attachment_list)
     transcription_part = text_part(transcription) if transcription.present?
 
-    attachment_part = text_part('User has shared an attachment') if attachments.where.not(file_type: %i[image audio]).exists?
+    has_other_attachments = attachment_list.any? { |attachment| !attachment.image? && !attachment.audio? }
+    attachment_part = text_part('User has shared an attachment') if has_other_attachments
 
     [image_content, transcription_part, attachment_part].flatten.compact
   end
@@ -58,8 +60,8 @@ class Captain::OpenAiMessageBuilderService
   end
 
   def extract_audio_transcriptions(attachments)
-    audio_attachments = attachments.where(file_type: :audio)
-    return '' if audio_attachments.blank?
+    audio_attachments = attachments.to_a.select(&:audio?)
+    return '' if audio_attachments.empty?
 
     audio_attachments.map do |attachment|
       result = Messages::AudioTranscriptionService.new(attachment).perform

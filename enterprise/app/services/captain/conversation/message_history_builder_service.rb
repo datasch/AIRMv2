@@ -1,7 +1,9 @@
 class Captain::Conversation::MessageHistoryBuilderService
   RESOLUTION_MARKER = '<conversation_boundary status="resolved" />'.freeze
 
-  pattr_initialize [:conversation!]
+  DEFAULT_HISTORY_LIMIT = ENV.fetch('CAPTAIN_CONVERSATION_HISTORY_LIMIT', 25).to_i
+
+  pattr_initialize [:conversation!, [:limit]]
 
   def perform
     conversation_messages_for_context.filter_map do |message|
@@ -15,10 +17,17 @@ class Captain::Conversation::MessageHistoryBuilderService
 
   private
 
+  def effective_limit
+    @limit.presence || DEFAULT_HISTORY_LIMIT
+  end
+
   def conversation_messages_for_context
     conversation.messages
+                .includes(attachments: { file_attachment: :blob })
                 .where(private: false, message_type: [:incoming, :outgoing, :activity])
-                .reorder(created_at: :asc, id: :asc)
+                .reorder(created_at: :desc, id: :desc)
+                .limit(effective_limit)
+                .reverse
   end
 
   def message_hash_for_context(message)
