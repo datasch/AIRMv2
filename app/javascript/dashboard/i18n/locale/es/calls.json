@@ -40,6 +40,12 @@
       "NO_CONTACT_ANSWER": "El contacto no respondió",
       "FAILED": "La llamada no se ha podido conectar",
       "YESTERDAY": "Ayer"
-    }
+    },
+    "MY_CALLS_TITLE": "Registro de Mis Llamadas",
+    "PHONE_TITLE": "Teléfono VoIP",
+    "OPEN_DIALER": "Abrir Teléfono",
+    "CLOSE_DIALER": "Ocultar Teléfono",
+    "AGENT_EMPTY_STATE": "Aún no tienes llamadas registradas. Utiliza el teléfono para marcar tus números o conversaciones.",
+    "CALLER_ID": "ID de llamada: {id}"
   }
 }

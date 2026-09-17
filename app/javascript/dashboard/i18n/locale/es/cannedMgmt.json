@@ -9,6 +9,10 @@
     "SEARCH_PLACEHOLDER": "Search canned responses...",
     "NO_RESULTS": "No canned responses found matching your search",
     "SEARCH_404": "No hay elementos que coincidan con esta consulta.",
+    "FILTER": {
+      "ALL_USERS": "Todos los usuarios",
+      "FILTER_BY_USER": "Filtrar por usuario"
+    },
     "LIST": {
       "404": "No hay respuestas enlatadas disponibles en esta cuenta.",
       "TITLE": "Administrar respuestas predefinidas",
@@ -16,6 +20,7 @@
       "TABLE_HEADER": {
         "SHORT_CODE": "Código corto",
         "CONTENT": "Contenido",
+        "CREATED_BY": "Creado por",
         "ACTIONS": "Acciones"
       }
     },
@@ -24,6 +29,10 @@
       "DESC": "Las respuestas predefinidas son plantillas de respuesta predefinidas que pueden ser utilizadas para enviar rápidamente respuestas a conversaciones.",
       "CANCEL_BUTTON_TEXT": "Cancelar",
       "FORM": {
+        "ASSIGNED_TO": {
+          "LABEL": "Asignar a usuario",
+          "PLACEHOLDER": "Seleccionar usuario (por defecto: tú)"
+        },
         "SHORT_CODE": {
           "LABEL": "Código corto",
           "PLACEHOLDER": "Por favor, introduzca un código corto.",

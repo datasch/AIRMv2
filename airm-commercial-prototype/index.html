@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIRM Enterprise — AI Relationship Management</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    /* eslint-disable */
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            dark: {
+              950: '#05070D',
+              900: '#070A13',
+              850: '#090E17',
+              800: '#111827',
+              750: '#161F30',
+              700: '#1F2937',
+              600: '#374151',
+            },
+            electric: {
+              blue: '#2563EB',
+              cyan: '#06B6D4',
+              emerald: '#10B981',
+              violet: '#8B5CF6',
+              purple: '#A855F7',
+            },
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: #070A13;
+      color: #F8FAFC;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    .grid-pattern {
+      background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-emerald {
+      background: rgba(16, 185, 129, 0.06);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .glass-card-purple {
+      background: rgba(139, 92, 246, 0.06);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.4);
+    }
+    .glow-purple {
+      box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.4);
+    }
+    .glow-blue {
+      box-shadow: 0 0 25px -5px rgba(37, 99, 235, 0.4);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(7, 10, 19, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(16, 185, 129, 0.4);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#070A13] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
+
+  <!-- Top Announcement Banner for Prototype -->
+  <header class="bg-gradient-to-r from-emerald-950/90 via-slate-900/90 to-purple-950/90 border-b border-emerald-500/30 px-6 py-2.5 flex items-center justify-between text-xs z-50">
+    <div class="flex items-center gap-2">
+      <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/40">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        AIRM COMMERCIAL PROTOTYPE
+      </span>
+      <span class="text-slate-400 hidden md:inline">Propuesta de interfaz visual basada en el video comercial (100% aislada, cero impacto en producción).</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-slate-400 font-medium">Hora Lima: <strong class="text-emerald-400 font-mono">PET (UTC-5)</strong></span>
+      <div class="flex items-center gap-1 text-slate-300">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+        <span>Entorno Seguro</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex flex-1 relative overflow-hidden">
+    <!-- Atmospheric Radial Glows -->
+    <div class="absolute -top-40 -left-40 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none"></div>
+    <div class="absolute top-1/3 -right-40 w-[700px] h-[700px] bg-blue-500/8 rounded-full blur-[160px] pointer-events-none"></div>
+    <div class="absolute -bottom-40 left-1/3 w-[650px] h-[650px] bg-purple-500/10 rounded-full blur-[150px] pointer-events-none"></div>
+
+    <!-- Background Grid -->
+    <div class="absolute inset-0 grid-pattern opacity-40 pointer-events-none"></div>
+
+    <!-- ==================== AIRM SIDEBAR ==================== -->
+    <aside class="w-64 bg-[#090E17]/95 border-r border-white/10 flex flex-col justify-between p-4 z-20 flex-shrink-0 backdrop-blur-xl">
+      <div>
+        <!-- Account Switcher / Branding -->
+        <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.08] mb-6 shadow-inner">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-emerald-500 flex items-center justify-center font-black text-slate-950 text-base shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+              G
+            </div>
+            <div>
+              <div class="text-white font-extrabold text-sm tracking-wide">Giantucchi</div>
+              <div class="text-emerald-400 text-[11px] font-bold tracking-wider uppercase flex items-center gap-1">
+                <span>AIRM Enterprise</span>
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+              </div>
+            </div>
+          </div>
+          <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="space-y-1">
+          <!-- Item 1: Mi Bandeja -->
+          <button onclick="switchTab('inbox')" id="tab-inbox" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] transition-all font-semibold text-xs text-left group">
+            <div class="flex items-center gap-3">
+              <i data-lucide="inbox" class="w-4 h-4 text-slate-400 group-hover:text-slate-200"></i>
+              <span>Mi Bandeja</span>
+            </div>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px] border border-emerald-500/30">23</span>
+          </button>
+
+          <!-- Item 2: Captain AI (IAN) -->
+          <button onclick="switchTab('captain')" id="tab-captain" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] transition-all font-semibold text-xs text-left group">
+            <div class="flex items-center gap-3">
+              <i data-lucide="bot" class="w-4 h-4 text-purple-400"></i>
+              <span class="text-slate-200">Captain AI (IAN)</span>
+            </div>
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400 animate-pulse"></i>
+          </button>
+
+          <!-- Item 3: Llamadas VoIP -->
+          <button onclick="switchTab('voip')" id="tab-voip" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] transition-all font-semibold text-xs text-left group">
+            <div class="flex items-center gap-3">
+              <i data-lucide="phone-call" class="w-4 h-4 text-emerald-400"></i>
+              <span>Llamadas VoIP</span>
+            </div>
+            <span class="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+          </button>
+
+          <!-- Item 4: Informes & ROI (Active by default) -->
+          <button onclick="switchTab('reports')" id="tab-reports" class="nav-btn active-nav w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-emerald-500/15 text-emerald-300 font-bold text-xs text-left border-l-4 border-emerald-500 shadow-sm">
+            <div class="flex items-center gap-3">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-emerald-400"></i>
+              <span>Informes & ROI</span>
+            </div>
+            <span class="text-[10px] text-emerald-400 font-mono">LIVE</span>
+          </button>
+
+          <!-- Item 5: Campañas -->
+          <button onclick="switchTab('campaigns')" id="tab-campaigns" class="nav-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-slate-400 hover:text-slate-200 hover:bg-white/[0.04] transition-all font-semibold text-xs text-left group">
+            <div class="flex items-center gap-3">
+              <i data-lucide="megaphone" class="w-4 h-4 text-slate-400 group-hover:text-slate-200"></i>
+              <span>Campañas Masivas</span>
+            </div>
+          </button>
+        </nav>
+      </div>
+
+      <!-- User Profile Card -->
+      <div class="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-between">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-8 h-8 rounded-full bg-slate-800 border border-emerald-400/80 flex items-center justify-center font-bold text-emerald-400 text-xs shadow-sm">
+            G
+          </div>
+          <div class="truncate">
+            <div class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+              <span>Giantucchi</span>
+              <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-mono border border-emerald-500/30">ADMIN</span>
+            </div>
+            <div class="text-[11px] text-slate-400 truncate">mr@giantucchi.com</div>
+          </div>
+        </div>
+        <i data-lucide="settings" class="w-4 h-4 text-slate-500 hover:text-slate-300 cursor-pointer"></i>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN WORKSPACE ==================== -->
+    <main class="flex-1 overflow-y-auto p-6 md:p-8 z-10 space-y-6">
+
+      <!-- ==================== VIEW 1: INFORMES & ROI (ACTIVE) ==================== -->
+      <section id="view-reports" class="space-y-6">
+        <!-- Top Executive Header -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 glass-card p-6 rounded-2xl">
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold uppercase tracking-wider mb-2">
+              <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-400"></i>
+              <span>AIRM Analytics Engine</span>
+            </div>
+            <h1 class="text-2xl font-black text-white tracking-tight">Reporte de Efectividad Telefónica & Workforce</h1>
+            <p class="text-xs text-slate-400 mt-1 max-w-2xl">Métricas en tiempo real de llamadas Asterisk VoIP, tasa de conversión comercial, horas pico en Lima y productividad por asesor.</p>
+          </div>
+
+          <!-- Controls: Period Selector & Lima Timezone -->
+          <div class="flex flex-wrap items-center gap-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-xs font-medium text-slate-300">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-blue-400"></i>
+              <span>Hora Local: <strong class="text-white">Lima (PET / UTC-5)</strong></span>
+            </div>
+            <select class="rounded-xl border border-white/15 bg-slate-900/90 px-3.5 py-1.5 text-xs font-semibold text-slate-200 shadow-inner focus:outline-none focus:border-emerald-500">
+              <option>Últimos 30 días</option>
+              <option>Últimos 7 días</option>
+              <option>Hoy</option>
+              <option>Últimos 90 días</option>
+            </select>
+            <button class="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs hover:bg-emerald-400 transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)] cursor-pointer">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+              <span>Actualizar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Executive KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Total Calls -->
+          <div class="glass-card p-5 rounded-2xl relative overflow-hidden group hover:border-white/20 transition-all">
+            <div class="flex items-center justify-between text-slate-400 mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider">Total Llamadas</span>
+              <div class="w-9 h-9 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400">
+                <i data-lucide="phone-call" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="text-3xl font-black text-white">34</div>
+            <p class="text-xs text-slate-400 mt-1">Realizadas por el equipo comercial</p>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-transparent"></div>
+          </div>
+
+          <!-- Effective Calls (>= 6s) -->
+          <div class="glass-card-emerald p-5 rounded-2xl relative overflow-hidden group glow-emerald transition-all">
+            <div class="flex items-center justify-between text-emerald-300 mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider">Llamadas Efectivas (≥ 6s)</span>
+              <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300">
+                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="flex items-baseline gap-2.5">
+              <span class="text-3xl font-black text-emerald-300">10</span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-extrabold text-xs border border-emerald-500/40">29.4%</span>
+            </div>
+            <p class="text-xs text-emerald-400/80 mt-1">Contacto directo y calificado</p>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600"></div>
+          </div>
+
+          <!-- Ineffective Calls -->
+          <div class="glass-card p-5 rounded-2xl relative overflow-hidden group hover:border-white/20 transition-all">
+            <div class="flex items-center justify-between text-slate-400 mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider">No Efectivas / Pruebas</span>
+              <div class="w-9 h-9 rounded-xl bg-rose-500/15 border border-rose-500/30 flex items-center justify-center text-rose-400">
+                <i data-lucide="phone-missed" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="flex items-baseline gap-2.5">
+              <span class="text-3xl font-black text-rose-400">20</span>
+              <span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 font-semibold text-xs border border-amber-500/30">+4 pruebas</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Buzón, no contesta o &lt; 2s</p>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 to-transparent"></div>
+          </div>
+
+          <!-- TMO Promedio -->
+          <div class="glass-card p-5 rounded-2xl relative overflow-hidden group hover:border-white/20 transition-all">
+            <div class="flex items-center justify-between text-slate-400 mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider">TMO Promedio</span>
+              <div class="w-9 h-9 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-400">
+                <i data-lucide="timer" class="w-4 h-4"></i>
+              </div>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-3xl font-black font-mono text-white">00:20</span>
+              <span class="text-xs text-slate-400">min/seg</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-1">Tiempo medio de operación por llamada</p>
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-transparent"></div>
+          </div>
+        </div>
+
+        <!-- 2 Main Interactive Visual Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Chart 1: Llamadas por Día -->
+          <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-sm font-bold text-white">Tendencia de Llamadas por Día</h3>
+                  <p class="text-xs text-slate-400">Comparativa de volumen total vs llamadas efectivas</p>
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span class="text-slate-300">Efectivas</span></span>
+                  <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span><span class="text-slate-300">No efectivas</span></span>
+                </div>
+              </div>
+
+              <!-- Visual SVG Bar Chart Simulation -->
+              <div class="h-60 flex items-end justify-between gap-3 pt-6 px-2 border-b border-white/10">
+                <!-- Day 1 -->
+                <div class="flex-1 flex flex-col items-center gap-2 group relative">
+                  <div class="absolute -top-8 hidden group-hover:block bg-slate-900 px-2 py-1 rounded text-[10px] text-white border border-white/20 whitespace-nowrap z-20">05 Sep: 1 Efectiva / 3 Totales</div>
+                  <div class="w-full flex flex-col items-center gap-0.5 justify-end h-40">
+                    <div class="w-full bg-emerald-400 rounded-t-md shadow-[0_0_10px_rgba(16,185,129,0.3)]" style="height: 33%"></div>
+                    <div class="w-full bg-rose-500/80 rounded-b-md" style="height: 67%"></div>
+                  </div>
+                  <span class="text-[11px] text-slate-400 font-medium">05 Sep</span>
+                </div>
+                <!-- Day 2 -->
+                <div class="flex-1 flex flex-col items-center gap-2 group relative">
+                  <div class="absolute -top-8 hidden group-hover:block bg-slate-900 px-2 py-1 rounded text-[10px] text-white border border-white/20 whitespace-nowrap z-20">07 Sep: 0 Efectivas / 2 Totales</div>
+                  <div class="w-full flex flex-col items-center gap-0.5 justify-end h-40">
+                    <div class="w-full bg-rose-500/80 rounded-md" style="height: 40%"></div>
+                  </div>
+                  <span class="text-[11px] text-slate-400 font-medium">07 Sep</span>
+                </div>
+                <!-- Day 3 -->
+                <div class="flex-1 flex flex-col items-center gap-2 group relative">
+                  <div class="absolute -top-8 hidden group-hover:block bg-slate-900 px-2 py-1 rounded text-[10px] text-white border border-white/20 whitespace-nowrap z-20">08 Sep: 1 Efectiva / 9 Totales</div>
+                  <div class="w-full flex flex-col items-center gap-0.5 justify-end h-40">
+                    <div class="w-full bg-emerald-400 rounded-t-md" style="height: 12%"></div>
+                    <div class="w-full bg-rose-500/80 rounded-b-md" style="height: 75%"></div>
+                  </div>
+                  <span class="text-[11px] text-slate-400 font-medium">08 Sep</span>
+                </div>
+                <!-- Day 4 (Peak) -->
+                <div class="flex-1 flex flex-col items-center gap-2 group relative">
+                  <div class="absolute -top-8 hidden group-hover:block bg-slate-900 px-2 py-1 rounded text-[10px] text-white border border-white/20 whitespace-nowrap z-20">09 Sep: 8 Efectivas / 20 Totales (40%)</div>
+                  <div class="w-full flex flex-col items-center gap-0.5 justify-end h-40">
+                    <div class="w-full bg-emerald-400 rounded-t-md shadow-[0_0_15px_rgba(16,185,129,0.5)]" style="height: 40%"></div>
+                    <div class="w-full bg-rose-500/80 rounded-b-md" style="height: 60%"></div>
+                  </div>
+                  <span class="text-[11px] text-emerald-400 font-bold">Hoy</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-400 mt-3 pt-2">
+              <span>Tasa de éxito hoy: <strong class="text-emerald-400 font-bold">40.0%</strong></span>
+              <span class="text-slate-500">Métricas actualizadas automáticamente</span>
+            </div>
+          </div>
+
+          <!-- Chart 2: Distribución Horaria en Hora Lima -->
+          <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-sm font-bold text-white">Distribución Horaria (00:00 - 23:00)</h3>
+                  <p class="text-xs text-slate-400">Horas pico con mayor volumen de contacto en Lima</p>
+                </div>
+                <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300 text-xs font-bold">
+                  <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-400"></i>
+                  <span>Pico: 17:00 (12 llamadas)</span>
+                </div>
+              </div>
+
+              <!-- Hourly Bars (Spaced Intervals) -->
+              <div class="h-60 flex items-end justify-between gap-1 pt-6 px-1 border-b border-white/10">
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-white/5 rounded-t h-[2%]"></div><span class="text-[9px] text-slate-500 mt-2">00h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-white/5 rounded-t h-[2%]"></div><span class="text-[9px] text-slate-500 mt-2">02h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-white/5 rounded-t h-[2%]"></div><span class="text-[9px] text-slate-500 mt-2">04h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-white/5 rounded-t h-[2%]"></div><span class="text-[9px] text-slate-500 mt-2">06h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-blue-500/40 rounded-t h-[15%]"></div><span class="text-[9px] text-slate-400 mt-2">08h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-blue-500/70 rounded-t h-[45%]"></div><span class="text-[9px] text-slate-400 mt-2">10h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-blue-500/80 rounded-t h-[65%]"></div><span class="text-[9px] text-slate-400 mt-2">12h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-blue-500/60 rounded-t h-[35%]"></div><span class="text-[9px] text-slate-400 mt-2">14h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-blue-500/80 rounded-t h-[55%]"></div><span class="text-[9px] text-slate-400 mt-2">16h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-emerald-400 rounded-t h-[95%] shadow-[0_0_15px_rgba(16,185,129,0.5)]"></div><span class="text-[9px] text-emerald-400 font-bold mt-2">17h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-blue-500/60 rounded-t h-[40%]"></div><span class="text-[9px] text-slate-400 mt-2">18h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-blue-500/40 rounded-t h-[20%]"></div><span class="text-[9px] text-slate-400 mt-2">20h</span></div>
+                <div class="flex-1 flex flex-col items-center justify-end h-full"><div class="w-full bg-white/5 rounded-t h-[2%]"></div><span class="text-[9px] text-slate-500 mt-2">22h</span></div>
+              </div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-400 mt-3 pt-2">
+              <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3 text-blue-400"></i> Horario Local de Lima (PET / UTC-5)</span>
+              <span class="text-emerald-400 font-medium">Mayor respuesta comercial entre 16h y 18h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dispositions Commercial Categorization -->
+        <div class="glass-card p-6 rounded-2xl space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-white">Tipificación Comercial de Llamadas</h3>
+              <p class="text-xs text-slate-400">Clasificación de intenciones y resultados registrados tras culminar cada llamada</p>
+            </div>
+            <span class="text-xs font-mono text-emerald-400 font-bold">15 Tipificaciones Registradas</span>
+          </div>
+
+          <!-- Multi-Segmented Proportional Bar -->
+          <div class="h-3 w-full rounded-full overflow-hidden flex bg-white/5">
+            <div style="width: 25%" class="h-full bg-emerald-500" title="Venta / Interesado (25%)"></div>
+            <div style="width: 15%" class="h-full bg-cyan-400" title="Agendado (15%)"></div>
+            <div style="width: 20%" class="h-full bg-amber-400" title="Volver a llamar (20%)"></div>
+            <div style="width: 25%" class="h-full bg-slate-500" title="Llamada cancelada (25%)"></div>
+            <div style="width: 15%" class="h-full bg-rose-500" title="No contesta (15%)"></div>
+          </div>
+
+          <!-- Cards Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
+            <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span class="text-xs font-semibold text-slate-200">Interesado</span>
+              </div>
+              <span class="text-xs font-bold text-white">3 <span class="text-slate-500 text-[10px] font-normal">(20%)</span></span>
+            </div>
+            <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                <span class="text-xs font-semibold text-slate-200">Agendado</span>
+              </div>
+              <span class="text-xs font-bold text-white">2 <span class="text-slate-500 text-[10px] font-normal">(13.3%)</span></span>
+            </div>
+            <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                <span class="text-xs font-semibold text-slate-200">Volver a llamar</span>
+              </div>
+              <span class="text-xs font-bold text-white">3 <span class="text-slate-500 text-[10px] font-normal">(20%)</span></span>
+            </div>
+            <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span>
+                <span class="text-xs font-semibold text-slate-200">Llamada cancelada</span>
+              </div>
+              <span class="text-xs font-bold text-white">5 <span class="text-slate-500 text-[10px] font-normal">(33.3%)</span></span>
+            </div>
+            <div class="p-3 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                <span class="text-xs font-semibold text-slate-200">No contesta</span>
+              </div>
+              <span class="text-xs font-bold text-white">2 <span class="text-slate-500 text-[10px] font-normal">(13.3%)</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Recordings & Calls Table -->
+        <div class="glass-card rounded-2xl overflow-hidden">
+          <div class="p-5 border-b border-white/10 flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-white">Historial y Grabaciones de Llamadas PBX</h3>
+              <p class="text-xs text-slate-400">Grabaciones capturadas automáticamente por Asterisk VoIP en formato WAV de alta fidelidad</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-white/5 text-[11px] font-mono text-emerald-400 border border-white/10">Hora Lima: UTC-5</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-white/[0.02] border-b border-white/10 text-slate-400 font-semibold">
+                <tr>
+                  <th class="px-5 py-3.5">Fecha y Hora (Lima)</th>
+                  <th class="px-5 py-3.5">Asesor Comercial</th>
+                  <th class="px-5 py-3.5">Número Marcado</th>
+                  <th class="px-5 py-3.5 text-center">Duración</th>
+                  <th class="px-5 py-3.5 text-center">Clasificación</th>
+                  <th class="px-5 py-3.5">Tipificación</th>
+                  <th class="px-5 py-3.5">Reproductor de Audio</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5 text-slate-300 font-medium">
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                  <td class="px-5 py-3.5 font-mono text-slate-300">09/09/2026 17:42</td>
+                  <td class="px-5 py-3.5 text-white font-bold">Jose Luis Hernandez</td>
+                  <td class="px-5 py-3.5 font-mono text-slate-400">+51 927 854 857</td>
+                  <td class="px-5 py-3.5 text-center font-mono font-bold text-white">00:16</td>
+                  <td class="px-5 py-3.5 text-center">
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40">Efectiva</span>
+                  </td>
+                  <td class="px-5 py-3.5"><span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 text-[11px]">Interesado</span></td>
+                  <td class="px-5 py-3.5">
+                    <div class="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-white/10 w-44">
+                      <i data-lucide="play" class="w-3.5 h-3.5 text-emerald-400 cursor-pointer"></i>
+                      <div class="flex-1 h-1 bg-white/20 rounded-full overflow-hidden"><div class="w-1/3 h-full bg-emerald-400"></div></div>
+                      <span class="text-[10px] font-mono text-slate-400">00:16</span>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                  <td class="px-5 py-3.5 font-mono text-slate-300">09/09/2026 17:41</td>
+                  <td class="px-5 py-3.5 text-white font-bold">Jose Luis Hernandez</td>
+                  <td class="px-5 py-3.5 font-mono text-slate-400">+51 943 717 524</td>
+                  <td class="px-5 py-3.5 text-center font-mono font-bold text-white">00:18</td>
+                  <td class="px-5 py-3.5 text-center">
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40">Efectiva</span>
+                  </td>
+                  <td class="px-5 py-3.5"><span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[11px]">Agendado</span></td>
+                  <td class="px-5 py-3.5">
+                    <div class="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-white/10 w-44">
+                      <i data-lucide="play" class="w-3.5 h-3.5 text-emerald-400 cursor-pointer"></i>
+                      <div class="flex-1 h-1 bg-white/20 rounded-full overflow-hidden"><div class="w-1/2 h-full bg-emerald-400"></div></div>
+                      <span class="text-[10px] font-mono text-slate-400">00:18</span>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                  <td class="px-5 py-3.5 font-mono text-slate-300">09/09/2026 17:38</td>
+                  <td class="px-5 py-3.5 text-white font-bold">Jose Luis Hernandez</td>
+                  <td class="px-5 py-3.5 font-mono text-slate-400">+51 943 717 524</td>
+                  <td class="px-5 py-3.5 text-center font-mono text-slate-400">00:00</td>
+                  <td class="px-5 py-3.5 text-center">
+                    <span class="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-bold border border-rose-500/40">No efectiva</span>
+                  </td>
+                  <td class="px-5 py-3.5"><span class="px-2 py-0.5 rounded bg-slate-500/20 text-slate-400 text-[11px]">Llamada cancelada</span></td>
+                  <td class="px-5 py-3.5 text-slate-500 text-[11px] italic">Sin grabación</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 2: CAPTAIN AI (IAN) ==================== -->
+      <section id="view-captain" class="space-y-6 hidden">
+        <div class="glass-card p-6 rounded-2xl flex items-center justify-between border-purple-500/30 glow-purple">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_20px_rgba(168,85,247,0.5)]">
+              <i data-lucide="bot" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-xl font-black text-white">Captain AI (IAN) — Agente Autónomo AIRM</h2>
+                <span class="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold border border-purple-500/40">AIRM v5 Core</span>
+              </div>
+              <p class="text-xs text-slate-400">Motor de atención 24/7 con integración RAG vectorial en Supabase y derivación inteligente.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs font-semibold">
+              <i data-lucide="cpu" class="w-4 h-4"></i>
+              <span>Modelo: <strong class="text-white font-mono">gpt-5-mini</strong></span>
+            </div>
+            <button class="px-4 py-2 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-500 transition-all shadow-[0_0_15px_rgba(168,85,247,0.4)] flex items-center gap-2">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Nuevo Asistente</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Left: Guardrails & Knowledge Base -->
+          <div class="space-y-6">
+            <div class="glass-card p-5 rounded-2xl space-y-4">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="book-open" class="w-4 h-4 text-purple-400"></i>
+                <span>Base de Conocimiento RAG</span>
+              </h3>
+              <div class="p-4 rounded-xl border border-dashed border-purple-500/40 bg-purple-500/5 text-center cursor-pointer hover:bg-purple-500/10 transition-all">
+                <i data-lucide="upload-cloud" class="w-6 h-6 text-purple-400 mx-auto mb-1"></i>
+                <div class="text-xs font-bold text-slate-200">Arrastra archivos PDF o catálogos</div>
+                <div class="text-[10px] text-slate-400">Vectorización automática en Qdrant / Supabase</div>
+              </div>
+              <div class="space-y-2">
+                <div class="p-2.5 rounded-lg bg-white/[0.03] border border-white/10 flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
+                    <span class="text-slate-200 truncate max-w-[150px]">Catalogo_Productos_2026.pdf</span>
+                  </div>
+                  <span class="text-[10px] text-emerald-400 font-bold">100% Vectorizado</span>
+                </div>
+                <div class="p-2.5 rounded-lg bg-white/[0.03] border border-white/10 flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
+                    <span class="text-slate-200 truncate max-w-[150px]">Politicas_Comerciales.pdf</span>
+                  </div>
+                  <span class="text-[10px] text-emerald-400 font-bold">100% Vectorizado</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="glass-card p-5 rounded-2xl space-y-3">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                <span>Guardrails Comerciales</span>
+              </h3>
+              <div class="space-y-2 text-xs">
+                <div class="flex items-start gap-2 text-slate-300">
+                  <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5"></i>
+                  <span>No activar handoff en saludos simples ("Hola", "Buenas").</span>
+                </div>
+                <div class="flex items-start gap-2 text-slate-300">
+                  <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5"></i>
+                  <span>Handoff exclusivo a solicitud explícita de asesor humano.</span>
+                </div>
+                <div class="flex items-start gap-2 text-slate-300">
+                  <i data-lucide="check" class="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5"></i>
+                  <span>Validar disponibilidad de stock antes de confirmar venta.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Playground Simulator -->
+          <div class="lg:col-span-2 glass-card p-6 rounded-2xl flex flex-col justify-between h-[520px]">
+            <div class="flex items-center justify-between border-b border-white/10 pb-3">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300">
+                  <i data-lucide="bot" class="w-4 h-4"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-white">Simulador Playground (Sandbox)</div>
+                  <div class="text-[10px] text-emerald-400 flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Conectado a gpt-5-mini</span>
+                  </div>
+                </div>
+              </div>
+              <button class="text-xs px-3 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 flex items-center gap-1.5">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <span>Reiniciar Chat</span>
+              </button>
+            </div>
+
+            <!-- Chat messages -->
+            <div class="flex-1 overflow-y-auto py-4 space-y-3 pr-2">
+              <div class="flex justify-end">
+                <div class="bg-emerald-500/20 border border-emerald-500/40 text-slate-100 rounded-2xl rounded-tr-none px-4 py-2.5 text-xs max-w-sm">
+                  Hola, me interesa saber el precio del paquete AIRM Enterprise y si tienen citas para demostración mañana.
+                </div>
+              </div>
+
+              <div class="flex justify-start">
+                <div class="bg-white/[0.05] border border-white/10 text-slate-200 rounded-2xl rounded-tl-none px-4 py-3 text-xs max-w-md space-y-2">
+                  <div class="flex items-center gap-2 text-purple-300 font-bold text-[11px]">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-400"></i>
+                    <span>Captain AI (IAN)</span>
+                  </div>
+                  <p>¡Hola! Con mucho gusto. El plan <strong>AIRM Enterprise</strong> incluye agentes IA ilimitados con modelo gpt-5-mini, integración con WhatsApp Cloud API y telefonía VoIP Asterisk.</p>
+                  <div class="p-2.5 rounded-xl bg-purple-950/40 border border-purple-500/30 text-[11px] text-purple-200 flex items-center justify-between">
+                    <span>📅 Horario disponible mañana: 10:00 AM o 4:00 PM</span>
+                    <button class="px-2.5 py-1 rounded bg-purple-500 text-white font-bold text-[10px]">Agendar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="pt-3 border-t border-white/10 flex items-center gap-2">
+              <input type="text" placeholder="Escribe un mensaje de prueba para evaluar la respuesta de IAN..." class="flex-1 bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500">
+              <button class="p-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition-all shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+                <i data-lucide="send" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 3: MI BANDEJA & WHATSAPP ==================== -->
+      <section id="view-inbox" class="space-y-6 hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[720px]">
+          <!-- Chat list -->
+          <div class="lg:col-span-4 glass-card rounded-2xl flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-white/10 flex items-center justify-between">
+              <h2 class="text-sm font-bold text-white">Mi Bandeja Comercial</h2>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 font-mono text-xs font-bold">23 Activos</span>
+            </div>
+            <div class="p-3 border-b border-white/5">
+              <input type="text" placeholder="Buscar contacto o teléfono..." class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+            </div>
+            <div class="flex-1 overflow-y-auto divide-y divide-white/5">
+              <div class="p-3.5 bg-emerald-500/10 border-l-4 border-emerald-500 flex items-start gap-3 cursor-pointer">
+                <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">CR</div>
+                <div class="flex-1 truncate">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-white">Carlos Rodriguez</span>
+                    <span class="text-[10px] text-slate-400">17:42</span>
+                  </div>
+                  <div class="text-[11px] text-slate-300 truncate">Me gustaría agendar una llamada con un asesor.</div>
+                  <div class="mt-1 flex items-center gap-1.5">
+                    <span class="px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 text-[9px] font-bold">WhatsApp</span>
+                    <span class="px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 text-[9px] font-bold">IAN Atendiendo</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3.5 hover:bg-white/[0.02] flex items-start gap-3 cursor-pointer transition-colors">
+                <div class="w-9 h-9 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs">MA</div>
+                <div class="flex-1 truncate">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-white">María Alarcón</span>
+                    <span class="text-[10px] text-slate-400">16:15</span>
+                  </div>
+                  <div class="text-[11px] text-slate-400 truncate">Envíame la cotización del CRM por favor.</div>
+                  <div class="mt-1 flex items-center gap-1.5">
+                    <span class="px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 text-[9px] font-bold">WhatsApp</span>
+                    <span class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 text-[9px] font-bold">Llamada PBX</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Chat Window & Dial Call Box -->
+          <div class="lg:col-span-8 glass-card rounded-2xl flex flex-col justify-between overflow-hidden">
+            <!-- Header -->
+            <div class="p-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">CR</div>
+                <div>
+                  <div class="text-xs font-bold text-white flex items-center gap-2">
+                    <span>Carlos Rodriguez</span>
+                    <span class="text-[10px] font-mono text-slate-400">+51 987 654 321</span>
+                  </div>
+                  <div class="text-[10px] text-emerald-400 font-medium">Cliente Potencial • Lima, Perú</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                  <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                  <span>Llamar Click-to-call</span>
+                </button>
+                <button class="p-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/10">
+                  <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="flex-1 p-6 overflow-y-auto space-y-4">
+              <div class="flex justify-start">
+                <div class="bg-white/[0.04] border border-white/10 rounded-2xl px-4 py-3 text-xs text-slate-200 max-w-md">
+                  Hola, vi su comercial del agente inteligente AIRM y me interesa saber si se conecta con mi WhatsApp corporativo.
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <div class="bg-emerald-500/20 border border-emerald-500/30 rounded-2xl px-4 py-3 text-xs text-emerald-100 max-w-md space-y-1">
+                  <div class="text-[10px] text-emerald-300 font-bold flex items-center gap-1">
+                    <i data-lucide="sparkles" class="w-3 h-3 text-emerald-400"></i>
+                    <span>AIRM Smart Agent</span>
+                  </div>
+                  <p>¡Hola Carlos! Totalmente. AIRM se conecta directamente con WhatsApp Cloud API y te permite atender 24/7 sin que se caigan tus prospectos.</p>
+                </div>
+              </div>
+
+              <!-- Call Log Activity Card -->
+              <div class="mx-auto max-w-md p-3.5 rounded-xl bg-slate-900/90 border border-emerald-500/30 text-xs text-slate-200 space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="font-bold text-emerald-400 flex items-center gap-1.5">
+                    <i data-lucide="phone-call" class="w-3.5 h-3.5"></i>
+                    Llamada Finalizada (Efectiva)
+                  </span>
+                  <span class="font-mono text-white text-[11px]">00:45 min</span>
+                </div>
+                <p class="text-[11px] text-slate-300">• Agente: Giantucchi (mr@giantucchi.com)<br>• Tipificación: <strong class="text-white">Interesado</strong></p>
+                <div class="bg-black/60 p-2 rounded-lg flex items-center justify-between border border-white/5">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="play" class="w-3 h-3 text-emerald-400"></i>
+                    <span class="text-[10px] text-slate-400 font-mono">Grabación_090926_CR.wav</span>
+                  </div>
+                  <span class="text-[10px] text-emerald-400 font-mono">AUDIO PBX</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer / Composer -->
+            <div class="p-4 border-t border-white/10 bg-white/[0.02] flex items-center gap-2">
+              <button class="p-2 rounded-xl bg-white/5 text-slate-400 hover:text-white border border-white/10">
+                <i data-lucide="paperclip" class="w-4 h-4"></i>
+              </button>
+              <input type="text" placeholder="Escribe una respuesta para enviar por WhatsApp..." class="flex-1 bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+              <button class="p-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition-all shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                <i data-lucide="send" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 4: VOIP Asterisk ==================== -->
+      <section id="view-voip" class="space-y-6 hidden">
+        <div class="glass-card p-6 rounded-2xl flex items-center justify-between border-blue-500/30 glow-blue">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center text-white shadow-[0_0_20px_rgba(37,99,235,0.5)]">
+              <i data-lucide="phone-call" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-xl font-black text-white">Central Telefónica Asterisk VoIP & Click-to-call</h2>
+                <span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-[10px] font-bold border border-blue-500/40">WebRTC Gateway</span>
+              </div>
+              <p class="text-xs text-slate-400">Llamadas directas desde el navegador a teléfonos de clientes con grabación automática y tipificación.</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>Troncal SIP Conectada: <strong class="text-white">giantucchi.com</strong></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="glass-card p-6 rounded-2xl text-center space-y-4">
+            <div class="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/40">
+              <i data-lucide="mic" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-white">Marcador Rápido Click-to-call</h4>
+              <p class="text-xs text-slate-400 mt-1">Conexión con 1 solo clic desde cualquier ficha de prospecto o chat.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-black/40 border border-white/10 font-mono text-sm text-white">
+              +51 927 854 857
+            </div>
+            <button class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all shadow-[0_0_20px_rgba(16,185,129,0.4)] flex items-center justify-center gap-2">
+              <i data-lucide="phone-outgoing" class="w-4 h-4"></i>
+              <span>Iniciar Llamada de Prueba</span>
+            </button>
+          </div>
+
+          <div class="md:col-span-2 glass-card p-6 rounded-2xl space-y-4">
+            <h4 class="text-sm font-bold text-white">Reglas de Calificación Telefónica</h4>
+            <div class="space-y-3 text-xs">
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                  <span class="font-bold text-white">Llamada Efectiva</span>
+                  <span class="text-slate-400">Duración igual o mayor a 6 segundos</span>
+                </div>
+                <span class="text-emerald-400 font-mono font-bold">≥ 6s</span>
+              </div>
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+                  <span class="font-bold text-white">Llamada de Prueba</span>
+                  <span class="text-slate-400">Duración entre 2 y 5 segundos</span>
+                </div>
+                <span class="text-amber-400 font-mono font-bold">2s - 5s</span>
+              </div>
+              <div class="p-3 rounded-xl bg-white/[0.02] border border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <span class="w-3 h-3 rounded-full bg-rose-400"></span>
+                  <span class="font-bold text-white">Llamada No Efectiva</span>
+                  <span class="text-slate-400">Línea ocupada, cancelada o menor a 2 segundos</span>
+                </div>
+                <span class="text-rose-400 font-mono font-bold">&lt; 2s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    /* eslint-disable */
+    // Lucide Icons initialization
+    lucide.createIcons();
+
+    // Tab Switcher Logic
+    function switchTab(tabId) {
+      // Hide all views
+      ['reports', 'captain', 'inbox', 'voip', 'campaigns'].forEach(id => {
+        const view = document.getElementById('view-' + id);
+        if (view) view.classList.add('hidden');
+
+        const btn = document.getElementById('tab-' + id);
+        if (btn) {
+          btn.classList.remove(
+            'active-nav',
+            'bg-emerald-500/15',
+            'text-emerald-300',
+            'border-l-4',
+            'border-emerald-500'
+          );
+          btn.classList.add('text-slate-400');
+        }
+      });
+
+      // Show selected view
+      const targetView =
+        document.getElementById('view-' + tabId) ||
+        document.getElementById('view-reports');
+      if (targetView) targetView.classList.remove('hidden');
+
+      // Highlight active button
+      const activeBtn = document.getElementById('tab-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-400');
+        activeBtn.classList.add(
+          'active-nav',
+          'bg-emerald-500/15',
+          'text-emerald-300',
+          'border-l-4',
+          'border-emerald-500'
+        );
+      }
+
+      // Re-initialize Lucide in newly rendered content
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

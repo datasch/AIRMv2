@@ -121,14 +121,71 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
   def call_contact
     contact_id = params[:contact_id]
     conversation_id = params[:conversation_id]
+    raw_phone = params[:phone_number].to_s.strip
 
-    contact = Current.account.contacts.find_by(id: contact_id)
-    render json: { success: false, error: 'Contacto no encontrado' }, status: :not_found and return if contact.blank?
+    conversation = nil
+    contact = nil
 
-    real_phone = contact.phone_number.presence
-    if real_phone.blank?
-      render json: { success: false, error: 'El contacto no tiene un número telefónico registrado' }, status: :unprocessable_entity and return
+    # 1. Si se envía o referencia una conversación (ej. #1027, /conversations/1027 o un número de display_id)
+    if conversation_id.present?
+      conversation = Current.account.conversations.find_by(id: conversation_id) ||
+                     Current.account.conversations.find_by(display_id: conversation_id)
+      contact ||= conversation&.contact
+    elsif raw_phone.present? && raw_phone.match?(%r{\A(?:/conversations/|#)?(\d+)\z})
+      conv_ref = raw_phone.match(%r{\A(?:/conversations/|#)?(\d+)\z})[1]
+      conv = Current.account.conversations.find_by(display_id: conv_ref) ||
+             Current.account.conversations.find_by(id: conv_ref)
+      if conv.present?
+        conversation = conv
+        contact = conv.contact
+      end
     end
+
+    # 2. Si se especificó contact_id
+    if contact.blank? && contact_id.present?
+      contact = Current.account.contacts.find_by(id: contact_id)
+      conversation ||= contact&.conversations&.order(updated_at: :desc)&.first
+    end
+
+    # 3. Si se envió un número y aún no tenemos contacto
+    real_phone = nil
+    if contact.present?
+      real_phone = contact.phone_number.presence
+    elsif raw_phone.present?
+      if raw_phone.include?('*') || raw_phone.include?('•')
+        agent_contacts = Current.user.conversations.where(account_id: Current.account.id).includes(:contact).map(&:contact).compact.uniq
+        matching_contact = agent_contacts.find do |c|
+          PhoneMaskerService.mask(c.phone_number) == raw_phone || PhoneMaskerService.mask(c.display_phone_number) == raw_phone
+        end
+
+        if matching_contact.blank?
+          digits = raw_phone.gsub(/\D/, '')
+          if digits.length >= 4
+            prefix = digits[0..2]
+            suffix = digits[-2..]
+            matching_contact = Current.account.contacts.where('phone_number LIKE ? AND phone_number LIKE ?', "%#{prefix}%", "%#{suffix}").find do |c|
+              PhoneMaskerService.mask(c.phone_number) == raw_phone || PhoneMaskerService.mask(c.display_phone_number) == raw_phone
+            end
+          end
+        end
+
+        if matching_contact.present?
+          contact = matching_contact
+          real_phone = contact.phone_number.presence
+          conversation ||= contact.conversations.order(updated_at: :desc).first
+        end
+      else
+        real_phone = raw_phone.gsub(/[^\d+]/, '')
+        contact = Current.account.contacts.find_by(phone_number: real_phone)
+        conversation ||= contact&.conversations&.order(updated_at: :desc)&.first
+      end
+    end
+
+    if real_phone.blank?
+      render json: { success: false, error: 'No se pudo identificar un número telefónico válido para realizar la llamada' },
+             status: :unprocessable_entity and return
+    end
+
     user = Current.user
     user_sip = user&.custom_attributes&.dig('sip') || {}
     extension = user_sip['extension'].presence || user&.custom_attributes&.dig('sip_extension')
@@ -138,10 +195,14 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
     enabled = voip_settings['enabled'].nil? ? (ENV['ASTERISK_ENABLED'].to_s == 'true' || ENV['ASTERISK_WS_URL'].present?) : voip_settings['enabled']
 
     unless enabled
-      render json: { success: false, error: 'El servicio de telefonía VoIP / PBX no está activo en esta cuenta' }, status: :unprocessable_entity and return
+      render json: { success: false, error: 'El servicio de telefonía VoIP / PBX no está activo en esta cuenta' },
+             status: :unprocessable_entity and return
     end
 
-    masked_phone = contact.display_phone_number
+    can_view_full = PhoneMaskerService.can_view_full_phone?(Current.account_user)
+    masked_phone = contact.present? ? contact.display_phone_number : PhoneMaskerService.mask(real_phone)
+    display_phone = can_view_full ? real_phone : masked_phone
+    display_conv_id = conversation&.display_id || conversation&.id
     agent_name = user&.available_name || user&.name
 
     Redis::Alfred.with do |redis|
@@ -149,8 +210,8 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
       call_data = {
         agent_id: user.id,
         agent_name: agent_name,
-        contact_id: contact.id,
-        contact_name: contact.display_name,
+        contact_id: contact&.id,
+        contact_name: contact&.display_name || (display_conv_id ? "Conversación ##{display_conv_id}" : 'Contacto'),
         phone_number: masked_phone,
         status: 'calling',
         started_at: Time.current.to_i
@@ -168,33 +229,34 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
         event: 'started',
         agent_id: user.id,
         agent_name: agent_name,
-        contact_id: contact.id,
-        contact_name: contact.display_name,
+        contact_id: contact&.id,
+        contact_name: contact&.display_name,
         phone_number: masked_phone
       }
     )
 
-    if conversation_id.present?
-      conversation = account.conversations.find_by(id: conversation_id)
-      if conversation.present?
-        message_content = "📞 **Llamada saliente iniciada**\n• Agente: #{agent_name}\n• Contacto: #{contact.display_name}\n• Número: #{masked_phone}"
-        conversation.messages.create!(
-          account: account,
-          inbox: conversation.inbox,
-          message_type: :activity,
-          content: message_content,
-          sender: user
-        )
-      end
+    if conversation.present?
+      message_content = "📞 **Llamada saliente iniciada**\n• Agente: #{agent_name}\n• Contacto: #{contact&.display_name || 'Contacto'}\n• Número: #{masked_phone}"
+      conversation.messages.create!(
+        account: account,
+        inbox: conversation.inbox,
+        message_type: :activity,
+        content: message_content,
+        sender: user
+      )
     end
 
     render json: {
       success: true,
       contact: {
-        id: contact.id,
-        name: contact.display_name,
-        phone_number: masked_phone
+        id: contact&.id,
+        name: contact&.display_name || (display_conv_id ? "Conversación ##{display_conv_id}" : 'Contacto'),
+        phone_number: display_phone,
+        masked_phone_number: masked_phone
       },
+      conversation_id: conversation&.id,
+      display_conversation_id: display_conv_id,
+      conversation_path: display_conv_id ? "/conversations/#{display_conv_id}" : nil,
       agent_extension: extension,
       sip_domain: voip_settings['sip_domain'].presence || ENV['ASTERISK_SIP_DOMAIN'] || 'giantucchi.com',
       destination: real_phone
@@ -285,7 +347,42 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
         initiated_at: Time.current - duration_seconds.seconds
       }
     )
-    call_log.save! rescue nil
+    begin
+      call_log.save!
+    rescue StandardError => e
+      Rails.logger.warn("[VoIP] Error saving call log: #{e.message}")
+    end
+
+    # Sincronizar en tabla calls para visibilidad unificada en CallsIndex
+    if conversation.present? && conversation.inbox.present?
+      call_status = case status
+                    when 'completed' then 'completed'
+                    when 'missed' then 'no_answer'
+                    else 'failed'
+                    end
+
+      call_rec = Current.account.calls.find_or_initialize_by(provider: :voip, provider_call_id: call_id)
+      call_rec.assign_attributes(
+        inbox: conversation.inbox,
+        conversation: conversation,
+        contact: contact || conversation.contact,
+        accepted_by_agent_id: Current.user&.id,
+        direction: :outgoing,
+        status: call_status,
+        duration_seconds: duration_seconds,
+        started_at: Time.current - duration_seconds.seconds,
+        meta: {
+          disposition: disposition,
+          call_category: call_category,
+          recording_url: "/api/v1/accounts/#{Current.account.id}/voip/recordings/#{call_id}"
+        }
+      )
+      begin
+        call_rec.save
+      rescue StandardError => e
+        Rails.logger.warn("[VoIP] Error syncing to calls table: #{e.message}")
+      end
+    end
 
     # Si se solicitó actualizar la tipificación de la conversación, guardar en custom_attributes['tipificacion']
     if conversation.present? && update_conv && disposition.present?

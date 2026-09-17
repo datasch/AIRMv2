@@ -29,6 +29,85 @@ export const voipState = reactive({
 let ua = null;
 let durationTimer = null;
 let remoteAudioElement = null;
+let ringbackAudioContext = null;
+let ringbackInterval = null;
+
+const createRingbackAudio = () => {
+  if (ringbackAudioContext && ringbackAudioContext.state !== 'closed') return;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+  ringbackAudioContext = new AudioContextClass();
+};
+
+export const stopRingbackTone = () => {
+  if (ringbackInterval) {
+    clearInterval(ringbackInterval);
+    ringbackInterval = null;
+  }
+  if (ringbackAudioContext) {
+    try {
+      ringbackAudioContext.close().catch(() => {});
+    } catch (e) {
+      // AudioContext already closed
+    }
+    ringbackAudioContext = null;
+  }
+};
+
+export const playRingbackTone = () => {
+  stopRingbackTone();
+  try {
+    createRingbackAudio();
+    if (!ringbackAudioContext) return;
+
+    if (ringbackAudioContext.state === 'suspended') {
+      ringbackAudioContext.resume().catch(() => {});
+    }
+
+    const playToneBurst = () => {
+      if (!ringbackAudioContext || ringbackAudioContext.state === 'closed')
+        return;
+
+      const now = ringbackAudioContext.currentTime;
+      const gainNode = ringbackAudioContext.createGain();
+      gainNode.connect(ringbackAudioContext.destination);
+
+      const osc1 = ringbackAudioContext.createOscillator();
+      const osc2 = ringbackAudioContext.createOscillator();
+      osc1.type = 'sine';
+      osc2.type = 'sine';
+      osc1.frequency.setValueAtTime(440, now);
+      osc2.frequency.setValueAtTime(480, now);
+
+      osc1.connect(gainNode);
+      osc2.connect(gainNode);
+
+      gainNode.gain.setValueAtTime(0.0001, now);
+      gainNode.gain.exponentialRampToValueAtTime(0.18, now + 0.05);
+      gainNode.gain.setValueAtTime(0.18, now + 1.75);
+      gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + 1.85);
+      osc2.stop(now + 1.85);
+    };
+
+    playToneBurst();
+    ringbackInterval = setInterval(() => {
+      if (
+        voipState.callState !== 'calling' &&
+        voipState.callState !== 'ringing'
+      ) {
+        stopRingbackTone();
+        return;
+      }
+      playToneBurst();
+    }, 4000);
+  } catch (err) {
+    // Web Audio not available or autoplay blocked
+  }
+};
 
 const ensureAudioElement = () => {
   if (!remoteAudioElement) {
@@ -60,6 +139,7 @@ const stopDurationTimer = () => {
 };
 
 const handleCallTermination = status => {
+  stopRingbackTone();
   if (
     voipState.callState === 'idle' ||
     voipState.callState === 'ended' ||
@@ -147,6 +227,7 @@ const bindSessionEvents = session => {
 
   session.on('progress', () => {
     voipState.callState = 'calling';
+    playRingbackTone();
     VoipAPI.updateCallStatus({
       event: 'ringing',
       phoneNumber: voipState.remoteNumber,
@@ -154,6 +235,7 @@ const bindSessionEvents = session => {
   });
 
   session.on('accepted', () => {
+    stopRingbackTone();
     voipState.callState = 'connected';
     startDurationTimer();
     VoipAPI.updateCallStatus({
@@ -169,6 +251,7 @@ const bindSessionEvents = session => {
   });
 
   session.on('confirmed', () => {
+    stopRingbackTone();
     voipState.callState = 'connected';
     if (session.connection) {
       const streams = session.connection.getRemoteStreams
@@ -185,10 +268,12 @@ const bindSessionEvents = session => {
   });
 
   session.on('ended', () => {
+    stopRingbackTone();
     handleCallTermination('completed');
   });
 
   session.on('failed', e => {
+    stopRingbackTone();
     handleCallTermination(e.cause === 'Busy' ? 'busy' : 'failed');
   });
 };
@@ -275,7 +360,8 @@ export const initVoIP = async () => {
 export const makeCall = async (
   targetNumber,
   conversationId = null,
-  customCallerId = null
+  customCallerId = null,
+  displayLabel = null
 ) => {
   if (!ua || !voipState.isRegistered) {
     initVoIP();
@@ -292,15 +378,58 @@ export const makeCall = async (
     }
   }
 
-  const cleanNumber = targetNumber.toString().replace(/[^0-9+]/g, '');
+  let dialTarget = targetNumber;
+  let labelToShow = displayLabel || targetNumber;
+
+  const rawStr = targetNumber.toString().trim();
+  const isMaskedOrRef =
+    rawStr.includes('*') ||
+    rawStr.includes('•') ||
+    rawStr.startsWith('#') ||
+    rawStr.includes('/conversations/') ||
+    /^\d{1,6}$/.test(rawStr);
+
+  if (isMaskedOrRef || conversationId) {
+    try {
+      const res = await VoipAPI.callContact({
+        phoneNumber: rawStr,
+        conversationId,
+      });
+      const data = res.data || {};
+      if (data.destination) {
+        dialTarget = data.destination;
+      }
+      if (data.contact?.phone_number) {
+        labelToShow = displayLabel || data.contact.phone_number;
+      } else if (data.display_conversation_id) {
+        labelToShow =
+          displayLabel || `/conversations/${data.display_conversation_id}`;
+      }
+      if (data.contact?.display_name || data.contact?.name) {
+        voipState.remoteDisplayName =
+          data.contact.display_name || data.contact.name;
+      }
+      if (data.conversation_id) {
+        voipState.conversationId = data.conversation_id;
+      }
+    } catch (err) {
+      // Fallback to dialTarget if resolution fails
+    }
+  }
+
+  const cleanNumber = dialTarget.toString().replace(/[^0-9+]/g, '');
+  if (!cleanNumber) return;
+
   const callerId = customCallerId || voipState.caller_id;
   const callId = `call_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
 
   voipState.callId = callId;
-  voipState.remoteNumber = cleanNumber;
-  voipState.conversationId = conversationId;
+  voipState.remoteNumber = labelToShow;
+  voipState.conversationId = conversationId || voipState.conversationId;
   voipState.callState = 'calling';
   voipState.isDialerOpen = true;
+
+  playRingbackTone();
 
   const extraHeaders = [`X-Call-ID: ${callId}`];
   if (callerId) {
@@ -316,7 +445,7 @@ export const makeCall = async (
     extraHeaders,
   };
 
-  VoipAPI.updateCallStatus({ event: 'started', phoneNumber: cleanNumber });
+  VoipAPI.updateCallStatus({ event: 'started', phoneNumber: labelToShow });
 
   const session = ua.call(
     `sip:${cleanNumber}@${voipState.sip_domain || 'pbx'}`,
@@ -327,6 +456,7 @@ export const makeCall = async (
 };
 
 export const answerCall = () => {
+  stopRingbackTone();
   if (voipState.currentSession && voipState.callState === 'ringing') {
     voipState.currentSession.answer({
       mediaConstraints: { audio: true, video: false },
@@ -335,6 +465,7 @@ export const answerCall = () => {
 };
 
 export const hangupCall = () => {
+  stopRingbackTone();
   const wasCalling =
     voipState.callState === 'calling' || voipState.callState === 'ringing';
   const session = voipState.currentSession;

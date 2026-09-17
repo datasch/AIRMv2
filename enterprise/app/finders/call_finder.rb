@@ -8,6 +8,7 @@ class CallFinder
   end
 
   def perform
+    sync_voip_call_logs_if_empty
     @calls = @current_account.calls
     filter_by_visibility
     filter_by_status
@@ -20,6 +21,56 @@ class CallFinder
   end
 
   private
+
+  def sync_voip_call_logs_if_empty
+    return if @current_account.calls.exists? || !@current_account.voip_call_logs.exists?
+
+    default_inbox = @current_account.inboxes.first
+    default_conv = @current_account.conversations.first
+    default_contact = @current_account.contacts.first
+
+    @current_account.voip_call_logs.find_each do |log|
+      conv = if log.conversation_id.present?
+               @current_account.conversations.find_by(id: log.conversation_id)
+             elsif log.contact_id.present?
+               @current_account.conversations.where(contact_id: log.contact_id).order(updated_at: :desc).first
+             elsif log.phone_number.present?
+               clean_num = log.phone_number.gsub(/[^\d+]/, '')
+               matching_contact = @current_account.contacts.find_by(phone_number: clean_num)
+               matching_contact&.conversations&.order(updated_at: :desc)&.first
+             end
+
+      conv ||= default_conv
+      next if conv.blank?
+
+      inbox = conv.inbox || default_inbox
+      next if inbox.blank?
+
+      contact = conv.contact || log.contact || default_contact
+      next if contact.blank?
+
+      agent_id = log.user_id.presence || @current_user&.id
+
+      call_rec = @current_account.calls.find_or_initialize_by(provider: :voip, provider_call_id: log.call_id)
+      call_rec.assign_attributes(
+        inbox: inbox,
+        conversation: conv,
+        contact: contact,
+        accepted_by_agent_id: agent_id,
+        direction: :outgoing,
+        status: log.status == 'completed' ? 'completed' : 'failed',
+        duration_seconds: log.duration_seconds || 0,
+        created_at: log.created_at || Time.current,
+        started_at: log.created_at || Time.current,
+        meta: {
+          disposition: log.disposition,
+          call_category: log.call_category,
+          recording_url: log.recording_url
+        }
+      )
+      call_rec.save
+    end
+  end
 
   # Admins and report managers see the whole account; everyone else only sees
   # calls they handled within conversations they can still access.

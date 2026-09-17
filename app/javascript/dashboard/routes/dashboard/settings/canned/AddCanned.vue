@@ -2,6 +2,8 @@
 import { useVuelidate } from '@vuelidate/core';
 import { required, minLength } from '@vuelidate/validators';
 import { useAlert } from 'dashboard/composables';
+import { useAdmin } from 'dashboard/composables/useAdmin';
+import { useStoreGetters } from 'dashboard/composables/store';
 
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import Modal from '../../../../components/Modal.vue';
@@ -25,18 +27,30 @@ export default {
     },
   },
   setup() {
-    return { v$: useVuelidate() };
+    const { isAdmin } = useAdmin();
+    const getters = useStoreGetters();
+    return {
+      v$: useVuelidate(),
+      isAdmin,
+      getters,
+    };
   },
   data() {
     return {
       shortCode: '',
       content: this.responseContent || '',
+      selectedUserId: null,
       addCanned: {
         showLoading: false,
         message: '',
       },
       show: true,
     };
+  },
+  computed: {
+    agentList() {
+      return this.getters['agents/getAgents'].value || [];
+    },
   },
   validations: {
     shortCode: {
@@ -51,18 +65,23 @@ export default {
     resetForm() {
       this.shortCode = '';
       this.content = '';
+      this.selectedUserId = null;
       this.v$.shortCode.$reset();
       this.v$.content.$reset();
     },
     addCannedResponse() {
       // Show loading on button
       this.addCanned.showLoading = true;
+      const payload = {
+        short_code: this.shortCode,
+        content: this.content,
+      };
+      if (this.isAdmin && this.selectedUserId) {
+        payload.user_id = this.selectedUserId;
+      }
       // Make API Calls
       this.$store
-        .dispatch('createCannedResponse', {
-          short_code: this.shortCode,
-          content: this.content,
-        })
+        .dispatch('createCannedResponse', payload)
         .then(() => {
           // Reset Form, Show success message
           this.addCanned.showLoading = false;
@@ -89,6 +108,24 @@ export default {
         :header-content="$t('CANNED_MGMT.ADD.DESC')"
       />
       <form class="flex flex-col w-full" @submit.prevent="addCannedResponse()">
+        <div v-if="isAdmin && agentList.length" class="w-full">
+          <label>
+            {{ $t('CANNED_MGMT.ADD.FORM.ASSIGNED_TO.LABEL') }}
+            <select v-model="selectedUserId">
+              <option :value="null">
+                {{ $t('CANNED_MGMT.ADD.FORM.ASSIGNED_TO.PLACEHOLDER') }}
+              </option>
+              <option
+                v-for="agent in agentList"
+                :key="agent.id"
+                :value="agent.id"
+              >
+                {{ agent.name }}
+              </option>
+            </select>
+          </label>
+        </div>
+
         <div class="w-full">
           <label :class="{ error: v$.shortCode.$error }">
             {{ $t('CANNED_MGMT.ADD.FORM.SHORT_CODE.LABEL') }}
@@ -105,7 +142,9 @@ export default {
           <label :class="{ error: v$.content.$error }">
             {{ $t('CANNED_MGMT.ADD.FORM.CONTENT.LABEL') }}
           </label>
-          <div class="editor-wrap">
+          <div
+            class="relative bg-white dark:bg-slate-900 border border-solid border-slate-200 dark:border-slate-800 rounded-xl [&_.ProseMirror-menubar]:hidden [&_.ProseMirror-woot-style]:text-base"
+          >
             <WootMessageEditor
               v-model="content"
               class="message-editor [&>div]:px-1"
@@ -141,13 +180,3 @@ export default {
     </div>
   </Modal>
 </template>
-
-<style scoped lang="scss">
-:deep(.ProseMirror-menubar) {
-  @apply hidden;
-}
-
-:deep(.ProseMirror-woot-style) {
-  @apply min-h-[12.5rem];
-}
-</style>

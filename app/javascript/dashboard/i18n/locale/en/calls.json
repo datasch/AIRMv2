@@ -40,6 +40,12 @@
       "NO_CONTACT_ANSWER": "Contact did not answer",
       "FAILED": "This call could not be connected",
       "YESTERDAY": "Yesterday"
-    }
+    },
+    "MY_CALLS_TITLE": "My Call History",
+    "PHONE_TITLE": "VoIP Phone",
+    "OPEN_DIALER": "Open Dialpad",
+    "CLOSE_DIALER": "Hide Dialpad",
+    "AGENT_EMPTY_STATE": "You don't have any logged calls yet. Use the dialpad to dial numbers or conversations.",
+    "CALLER_ID": "Caller ID: {id}"
   }
 }

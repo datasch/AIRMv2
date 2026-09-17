@@ -52,7 +52,7 @@ const actions = {
   getCannedResponse: async function getCannedResponse({ commit }) {
     commit(types.default.SET_CANNED_UI_FLAG, { fetchingList: true });
     try {
-      const response = await CannedResponseAPI.get(true);
+      const response = await CannedResponseAPI.get();
       commit(types.default.SET_CANNED, response.data);
       commit(types.default.SET_CANNED_UI_FLAG, { fetchingList: false });
     } catch (error) {

@@ -7,6 +7,7 @@ import BaseSettingsHeader from '../components/BaseSettingsHeader.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useStoreGetters, useStore } from 'dashboard/composables/store';
+import { useAdmin } from 'dashboard/composables/useAdmin';
 import { picoSearch } from '@chatwoot/pico-search';
 import { useMessageFormatter } from 'shared/composables/useMessageFormatter';
 
@@ -25,6 +26,7 @@ defineOptions({
 const getters = useStoreGetters();
 const store = useStore();
 const { t } = useI18n();
+const { isAdmin } = useAdmin();
 
 const { getPlainText } = useMessageFormatter();
 
@@ -37,10 +39,23 @@ const cannedResponseAPI = ref({ message: '' });
 
 const sortOrder = ref('asc');
 const searchQuery = ref('');
+const selectedUserId = ref('all');
 
-const records = computed(() =>
+const agentList = computed(() => getters['agents/getAgents'].value || []);
+
+const rawRecords = computed(() =>
   getters.getSortedCannedResponses.value(sortOrder.value)
 );
+
+const records = computed(() => {
+  if (!isAdmin.value || selectedUserId.value === 'all') {
+    return rawRecords.value;
+  }
+  const targetId = Number(selectedUserId.value);
+  return rawRecords.value.filter(
+    item => item.user_id === targetId || item.user?.id === targetId
+  );
+});
 
 const filteredRecords = computed(() => {
   const query = searchQuery.value.trim();
@@ -80,6 +95,9 @@ const fetchCannedResponses = async () => {
 
 onMounted(() => {
   fetchCannedResponses();
+  if (isAdmin.value) {
+    store.dispatch('agents/get');
+  }
 });
 
 const showAlertMessage = message => {
@@ -131,6 +149,13 @@ const confirmDeletion = () => {
 };
 
 const tableHeaders = computed(() => {
+  if (isAdmin.value) {
+    return [
+      t('CANNED_MGMT.LIST.TABLE_HEADER.SHORT_CODE'),
+      t('CANNED_MGMT.LIST.TABLE_HEADER.CREATED_BY'),
+      t('CANNED_MGMT.LIST.TABLE_HEADER.ACTIONS'),
+    ];
+  }
   return [
     t('CANNED_MGMT.LIST.TABLE_HEADER.SHORT_CODE'),
     t('CANNED_MGMT.LIST.TABLE_HEADER.ACTIONS'),
@@ -160,11 +185,29 @@ const tableHeaders = computed(() => {
           </span>
         </template>
         <template #actions>
-          <Button
-            :label="$t('CANNED_MGMT.HEADER_BTN_TXT')"
-            size="sm"
-            @click="openAddPopup"
-          />
+          <div class="flex items-center gap-2">
+            <select
+              v-if="isAdmin && agentList.length"
+              v-model="selectedUserId"
+              class="h-8 py-1 px-2.5 text-xs text-n-slate-12 bg-n-alpha-1 border border-n-strong rounded-lg shadow-sm focus:outline-none focus:border-n-brand"
+            >
+              <option value="all">
+                {{ $t('CANNED_MGMT.FILTER.ALL_USERS') }}
+              </option>
+              <option
+                v-for="agent in agentList"
+                :key="agent.id"
+                :value="agent.id"
+              >
+                {{ agent.name }}
+              </option>
+            </select>
+            <Button
+              :label="$t('CANNED_MGMT.HEADER_BTN_TXT')"
+              size="sm"
+              @click="openAddPopup"
+            />
+          </div>
         </template>
       </BaseSettingsHeader>
     </template>
@@ -202,11 +245,14 @@ const tableHeaders = computed(() => {
         <template #header-1>
           {{ tableHeaders[1] }}
         </template>
+        <template v-if="isAdmin" #header-2>
+          {{ tableHeaders[2] }}
+        </template>
 
         <template #row="{ items }">
           <BaseTableRow
             v-for="cannedItem in items"
-            :key="cannedItem.short_code"
+            :key="cannedItem.id"
             :item="cannedItem"
           >
             <template #default>
@@ -218,6 +264,20 @@ const tableHeaders = computed(() => {
                   <p class="text-body-main text-n-slate-11 line-clamp-5">
                     {{ getPlainText(cannedItem.content) }}
                   </p>
+                </div>
+              </BaseTableCell>
+
+              <BaseTableCell v-if="isAdmin" class="w-48">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-n-alpha-2 text-n-slate-12 truncate"
+                  >
+                    {{
+                      cannedItem.user?.display_name ||
+                      cannedItem.user?.name ||
+                      $t('CANNED_MGMT.FILTER.ALL_USERS')
+                    }}
+                  </span>
                 </div>
               </BaseTableCell>
 

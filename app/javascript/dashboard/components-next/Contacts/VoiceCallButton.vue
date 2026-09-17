@@ -194,7 +194,7 @@ const onClick = async () => {
         voipState.remoteNumber = displayPhone;
 
         if (voipState.isRegistered && dest) {
-          makeCall(dest, props.conversationId, customCallerId);
+          makeCall(dest, props.conversationId, customCallerId, displayPhone);
         } else {
           openDialer(displayPhone, props.conversationId);
         }

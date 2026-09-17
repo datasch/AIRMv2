@@ -1,5 +1,33 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: voip_call_logs
+#
+#  id               :bigint           not null, primary key
+#  call_category    :string           default("ineffective")
+#  disposition      :string
+#  duration_seconds :integer          default(0), not null
+#  metadata         :jsonb
+#  phone_number     :string
+#  recording_url    :string
+#  status           :string           default("completed")
+#  created_at       :datetime         not null
+#  updated_at       :datetime         not null
+#  account_id       :bigint           not null
+#  call_id          :string           not null
+#  contact_id       :bigint
+#  conversation_id  :bigint
+#  user_id          :bigint
+#
+# Indexes
+#
+#  idx_voip_call_logs_account_category     (account_id,call_category)
+#  idx_voip_call_logs_account_created      (account_id,created_at)
+#  idx_voip_call_logs_account_disposition  (account_id,disposition)
+#  idx_voip_call_logs_account_user         (account_id,user_id)
+#  idx_voip_call_logs_call_id              (call_id) UNIQUE
+#
 class VoipCallLog < ApplicationRecord
   belongs_to :account
   belongs_to :user, optional: true

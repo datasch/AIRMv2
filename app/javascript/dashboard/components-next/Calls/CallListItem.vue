@@ -7,6 +7,7 @@ import { getInboxVoiceIcon } from 'dashboard/helper/inbox';
 import Avatar from 'dashboard/components-next/avatar/Avatar.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
 import AudioPlayer from 'dashboard/components-next/audio/AudioPlayer.vue';
+import { useAdmin } from 'dashboard/composables/useAdmin';
 import {
   VOICE_CALL_DIRECTION,
   VOICE_CALL_STATUS,
@@ -23,15 +24,26 @@ const props = defineProps({
 
 const { t } = useI18n();
 const route = useRoute();
+const { isAdmin } = useAdmin();
+
+const isPhoneLike = str => {
+  if (!str) return false;
+  return /^\+?[\d\s\-().*•]{5,}$/.test(str.trim());
+};
 
 const kind = computed(() => getCallKind(props.call));
 
-const contactName = computed(() =>
-  (props.call.contact.name || props.call.contact.phoneNumber || '').replace(
-    /^\+/,
-    ''
-  )
-);
+const contactName = computed(() => {
+  if (!isAdmin.value) {
+    if (props.call.contact?.name && !isPhoneLike(props.call.contact.name)) {
+      return props.call.contact.name;
+    }
+    return `/conversations/${props.call.conversation?.displayId || props.call.conversation?.id || ''}`;
+  }
+
+  const raw = props.call.contact?.name || props.call.contact?.phoneNumber || '';
+  return raw.replace(/^\+/, '');
+});
 
 const agentActionLabel = computed(() => {
   if (!props.call.agent) return '';
@@ -99,7 +111,7 @@ const conversationRoute = computed(() => ({
         class="inline-flex items-center h-6 gap-1 px-2 text-label-small outline outline-1 -outline-offset-1 rounded-md outline-n-weak text-n-slate-11 hover:bg-n-alpha-1 shrink-0"
       >
         <Icon icon="i-lucide-message-circle" class="size-3.5 text-n-slate-11" />
-        {{ call.conversation.displayId }}
+        {{ `/conversations/${call.conversation.displayId}` }}
         <Icon icon="i-lucide-arrow-up-right" class="size-3.5 text-n-slate-11" />
       </RouterLink>
     </div>
@@ -228,7 +240,7 @@ const conversationRoute = computed(() => ({
       class="inline-flex items-center h-6 gap-1 px-2 text-label-small py-3.5 outline outline-1 -outline-offset-1 rounded-md outline-n-weak text-n-slate-11 hover:bg-n-alpha-1 shrink-0 justify-self-start"
     >
       <Icon icon="i-lucide-message-circle" class="size-3.5 text-n-slate-11" />
-      {{ call.conversation.displayId }}
+      {{ `/conversations/${call.conversation.displayId}` }}
       <Icon icon="i-lucide-arrow-up-right" class="size-3.5 text-n-slate-11" />
     </RouterLink>
     <span

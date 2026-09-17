@@ -13,6 +13,13 @@ import {
   skipCallDisposition,
 } from 'dashboard/helper/voipHelper';
 
+defineProps({
+  embedded: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const { t } = useI18n();
 const dialerNumber = ref('');
 const isDTMFOpen = ref(false);
@@ -128,9 +135,16 @@ const handleSkipDisposition = () => {
 </script>
 
 <template>
-  <div v-show="voipState.isDialerOpen">
+  <div
+    v-show="embedded || voipState.isDialerOpen"
+    :class="{ 'w-full': embedded }"
+  >
     <div
-      class="fixed bottom-6 right-6 z-50 w-80 rounded-2xl bg-white shadow-2xl ring-1 ring-black/10 dark:bg-slate-900 dark:ring-white/10"
+      :class="
+        embedded
+          ? 'w-full rounded-2xl bg-white shadow-sm border border-slate-200/80 dark:border-slate-800 dark:bg-slate-900 overflow-hidden'
+          : 'fixed bottom-6 right-6 z-50 w-80 rounded-2xl bg-white shadow-2xl ring-1 ring-black/10 dark:bg-slate-900 dark:ring-white/10'
+      "
     >
       <!-- Header -->
       <div
@@ -157,8 +171,9 @@ const handleSkipDisposition = () => {
         </div>
         <button
           v-if="
-            voipState.callState === 'idle' ||
-            voipState.callState === 'disposition'
+            !embedded &&
+            (voipState.callState === 'idle' ||
+              voipState.callState === 'disposition')
           "
           type="button"
           class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"

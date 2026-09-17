@@ -8,19 +8,21 @@ json.end_reason call.end_reason
 json.started_at call.started_at&.to_i
 json.created_at call.created_at.to_i
 json.message_id call.message_id
-json.recording_url call.recording_url
+json.recording_url call.recording_url || call.meta&.dig('recording_url')
 json.transcript call.transcript
+json.disposition call.meta&.dig('disposition')
+json.call_category call.meta&.dig('call_category')
 
 json.conversation do
   json.id call.conversation_id
-  json.display_id call.conversation.display_id
+  json.display_id call.conversation&.display_id || call.conversation_id
 end
 
 json.inbox do
   json.id call.inbox_id
-  json.name call.inbox.name
-  json.channel_type call.inbox.channel_type
-  json.medium call.inbox.channel.try(:medium)
+  json.name call.inbox&.name
+  json.channel_type call.inbox&.channel_type
+  json.medium call.inbox&.channel.try(:medium)
 end
 
 if call.accepted_by_agent
@@ -34,9 +36,10 @@ else
 end
 
 contact = call.contact
+can_view_full_phone = PhoneMaskerService.can_view_full_phone?
 json.contact do
-  json.id contact.id
-  json.name contact.name
-  json.phone_number contact.phone_number
-  json.avatar contact.avatar_url
+  json.id contact&.id
+  json.name can_view_full_phone ? contact&.name : PhoneMaskerService.mask_if_phone(contact&.name)
+  json.phone_number can_view_full_phone ? contact&.phone_number : PhoneMaskerService.mask(contact&.phone_number)
+  json.avatar contact&.avatar_url
 end

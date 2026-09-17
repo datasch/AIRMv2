@@ -9,6 +9,10 @@
     "SEARCH_PLACEHOLDER": "Search canned responses...",
     "NO_RESULTS": "No canned responses found matching your search",
     "SEARCH_404": "There are no items matching this query.",
+    "FILTER": {
+      "ALL_USERS": "All users",
+      "FILTER_BY_USER": "Filter by user"
+    },
     "LIST": {
       "404": "There are no canned responses available in this account.",
       "TITLE": "Manage canned responses",
@@ -16,6 +20,7 @@
       "TABLE_HEADER": {
         "SHORT_CODE": "Short code",
         "CONTENT": "Content",
+        "CREATED_BY": "Created by",
         "ACTIONS": "Actions"
       }
     },
@@ -24,6 +29,10 @@
       "DESC": "Canned Responses are predefined reply templates which can be used to quickly send out replies to conversations.",
       "CANCEL_BUTTON_TEXT": "Cancel",
       "FORM": {
+        "ASSIGNED_TO": {
+          "LABEL": "Assign to user",
+          "PLACEHOLDER": "Select user (default: you)"
+        },
         "SHORT_CODE": {
           "LABEL": "Short code",
           "PLACEHOLDER": "Please enter a short code.",
