@@ -7,9 +7,9 @@ class Api::V1::Accounts::Conversations::MessagesController < Api::V1::Accounts::
 
   def create
     clean_source_id = params[:source_id].to_s.strip
-    # Deduplicate incoming message if it has a source_id and was already ingested into this conversation
-    if clean_source_id.present? && !clean_source_id.in?(['null', 'undefined']) && params[:message_type].to_s == 'incoming'
-      existing = @conversation.messages.find_by(source_id: clean_source_id)
+    # Deduplicate message if it has a source_id and was already ingested into this conversation
+    if clean_source_id.present? && !clean_source_id.in?(['null', 'undefined'])
+      existing = @conversation.messages.find_by(source_id: [clean_source_id, "WAID:#{clean_source_id}"])
       if existing.present?
         # Fix race condition: if webhook created the message first without attachments, process them now
         if params[:attachments].present? && existing.attachments.blank?

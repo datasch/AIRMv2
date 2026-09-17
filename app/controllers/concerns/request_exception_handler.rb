@@ -9,6 +9,7 @@ module RequestExceptionHandler
 
   included do
     rescue_from ActiveRecord::RecordInvalid, with: :render_record_invalid
+    rescue_from ActiveRecord::RecordNotUnique, with: :render_record_not_unique
     rescue_from CustomExceptions::Inbox::LimitExceeded,
                 CustomExceptions::Account::EmailLimitExceeded,
                 with: :render_error_response
@@ -60,6 +61,14 @@ module RequestExceptionHandler
     render json: {
       message: exception.record.errors.full_messages.join(', '),
       attributes: exception.record.errors.attribute_names
+    }, status: :unprocessable_entity
+  end
+
+  def render_record_not_unique(exception)
+    log_handled_error(exception)
+    render json: {
+      error: 'Record already exists or is not unique',
+      message: exception.message
     }, status: :unprocessable_entity
   end
 

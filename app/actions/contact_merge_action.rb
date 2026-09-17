@@ -43,7 +43,15 @@ class ContactMergeAction
   end
 
   def merge_contact_inboxes
-    ContactInbox.where(contact_id: @mergee_contact.id).update(contact_id: @base_contact.id)
+    @mergee_contact.contact_inboxes.each do |mergee_ci|
+      existing_base_ci = @base_contact.contact_inboxes.find_by(inbox_id: mergee_ci.inbox_id, source_id: mergee_ci.source_id)
+      if existing_base_ci.present?
+        Conversation.where(contact_inbox_id: mergee_ci.id).update_all(contact_inbox_id: existing_base_ci.id)
+        mergee_ci.destroy!
+      else
+        mergee_ci.update!(contact_id: @base_contact.id)
+      end
+    end
   end
 
   def merge_and_remove_mergee_contact

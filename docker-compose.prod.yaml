@@ -197,6 +197,7 @@ services:
       - DATABASE_SAVE_DATA_CHATS=true
       - CACHE_REDIS_ENABLED=false
       - CHATWOOT_ENABLED=true
+      - 'CHATWOOT_IMPORT_DATABASE_CONNECTION_URI=postgresql://${POSTGRES_USERNAME:-postgres}:${POSTGRES_PASSWORD:-postgres}@airm_postgres:5432/${POSTGRES_DATABASE:-chatwoot_production}?sslmode=disable'
       - CHATWOOT_MESSAGE_READ=true
       - CHATWOOT_MESSAGE_DELETE=true
       - WA_BUSINESS_TOKEN_WEBHOOK=true

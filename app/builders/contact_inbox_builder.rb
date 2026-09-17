@@ -5,6 +5,11 @@ class ContactInboxBuilder
   pattr_initialize [:contact, :inbox, :source_id, { hmac_verified: false }]
 
   def perform
+    if @source_id.blank?
+      existing_contact_inbox = @contact.contact_inboxes.find_by(inbox_id: @inbox.id)
+      return existing_contact_inbox if existing_contact_inbox.present?
+    end
+
     @source_id ||= generate_source_id
     create_contact_inbox if source_id.present?
   end
@@ -92,7 +97,7 @@ class ContactInboxBuilder
   end
 
   def new_source_id
-    if @inbox.whatsapp? || @inbox.sms? || @inbox.twilio?
+    if @inbox.whatsapp? || @inbox.sms? || @inbox.twilio? || @inbox.api?
       "whatsapp:#{@source_id}#{rand(100)}"
     else
       "#{rand(10)}#{@source_id}"
@@ -100,7 +105,7 @@ class ContactInboxBuilder
   end
 
   def allowed_channels?
-    @inbox.email? || @inbox.sms? || @inbox.twilio? || @inbox.whatsapp?
+    @inbox.email? || @inbox.sms? || @inbox.twilio? || @inbox.whatsapp? || @inbox.api?
   end
 end
 

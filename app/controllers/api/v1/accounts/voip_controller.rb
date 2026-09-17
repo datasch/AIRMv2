@@ -600,8 +600,8 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
     total_incoming = incoming_messages.count
 
     # Conversaciones prospectadas vs respondidas
-    contacted_conversation_ids = outbound_messages.select(:conversation_id).distinct.pluck(:conversation_id)
-    replied_conversation_ids = incoming_messages.where(conversation_id: contacted_conversation_ids).select(:conversation_id).distinct.pluck(:conversation_id)
+    contacted_conversation_ids = outbound_messages.reorder(nil).distinct.pluck(:conversation_id)
+    replied_conversation_ids = incoming_messages.where(conversation_id: contacted_conversation_ids).reorder(nil).distinct.pluck(:conversation_id)
 
     total_prospects_contacted = contacted_conversation_ids.size
     total_prospects_replied = replied_conversation_ids.size

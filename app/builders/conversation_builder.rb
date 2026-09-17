@@ -8,11 +8,19 @@ class ConversationBuilder
   private
 
   def look_up_exising_conversation
-    return @contact_inbox.conversations.last if @contact_inbox.inbox.lock_to_single_conversation?
+    if @contact_inbox.inbox.lock_to_single_conversation?
+      existing = @contact_inbox.conversations.last
+      return existing if existing.present?
+
+      return @contact_inbox.contact.conversations.where(inbox_id: @contact_inbox.inbox_id).order(created_at: :desc).first
+    end
 
     # For WhatsApp, API, and SMS inboxes, prevent duplicate concurrent conversations with the same contact
     if @contact_inbox.inbox.channel_type.in?(%w[Channel::Whatsapp Channel::Api Channel::TwilioSms Channel::Sms Channel::Telegram])
-      return @contact_inbox.conversations.where(status: [:open, :snoozed]).order(created_at: :desc).first
+      existing = @contact_inbox.conversations.where(status: [:open, :snoozed]).order(created_at: :desc).first
+      return existing if existing.present?
+
+      return @contact_inbox.contact.conversations.where(inbox_id: @contact_inbox.inbox_id, status: [:open, :snoozed]).order(created_at: :desc).first
     end
 
     nil
@@ -20,6 +28,15 @@ class ConversationBuilder
 
   def create_new_conversation
     ::Conversation.create!(conversation_params)
+  rescue ActiveRecord::RecordNotUnique => e
+    if e.message.include?('index_conversations_on_account_id_and_display_id')
+      account_id = @contact_inbox.inbox.account_id
+      max_id = ::Conversation.where(account_id: account_id).maximum(:display_id).to_i
+      ActiveRecord::Base.connection.execute("SELECT setval('conv_dpid_seq_#{account_id}', #{[max_id, 1].max}, true)")
+      ::Conversation.create!(conversation_params)
+    else
+      raise e
+    end
   end
 
   def conversation_params
