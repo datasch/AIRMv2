@@ -122,6 +122,13 @@ class Whatsapp::IncomingMessageBaseService
                     else
                       conversations.where.not(status: :resolved).last
                     end
+
+    # If an incoming (non-echo) message arrives for a pending conversation, reopen it
+    # so it becomes visible in the Unassigned queue for agents.
+    if @conversation&.pending? && !outgoing_echo
+      @conversation.open!
+    end
+
     return if @conversation
 
     @conversation = ::Conversation.create!(conversation_params)

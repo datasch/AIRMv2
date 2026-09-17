@@ -8,7 +8,11 @@ module Whatsapp::IncomingMessageServiceHelpers
       account_id: @inbox.account_id,
       inbox_id: @inbox.id,
       contact_id: @contact.id,
-      contact_inbox_id: @contact_inbox.id
+      contact_inbox_id: @contact_inbox.id,
+      # Force open so webhook-originated conversations are immediately visible
+      # in the Unassigned queue even when the inbox has an active bot (Captain AI).
+      # The bot can still reply once the conversation is open.
+      status: :open
     }
   end
 
