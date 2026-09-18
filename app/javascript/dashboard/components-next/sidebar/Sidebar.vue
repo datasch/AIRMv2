@@ -365,6 +365,11 @@ const newReportRoutes = () => [
     label: t('SIDEBAR.DATABASE_REPORTS'),
     to: accountScopedRoute('database_reports'),
   },
+  {
+    name: 'Coverage Reports',
+    label: t('SIDEBAR.COVERAGE_REPORTS'),
+    to: accountScopedRoute('coverage_reports'),
+  },
 ];
 
 const reportRoutes = computed(() => newReportRoutes());

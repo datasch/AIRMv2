@@ -25,6 +25,7 @@ import LiveReports from './LiveReports.vue';
 import SLAReports from './SLAReports.vue';
 import ClickToCallReports from './ClickToCallReports.vue';
 import DatabaseReports from './DatabaseReports.vue';
+import CoverageReports from './CoverageReports.vue';
 
 const meta = {
   featureFlag: FEATURE_FLAGS.REPORTS,
@@ -165,6 +166,12 @@ export default {
           name: 'database_reports',
           meta,
           component: DatabaseReports,
+        },
+        {
+          path: 'coverage',
+          name: 'coverage_reports',
+          meta,
+          component: CoverageReports,
         },
       ],
     },

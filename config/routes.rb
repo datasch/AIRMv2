@@ -328,6 +328,11 @@ Rails.application.routes.draw do
             get :database_reports
             get 'recordings/:id', action: :recording, as: :recording
           end
+          resource :coverage, only: [], controller: 'coverage' do
+            get :reports
+            post :sync
+            get :sync_status
+          end
           resources :inboxes, only: [:index, :show, :create, :update, :destroy] do
             get :assignable_agents, on: :member
             get :campaigns, on: :member
