@@ -16,6 +16,8 @@ import { useMapGetter } from 'dashboard/composables/store';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { FEATURE_FLAGS } from 'dashboard/featureFlags';
 import { useAlert } from 'dashboard/composables';
+import { voipState, makeCall, openDialer } from 'dashboard/helper/voipHelper';
+import VoipAPI from 'dashboard/api/voip';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 
 const props = defineProps({
@@ -46,6 +48,26 @@ const isWhatsappVoiceInbox = computed(
   () => voiceCallProvider.value === VOICE_CALL_PROVIDERS.WHATSAPP
 );
 
+const contactPhone = computed(() => {
+  return (
+    props.chat?.meta?.sender?.phone_number ||
+    props.chat?.contact?.phone_number ||
+    store.getters['contacts/getContact'](props.chat?.meta?.sender?.id)
+      ?.phone_number ||
+    store.getters['contacts/getContact'](props.chat?.contact?.id)
+      ?.phone_number ||
+    ''
+  );
+});
+
+const hasVoipEnabled = computed(
+  () => voipState.isConfigured || voipState.isEnabled
+);
+
+const isCallable = computed(
+  () => isVoiceCallInbox.value || !!contactPhone.value || hasVoipEnabled.value
+);
+
 const isCallButtonDisabled = computed(() => {
   if (callsStore.hasActiveCall || callsStore.hasIncomingCall) return true;
   if (isWhatsappVoiceInbox.value) {
@@ -60,11 +82,15 @@ const isCallButtonLoading = computed(() =>
     : !!contactsUiFlags.value?.isInitiatingCall
 );
 
-const callButtonTooltip = computed(() =>
-  isWhatsappVoiceInbox.value
-    ? t('CONVERSATION.HEADER.WHATSAPP_CALL')
-    : t('CONVERSATION.HEADER.VOICE_CALL')
-);
+const callButtonTooltip = computed(() => {
+  if (isWhatsappVoiceInbox.value) {
+    return t('CONVERSATION.HEADER.WHATSAPP_CALL');
+  }
+  if (hasVoipEnabled.value) {
+    return t('VOIP_SETTINGS.DIALER.CALL', 'Llamar');
+  }
+  return t('CONVERSATION.HEADER.VOICE_CALL');
+});
 
 const startWhatsappCall = async () => {
   if (whatsappCallSession.isInitiating.value) return;
@@ -79,11 +105,11 @@ const startWhatsappCall = async () => {
     // Permission template path returns no call id — show banner, no widget yet.
     if (!response?.id) {
       const status = response?.status;
-      const messageKey =
+      const message =
         status === VOICE_CALL_OUTBOUND_INIT_STATUS.PERMISSION_PENDING
-          ? 'CONVERSATION.HEADER.WHATSAPP_CALL_PERMISSION_PENDING'
-          : 'CONVERSATION.HEADER.WHATSAPP_CALL_PERMISSION_REQUESTED';
-      useAlert(t(messageKey));
+          ? t('CONVERSATION.HEADER.WHATSAPP_CALL_PERMISSION_PENDING')
+          : t('CONVERSATION.HEADER.WHATSAPP_CALL_PERMISSION_REQUESTED');
+      useAlert(message);
       return;
     }
 
@@ -122,15 +148,72 @@ const startTwilioCall = async () => {
   }
 };
 
-const startCall = () => {
-  if (isWhatsappVoiceInbox.value) return startWhatsappCall();
-  return startTwilioCall();
+const startCall = async () => {
+  if (isWhatsappVoiceInbox.value) {
+    await startWhatsappCall();
+    return;
+  }
+  if (isVoiceCallInbox.value) {
+    await startTwilioCall();
+    return;
+  }
+
+  if (hasVoipEnabled.value) {
+    const contactId = props.chat?.meta?.sender?.id || props.chat?.contact?.id;
+    const customCallerId = props.inbox?.phone_number;
+
+    if (contactId) {
+      try {
+        const response = await VoipAPI.callContact({
+          contactId,
+          conversationId: props.chat.id,
+        });
+        const data = response.data || {};
+        const dest = data.destination || contactPhone.value;
+        const displayName = data.contact?.name || contactPhone.value;
+        const displayPhone = data.contact?.phone_number || contactPhone.value;
+
+        voipState.remoteDisplayName = displayName;
+        voipState.remoteNumber = displayPhone;
+
+        if (voipState.isRegistered && dest) {
+          makeCall(dest, props.chat.id, customCallerId, displayPhone);
+        } else {
+          openDialer(displayPhone, props.chat.id);
+        }
+        return;
+      } catch (error) {
+        useAlert(
+          error.response?.data?.error ||
+            error.message ||
+            t('CONVERSATION.HEADER.VOICE_CALL_FAILED')
+        );
+        return;
+      }
+    }
+
+    if (voipState.isRegistered && contactPhone.value) {
+      makeCall(
+        contactPhone.value,
+        props.chat.id,
+        customCallerId,
+        contactPhone.value
+      );
+    } else {
+      openDialer(contactPhone.value, props.chat.id);
+    }
+    return;
+  }
+
+  if (contactPhone.value) {
+    window.location.href = `tel:${contactPhone.value}`;
+  }
 };
 </script>
 
 <template>
   <NextButton
-    v-if="isVoiceCallInbox"
+    v-if="isCallable"
     v-tooltip.bottom="callButtonTooltip"
     sm
     ghost

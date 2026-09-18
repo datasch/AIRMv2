@@ -41,7 +41,7 @@ export default {
       default: '',
     },
   },
-  emits: ['update'],
+  emits: ['update', 'clickLink'],
   data() {
     return {
       isEditing: false,
@@ -102,6 +102,7 @@ export default {
       v-else-if="href"
       :href="href"
       class="flex items-center gap-2 text-n-slate-11 hover:underline"
+      @click="$emit('clickLink', $event)"
     >
       <EmojiOrIcon
         :icon="icon"

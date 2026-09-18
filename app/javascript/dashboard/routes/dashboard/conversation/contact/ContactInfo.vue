@@ -7,6 +7,7 @@ import {
 } from 'shared/helpers/CustomErrors';
 import { dynamicTime } from 'shared/helpers/timeHelper';
 import { useAdmin } from 'dashboard/composables/useAdmin';
+import { voipState, openDialer } from 'dashboard/helper/voipHelper';
 import ContactInfoRow from './ContactInfoRow.vue';
 import Avatar from 'next/avatar/Avatar.vue';
 import SocialIcons from './SocialIcons.vue';
@@ -106,6 +107,13 @@ export default {
   },
   methods: {
     dynamicTime,
+    onPhoneClick(event) {
+      if (!this.contact?.phone_number) return;
+      if (voipState.isEnabled || voipState.isConfigured) {
+        event?.preventDefault?.();
+        openDialer(this.contact.phone_number, this.currentChat?.id);
+      }
+    },
     toggleEditModal() {
       this.showEditModal = !this.showEditModal;
     },
@@ -263,17 +271,14 @@ export default {
             @update="value => onFieldUpdate('email', value)"
           />
           <ContactInfoRow
-            :href="
-              isAdmin && contact.phone_number
-                ? `tel:${contact.phone_number}`
-                : ''
-            "
+            :href="contact.phone_number ? `tel:${contact.phone_number}` : ''"
             :value="contact.phone_number"
             icon="call"
             emoji="📞"
             :title="$t('CONTACT_PANEL.PHONE_NUMBER')"
-            :show-copy="isAdmin"
+            show-copy
             :editable="isAdmin"
+            @click-link="onPhoneClick"
             @update="value => onFieldUpdate('phone_number', value)"
           />
           <ContactInfoRow

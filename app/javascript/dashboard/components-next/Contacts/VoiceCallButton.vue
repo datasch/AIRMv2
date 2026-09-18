@@ -51,14 +51,11 @@ const contactsUiFlags = useMapGetter('contacts/getUIFlags');
 const voiceInboxes = computed(() =>
   (inboxesList.value || []).filter(isVoiceCallEnabled)
 );
-const hasVoiceInboxes = computed(() => voiceInboxes.value.length > 0);
 const hasVoipEnabled = computed(
   () => voipState.isConfigured || voipState.isEnabled
 );
 
-const shouldRender = computed(
-  () => (hasVoiceInboxes.value || hasVoipEnabled.value) && !!props.phone
-);
+const shouldRender = computed(() => !!props.phone);
 
 const isInitiatingCall = computed(() => {
   return contactsUiFlags.value?.isInitiatingCall || false;
@@ -237,8 +234,14 @@ const onClick = async () => {
     dialogRef.value?.open();
     return;
   }
-  const [inbox] = voiceInboxes.value;
-  await startCall(inbox.id);
+  if (voiceInboxes.value.length === 1) {
+    const [inbox] = voiceInboxes.value;
+    await startCall(inbox.id);
+    return;
+  }
+  if (props.phone) {
+    window.location.href = `tel:${props.phone}`;
+  }
 };
 
 const onPickInbox = async inbox => {
