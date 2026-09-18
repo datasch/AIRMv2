@@ -180,6 +180,9 @@ const startCall = async () => {
           makeCall(dest, props.chat.id, customCallerId, displayPhone);
         } else {
           openDialer(displayPhone, props.chat.id);
+          if (!voipState.isRegistered && dest) {
+            window.location.href = `tel:${dest}`;
+          }
         }
         return;
       } catch (error) {
@@ -201,6 +204,9 @@ const startCall = async () => {
       );
     } else {
       openDialer(contactPhone.value, props.chat.id);
+      if (!voipState.isRegistered && contactPhone.value) {
+        window.location.href = `tel:${contactPhone.value}`;
+      }
     }
     return;
   }

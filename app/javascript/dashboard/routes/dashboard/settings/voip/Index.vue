@@ -15,7 +15,7 @@ const isCopied = ref(false);
 
 const voipConfig = ref({
   enabled: true,
-  ws_url: 'wss://voip.giantucchi.com:8089/ws',
+  ws_url: 'wss://voip.giantucchi.com/ws',
   sip_domain: 'giantucchi.com',
   caller_id: '51913086096',
   concurrency_limit: 1,
@@ -40,7 +40,7 @@ const fetchVoipData = async () => {
     if (configRes.data) {
       voipConfig.value = {
         enabled: configRes.data.enabled !== false,
-        ws_url: configRes.data.ws_url || 'wss://voip.giantucchi.com:8089/ws',
+        ws_url: configRes.data.ws_url || 'wss://voip.giantucchi.com/ws',
         sip_domain: configRes.data.sip_domain || 'giantucchi.com',
         caller_id: configRes.data.caller_id || '51913086096',
         concurrency_limit: configRes.data.concurrency_limit || 1,

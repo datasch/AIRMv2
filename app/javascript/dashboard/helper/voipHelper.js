@@ -341,6 +341,9 @@ export const initVoIP = async () => {
     ua.on('registrationFailed', e => {
       voipState.isRegistered = false;
       voipState.registrationError = e.cause || 'Registration Failed';
+      if (e.cause === 'Authentication Error' || e.cause === 'Not Found') {
+        ua?.stop();
+      }
     });
 
     ua.on('newRTCSession', data => {
@@ -420,6 +423,13 @@ export const makeCall = async (
   const cleanNumber = dialTarget.toString().replace(/[^0-9+]/g, '');
   if (!cleanNumber) return;
 
+  if (!ua || !voipState.isRegistered) {
+    stopRingbackTone();
+    voipState.callState = 'idle';
+    window.location.href = `tel:${cleanNumber}`;
+    return;
+  }
+
   const callerId = customCallerId || voipState.caller_id;
   const callId = `call_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
 
@@ -447,12 +457,18 @@ export const makeCall = async (
 
   VoipAPI.updateCallStatus({ event: 'started', phoneNumber: labelToShow });
 
-  const session = ua.call(
-    `sip:${cleanNumber}@${voipState.sip_domain || 'pbx'}`,
-    eventOptions
-  );
-  voipState.currentSession = session;
-  bindSessionEvents(session);
+  try {
+    const session = ua.call(
+      `sip:${cleanNumber}@${voipState.sip_domain || 'pbx'}`,
+      eventOptions
+    );
+    voipState.currentSession = session;
+    bindSessionEvents(session);
+  } catch (err) {
+    stopRingbackTone();
+    voipState.callState = 'idle';
+    window.location.href = `tel:${cleanNumber}`;
+  }
 };
 
 export const answerCall = () => {

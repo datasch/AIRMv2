@@ -2,6 +2,8 @@
 
 class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
   before_action :check_admin_authorization, only: [:update_config, :update_agent]
+  skip_before_action :authenticate_user!, only: [:recording]
+  skip_before_action :validate_token_api_access, only: [:recording]
 
   def show_config
     account = Current.account
@@ -14,7 +16,7 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
 
     response_data = {
       enabled: voip_settings['enabled'].nil? ? (ENV['ASTERISK_ENABLED'].to_s == 'true' || ENV['ASTERISK_WS_URL'].present?) : voip_settings['enabled'],
-      ws_url: voip_settings['ws_url'].presence || ENV['ASTERISK_WS_URL'] || 'wss://voip.giantucchi.com:8089/ws',
+      ws_url: voip_settings['ws_url'].presence || ENV['ASTERISK_WS_URL'] || 'wss://voip.giantucchi.com/ws',
       sip_domain: voip_settings['sip_domain'].presence || ENV['ASTERISK_SIP_DOMAIN'] || 'giantucchi.com',
       caller_id: voip_settings['caller_id'].presence || ENV['ASTERISK_CALLER_ID'],
       concurrency_limit: voip_settings['concurrency_limit'] || 1,

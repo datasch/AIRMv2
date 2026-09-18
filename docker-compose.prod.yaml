@@ -43,7 +43,7 @@ services:
       - 'SMTP_AUTHENTICATION=${SMTP_AUTHENTICATION:-plain}'
       - 'SMTP_ENABLE_STARTTLS_AUTO=${SMTP_ENABLE_STARTTLS_AUTO:-true}'
       - 'ASTERISK_ENABLED=${ASTERISK_ENABLED:-true}'
-      - 'ASTERISK_WS_URL=${ASTERISK_WS_URL:-wss://voip.giantucchi.com:8089/ws}'
+      - 'ASTERISK_WS_URL=${ASTERISK_WS_URL:-wss://voip.giantucchi.com/ws}'
       - 'ASTERISK_SIP_DOMAIN=${ASTERISK_SIP_DOMAIN:-giantucchi.com}'
       - 'ASTERISK_CALLER_ID=${ASTERISK_CALLER_ID:-}'
       - 'OPENAI_API_KEY=${OPENAI_API_KEY:-}'

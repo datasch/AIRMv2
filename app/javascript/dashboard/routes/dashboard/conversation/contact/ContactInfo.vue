@@ -109,7 +109,7 @@ export default {
     dynamicTime,
     onPhoneClick(event) {
       if (!this.contact?.phone_number) return;
-      if (voipState.isEnabled || voipState.isConfigured) {
+      if (voipState.isRegistered) {
         event?.preventDefault?.();
         openDialer(this.contact.phone_number, this.currentChat?.id);
       }
