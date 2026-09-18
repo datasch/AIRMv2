@@ -131,3 +131,9 @@ Practical checklist for any change impacting core logic or public APIs
 - **WhatsApp Encryption Logs:** Logs with `_chains`, `currentRatchet`, `ephemeralKeyPair`, `rootKey` belong to the Baileys/Signal Protocol in Evolution API, NOT Asterisk VoIP.
 - **Corporate Memory:** System architecture insights and permanent agent rules are mirrored in Supabase table `ai_corporate_memory` (category: `guideline`).
 
+## Lead Ingestion & Datatable Sync Guardrails (AIRM v5)
+
+- **Non-Destructive Augmentation:** External datatable syncs (e.g., n8n DataTables, Google Sheets) must strictly augment / complement lead records and NEVER alter core lead reception, incoming webhooks, or existing database messaging sequences.
+- **Idempotency & Anti-Duplication:** Sync flows must only process new leads (`synced_at` or `datatable_id` tracking). Once a lead is synchronized, it must never be re-synced or duplicated.
+- **Centralized Traceability:** Centralize lead metadata in AIRM (`CoverageLead` & `Contact.custom_attributes`) so that phone numbers, georeferencing, sectors, and assigned agents provide seamless end-to-end traceability without interfering with active conversations.
+- **Mandatory Backup Before Structural Changes:** Always create a clean git backup branch before introducing architectural or schema additions to enable instant reversibility.
