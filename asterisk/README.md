@@ -4,7 +4,7 @@ Este directorio contiene la configuración lista para que el contenedor de Aster
 1. **WebRTC WebSocket (WSS / WS)** en el puerto `8089`.
 2. **Troncal SIP VoIPRabbit** en `149.20.185.4:5060` (autenticación por IP).
 3. **Identificador / Caller ID**: `51913086096`.
-4. **Extensiones WebRTC**: `1001`, `1011`, `1012`, `1013`, `1014`.
+4. **Extensiones WebRTC**: Rango completo de `1001` a `1099` (contraseña predeterminada: `Ventas2026*`).
 
 ---
 

@@ -19,7 +19,8 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
       default_ext = if is_user_admin
                       '1001'
                     else
-                      "101#{(user.id % 4) + 1}"
+                      user_offset = (user.id % 98) + 2
+                      format('10%02d', user_offset)
                     end
       default_pass = 'Ventas2026*'
 
