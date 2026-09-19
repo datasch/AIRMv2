@@ -128,6 +128,8 @@
       "RESOLVE_ACTION": "Resolver",
       "REOPEN_ACTION": "Reabrir",
       "OPEN_ACTION": "Abrir",
+      "PIN_CONVERSATION": "Fijar conversación",
+      "UNPIN_CONVERSATION": "Desfijar conversación",
       "MORE_ACTIONS": "Otras acciones",
       "OPEN": "Más",
       "CLOSE": "Cerrar",

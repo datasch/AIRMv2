@@ -179,8 +179,24 @@ describe ConversationFinder do
                                        mine_count: 2,
                                        assigned_count: 4,
                                        unassigned_count: 1,
-                                       all_count: 5
+                                       all_count: 5,
+                                       leads_count: 0
                                      })
+      end
+    end
+
+    context 'with assignee_type leads' do
+      let(:params) { { assignee_type: 'leads' } }
+      let!(:lead_conversation) do
+        conv = create(:conversation, account: account, inbox: inbox, assignee: user_1)
+        conv.add_labels(['1_lead_nuevo'])
+        conv
+      end
+
+      it 'filters conversations by leads tags and returns correct leads_count' do
+        result = conversation_finder.perform
+        expect(result[:conversations].map(&:id)).to eq([lead_conversation.id])
+        expect(result[:count][:leads_count]).to eq 1
       end
     end
 
@@ -274,7 +290,8 @@ describe ConversationFinder do
                                        mine_count: 2,
                                        assigned_count: 3,
                                        unassigned_count: 1,
-                                       all_count: 4
+                                       all_count: 4,
+                                       leads_count: 0
                                      })
       end
 

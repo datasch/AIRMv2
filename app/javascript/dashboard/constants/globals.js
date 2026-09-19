@@ -2,6 +2,7 @@ export default {
   GRAVATAR_URL: 'https://www.gravatar.com/avatar/',
   ASSIGNEE_TYPE: {
     ME: 'me',
+    LEADS: 'leads',
     UNASSIGNED: 'unassigned',
     ALL: 'all',
   },
@@ -77,3 +78,9 @@ export default {
 };
 export const DEFAULT_REDIRECT_URL = '/app/';
 export const META_RESTRICTION_STATUS_URL = 'https://giantucchi.com/status';
+export const LEAD_STAGE_LABELS = [
+  '1_lead_nuevo',
+  '2_calificado',
+  '3_cotizado',
+  '4_negociacion',
+];

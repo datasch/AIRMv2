@@ -183,6 +183,54 @@ describe('#getters', () => {
       ]);
     });
   });
+
+  describe('#getLeadsChats', () => {
+    it('returns only leads conversations with funnel tags', () => {
+      const conversationList = [
+        {
+          id: 1,
+          inbox_id: 2,
+          status: 1,
+          meta: { assignee: { id: 1 } },
+          labels: ['1_lead_nuevo'],
+        },
+        {
+          id: 2,
+          inbox_id: 2,
+          status: 1,
+          meta: { assignee: { id: 1 } },
+          labels: ['other_label'],
+        },
+        {
+          id: 3,
+          inbox_id: 2,
+          status: 1,
+          meta: { assignee: { id: 2 } },
+          labels: ['2_calificado'],
+        },
+      ];
+
+      const rootGetters = {
+        getCurrentUser: {
+          id: 1,
+          role: 'agent',
+          accounts: [{ id: 1, role: 'agent' }],
+        },
+        getCurrentAccountId: 1,
+      };
+
+      expect(
+        getters.getLeadsChats(
+          { allConversations: conversationList },
+          null,
+          null,
+          rootGetters
+        )({
+          status: 1,
+        })
+      ).toEqual([conversationList[0]]);
+    });
+  });
   describe('#getParticipatingChats', () => {
     const conversationList = [
       { id: 1, inbox_id: 2, status: 1, meta: { assignee: { id: 1 } } },

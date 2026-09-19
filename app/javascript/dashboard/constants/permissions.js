@@ -34,6 +34,10 @@ export const ASSIGNEE_TYPE_TAB_PERMISSIONS = {
     count: 'mineCount',
     permissions: [...ROLES, ...CONVERSATION_PERMISSIONS],
   },
+  leads: {
+    count: 'leadsCount',
+    permissions: [...ROLES, ...CONVERSATION_PERMISSIONS],
+  },
   unassigned: {
     count: 'unAssignedCount',
     permissions: [

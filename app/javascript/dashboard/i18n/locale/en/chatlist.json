@@ -17,6 +17,7 @@
     "FILTER_ALL": "All",
     "ASSIGNEE_TYPE_TABS": {
       "me": "Mine",
+      "leads": "Leads",
       "unassigned": "Unassigned",
       "all": "All"
     },

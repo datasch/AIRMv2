@@ -12,6 +12,7 @@ import SLACardLabel from 'dashboard/components-next/Conversation/Sla/SLACardLabe
 import CardStatusIcon from './CardStatusIcon.vue';
 import Checkbox from 'dashboard/components-next/checkbox/Checkbox.vue';
 import Icon from 'dashboard/components-next/icon/Icon.vue';
+import { useConversationPin } from 'dashboard/composables/useConversationPin';
 
 const props = defineProps({
   chat: { type: Object, required: true },
@@ -32,6 +33,8 @@ const emit = defineEmits([
   'contextmenu',
 ]);
 
+const { isPinned, togglePin } = useConversationPin();
+const isChatPinned = computed(() => isPinned(props.chat.id));
 const lastMessageInChat = computed(() => getLastMessage(props.chat));
 const showLabelsSection = computed(() => props.chat.labels?.length > 0);
 
@@ -181,13 +184,32 @@ const selectedModel = computed({
         <SLACardLabel ref="slaCardLabel" :chat="chat" />
       </div>
 
-      <div class="flex-shrink-0 w-[4.375rem] text-end">
-        <TimeAgo
-          :conversation-id="chat.id"
-          :last-activity-timestamp="chat.timestamp"
-          :created-at-timestamp="chat.created_at"
-          class="font-440 !text-xs text-n-slate-11"
-        />
+      <div class="flex items-center gap-1 flex-shrink-0">
+        <button
+          v-tooltip.top="
+            isChatPinned
+              ? $t('CONVERSATION.HEADER.UNPIN_CONVERSATION')
+              : $t('CONVERSATION.HEADER.PIN_CONVERSATION')
+          "
+          type="button"
+          class="transition-all duration-150 p-0.5 rounded hover:bg-n-alpha-2 cursor-pointer"
+          :class="
+            isChatPinned
+              ? 'opacity-100 text-n-brand'
+              : 'opacity-0 group-hover:opacity-100 text-n-slate-9 hover:text-n-slate-12'
+          "
+          @click.stop="togglePin(chat.id)"
+        >
+          <Icon icon="i-lucide-pin" class="size-3.5" />
+        </button>
+        <div class="w-[4.375rem] text-end">
+          <TimeAgo
+            :conversation-id="chat.id"
+            :last-activity-timestamp="chat.timestamp"
+            :created-at-timestamp="chat.created_at"
+            class="font-440 !text-xs text-n-slate-11"
+          />
+        </div>
       </div>
     </div>
   </div>

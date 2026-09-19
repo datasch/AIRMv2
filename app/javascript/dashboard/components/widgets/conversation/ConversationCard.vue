@@ -12,6 +12,7 @@ import UnreadBadge from 'dashboard/components-next/Conversation/ConversationCard
 import SLACardLabel from './components/SLACardLabel.vue';
 import VoiceCallStatus from './VoiceCallStatus.vue';
 import Checkbox from 'dashboard/components-next/checkbox/Checkbox.vue';
+import { useConversationPin } from 'dashboard/composables/useConversationPin';
 
 const props = defineProps({
   chat: { type: Object, required: true },
@@ -34,6 +35,8 @@ const emit = defineEmits([
 ]);
 
 const hovered = ref(false);
+const { isPinned, togglePin } = useConversationPin();
+const isChatPinned = computed(() => isPinned(props.chat.id));
 
 const unreadCount = computed(() => props.chat.unread_count);
 const hasUnread = computed(() => unreadCount.value > 0);
@@ -216,16 +219,35 @@ watch(
         </span>
       </p>
       <div
-        class="absolute flex flex-col ltr:right-3 rtl:left-3"
+        class="absolute flex flex-col items-end ltr:right-3 rtl:left-3"
         :class="showMetaSection ? 'top-8' : 'top-4'"
       >
-        <span class="ml-auto font-normal leading-4 text-xxs">
-          <TimeAgo
-            :last-activity-timestamp="chat.timestamp"
-            :created-at-timestamp="chat.created_at"
-            :conversation-id="chat.id"
-          />
-        </span>
+        <div class="flex items-center gap-1">
+          <button
+            v-tooltip.top="
+              isChatPinned
+                ? $t('CONVERSATION.HEADER.UNPIN_CONVERSATION')
+                : $t('CONVERSATION.HEADER.PIN_CONVERSATION')
+            "
+            type="button"
+            class="transition-all duration-150 p-0.5 rounded hover:bg-n-alpha-2 cursor-pointer"
+            :class="
+              isChatPinned
+                ? 'opacity-100 text-n-brand'
+                : 'opacity-0 group-hover:opacity-100 text-n-slate-9 hover:text-n-slate-12'
+            "
+            @click.stop="togglePin(chat.id)"
+          >
+            <Icon icon="i-lucide-pin" class="size-3" />
+          </button>
+          <span class="font-normal leading-4 text-xxs">
+            <TimeAgo
+              :last-activity-timestamp="chat.timestamp"
+              :created-at-timestamp="chat.created_at"
+              :conversation-id="chat.id"
+            />
+          </span>
+        </div>
         <UnreadBadge
           v-if="hasUnread"
           :count="unreadCount"

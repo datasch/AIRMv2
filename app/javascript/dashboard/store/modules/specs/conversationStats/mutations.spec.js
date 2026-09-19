@@ -7,11 +7,13 @@ describe('#mutations', () => {
       const state = {};
       mutations[types.SET_CONV_TAB_META](state, {
         mine_count: 1,
+        leads_count: 3,
         unassigned_count: 1,
         all_count: 2,
       });
       expect(state).toEqual({
         mineCount: 1,
+        leadsCount: 3,
         unAssignedCount: 1,
         allCount: 2,
         updatedOn: expect.any(Date),

@@ -52,6 +52,8 @@ import {
 import { matchesFilters } from '../store/modules/conversations/helpers/filterHelpers';
 import { CONVERSATION_EVENTS } from '../helper/AnalyticsHelper/events';
 import { ASSIGNEE_TYPE_TAB_PERMISSIONS } from 'dashboard/constants/permissions.js';
+import { useConversationPin } from 'dashboard/composables/useConversationPin';
+import { LEAD_STAGE_LABELS } from 'dashboard/constants/globals.js';
 
 const props = defineProps({
   conversationInbox: { type: [String, Number], default: 0 },
@@ -86,6 +88,7 @@ const appliedFilter = ref([]);
 const advancedFilterTypes = ref(
   advancedFilterOptions.map(filter => ({
     ...filter,
+    // eslint-disable-next-line @intlify/vue-i18n/no-dynamic-keys
     attributeName: t(`FILTER.ATTRIBUTES.${filter.attributeI18nKey}`),
   }))
 );
@@ -93,9 +96,11 @@ const advancedFilterTypes = ref(
 const currentUser = useMapGetter('getCurrentUser');
 const chatLists = useMapGetter('getFilteredConversations');
 const mineChatsList = useMapGetter('getMineChats');
+const leadsChatsList = useMapGetter('getLeadsChats');
 const allChatList = useMapGetter('getAllStatusChats');
 const unAssignedChatsList = useMapGetter('getUnAssignedChats');
 const participatingChatsList = useMapGetter('getParticipatingChats');
+const { pinnedConversationIds, isPinned } = useConversationPin();
 const chatListLoading = useMapGetter('getChatListLoadingStatus');
 const activeInbox = useMapGetter('getSelectedInbox');
 const conversationStats = useMapGetter('conversationStats/getStats');
@@ -182,6 +187,7 @@ const assigneeTabItems = computed(() => {
     item => item.permissions
   ).map(({ key, count: countKey }) => ({
     key,
+    // eslint-disable-next-line @intlify/vue-i18n/no-dynamic-keys
     name: t(`CHAT_LIST.ASSIGNEE_TYPE_TABS.${key}`),
     count: conversationStats.value[countKey] || 0,
   }));
@@ -302,6 +308,12 @@ function filterByAssigneeTab(conversations) {
       c => c.meta?.assignee?.id === currentUser.value?.id
     );
   }
+  if (activeAssigneeTab.value === wootConstants.ASSIGNEE_TYPE.LEADS) {
+    return conversations.filter(c => {
+      const chatLabels = Array.isArray(c.labels) ? c.labels : [];
+      return chatLabels.some(l => LEAD_STAGE_LABELS.includes(l));
+    });
+  }
   if (activeAssigneeTab.value === wootConstants.ASSIGNEE_TYPE.UNASSIGNED) {
     return conversations.filter(c => !c.meta?.assignee);
   }
@@ -330,6 +342,8 @@ const conversationList = computed(() => {
       );
     } else if (activeAssigneeTab.value === 'me') {
       localConversationList = [...mineChatsList.value(filters)];
+    } else if (activeAssigneeTab.value === 'leads') {
+      localConversationList = [...leadsChatsList.value(filters)];
     } else if (activeAssigneeTab.value === 'unassigned') {
       localConversationList = [...unAssignedChatsList.value(filters)];
     } else {
@@ -351,6 +365,21 @@ const conversationList = computed(() => {
     activeSortBy.value === wootConstants.SORT_BY_TYPE.UNREAD
   ) {
     localConversationList = sortByUnreadStatus(localConversationList);
+  }
+
+  if (pinnedConversationIds.value.length) {
+    const pinnedChats = [];
+    const otherChats = [];
+
+    localConversationList.forEach(chat => {
+      if (isPinned(chat.id) && chat.status === 'open') {
+        pinnedChats.push(chat);
+      } else {
+        otherChats.push(chat);
+      }
+    });
+
+    localConversationList = [...pinnedChats, ...otherChats];
   }
 
   return localConversationList;

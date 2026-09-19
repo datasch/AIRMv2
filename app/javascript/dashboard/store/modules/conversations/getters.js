@@ -7,6 +7,7 @@ import {
   getUserRole,
 } from '../../../helper/permissionsHelper';
 import camelcaseKeys from 'camelcase-keys';
+import { LEAD_STAGE_LABELS } from 'dashboard/constants/globals';
 
 export const getSelectedChatConversation = ({
   allConversations,
@@ -84,6 +85,38 @@ const getters = {
       const isChatMine = isAssignedToMe && shouldFilter;
 
       return isChatMine;
+    });
+  },
+  getLeadsChats: (_state, _, __, rootGetters) => activeFilters => {
+    const currentUser = rootGetters.getCurrentUser;
+    const currentUserId = currentUser?.id;
+    const currentAccountId = rootGetters.getCurrentAccountId;
+
+    const permissions = getUserPermissions(currentUser, currentAccountId);
+    const userRole = getUserRole(currentUser, currentAccountId);
+    const isAdmin = userRole === 'administrator';
+
+    return _state.allConversations.filter(conversation => {
+      const { assignee } = conversation.meta || {};
+      const isAssignedToMe = assignee && assignee.id === currentUserId;
+      const isAccessible = isAdmin || isAssignedToMe;
+
+      const chatLabels = Array.isArray(conversation.labels)
+        ? conversation.labels
+        : [];
+      const hasLeadLabel = chatLabels.some(label =>
+        LEAD_STAGE_LABELS.includes(label)
+      );
+
+      const shouldFilter = applyPageFilters(conversation, activeFilters);
+      const allowedForRole = applyRoleFilter(
+        conversation,
+        userRole,
+        permissions,
+        currentUserId
+      );
+
+      return isAccessible && hasLeadLabel && shouldFilter && allowedForRole;
     });
   },
   getAppliedConversationFiltersV2: _state => {

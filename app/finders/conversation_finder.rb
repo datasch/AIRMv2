@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ClassLength
 class ConversationFinder
   attr_reader :current_user, :current_account, :params
 
@@ -28,6 +29,8 @@ class ConversationFinder
   # response of this class will be of type
   # {conversations: [array of conversations], count: {open: count, resolved: count}}
 
+  LEAD_LABELS = %w[1_lead_nuevo 2_calificado 3_cotizado 4_negociacion].freeze
+
   # params
   # assignee_type, inbox_id, :status
 
@@ -43,6 +46,7 @@ class ConversationFinder
 
     mine_count, unassigned_count, all_count = set_count_for_all_conversations
     assigned_count = all_count - unassigned_count
+    leads_count = count_for_leads_conversations
 
     filter_by_assignee_type
 
@@ -52,7 +56,8 @@ class ConversationFinder
         mine_count: mine_count,
         assigned_count: assigned_count,
         unassigned_count: unassigned_count,
-        all_count: all_count
+        all_count: all_count,
+        leads_count: leads_count
       }
     }
   end
@@ -62,13 +67,15 @@ class ConversationFinder
 
     mine_count, unassigned_count, all_count, = set_count_for_all_conversations
     assigned_count = all_count - unassigned_count
+    leads_count = count_for_leads_conversations
 
     {
       count: {
         mine_count: mine_count,
         assigned_count: assigned_count,
         unassigned_count: unassigned_count,
-        all_count: all_count
+        all_count: all_count,
+        leads_count: leads_count
       }
     }
   end
@@ -128,6 +135,9 @@ class ConversationFinder
     case @assignee_type
     when 'me'
       @conversations = @conversations.assigned_to(current_user)
+    when 'leads'
+      @conversations = @conversations.tagged_with(LEAD_LABELS, any: true)
+      @conversations = @conversations.assigned_to(current_user) unless @is_admin
     when 'unassigned'
       @conversations = @conversations.unassigned
     when 'assigned'
@@ -204,6 +214,12 @@ class ConversationFinder
     ]
   end
 
+  def count_for_leads_conversations
+    leads_scope = @conversations.unscope(:order).tagged_with(LEAD_LABELS, any: true)
+    leads_scope = leads_scope.assigned_to(current_user) unless @is_admin
+    leads_scope.count
+  end
+
   def current_page
     params[:page] || 1
   end
@@ -227,4 +243,5 @@ class ConversationFinder
     end
   end
 end
+# rubocop:enable Metrics/ClassLength
 ConversationFinder.prepend_mod_with('ConversationFinder')

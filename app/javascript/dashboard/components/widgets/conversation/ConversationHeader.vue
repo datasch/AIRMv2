@@ -15,6 +15,8 @@ import { snoozedReopenTime } from 'dashboard/helper/snoozeHelpers';
 import { useInbox } from 'dashboard/composables/useInbox';
 import { useAlert } from 'dashboard/composables';
 import { useI18n } from 'vue-i18n';
+import NextButton from 'dashboard/components-next/button/Button.vue';
+import { useConversationPin } from 'dashboard/composables/useConversationPin';
 import { copyTextToClipboard } from 'shared/helpers/clipboard';
 
 const props = defineProps({
@@ -37,6 +39,11 @@ const { isAWebWidgetInbox } = useInbox();
 
 const currentChat = computed(() => store.getters.getSelectedChat);
 const accountId = computed(() => store.getters.getCurrentAccountId);
+
+const { isPinned, togglePin } = useConversationPin();
+const isCurrentChatPinned = computed(() =>
+  isPinned(props.chat?.id || currentChat.value?.id)
+);
 
 const chatMetadata = computed(() => props.chat.meta);
 
@@ -153,8 +160,10 @@ const copyConversationId = async () => {
           >
             {{ `#${chat.id}` }}
           </button>
+          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
           <span v-if="hasMultipleInboxes">•</span>
           <InboxName v-if="hasMultipleInboxes" :inbox="inbox" class="!mx-0" />
+          <!-- eslint-disable-next-line @intlify/vue-i18n/no-raw-text -->
           <span v-if="isSnoozed">•</span>
           <span v-if="isSnoozed" class="font-medium text-n-amber-10">
             {{ snoozedDisplayText }}
@@ -171,6 +180,21 @@ const copyConversationId = async () => {
         show-extended-info
         :parent-width="width"
         class="hidden md:flex"
+      />
+      <NextButton
+        v-if="currentChat.id"
+        v-tooltip.bottom="
+          isCurrentChatPinned
+            ? $t('CONVERSATION.HEADER.UNPIN_CONVERSATION')
+            : $t('CONVERSATION.HEADER.PIN_CONVERSATION')
+        "
+        sm
+        ghost
+        :slate="!isCurrentChatPinned"
+        :brand="isCurrentChatPinned"
+        :icon="isCurrentChatPinned ? 'i-lucide-pin-off' : 'i-lucide-pin'"
+        class="header-action-button"
+        @click="togglePin(currentChat.id)"
       />
       <ConversationCallButton :inbox="inbox" :chat="currentChat" />
       <MoreActions :conversation-id="currentChat.id" />

@@ -140,6 +140,8 @@
       "RESOLVE_ACTION": "Resolve",
       "REOPEN_ACTION": "Reopen",
       "OPEN_ACTION": "Open",
+      "PIN_CONVERSATION": "Pin conversation",
+      "UNPIN_CONVERSATION": "Unpin conversation",
       "MORE_ACTIONS": "More actions",
       "OPEN": "More",
       "CLOSE": "Close",
