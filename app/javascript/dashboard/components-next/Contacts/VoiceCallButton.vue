@@ -181,6 +181,7 @@ const onClick = async () => {
         const response = await VoipAPI.callContact({
           contactId: props.contactId,
           conversationId: props.conversationId,
+          phoneNumber: props.phone,
         });
         const data = response.data || {};
         const dest = data.destination || props.phone;
@@ -190,7 +191,7 @@ const onClick = async () => {
         voipState.remoteDisplayName = displayName;
         voipState.remoteNumber = displayPhone;
 
-        if (voipState.isRegistered && dest) {
+        if (dest) {
           makeCall(dest, props.conversationId, customCallerId, displayPhone);
         } else {
           openDialer(displayPhone, props.conversationId);
@@ -206,10 +207,10 @@ const onClick = async () => {
       }
     }
 
-    if (voipState.isRegistered) {
-      makeCall(props.phone, props.conversationId, customCallerId);
+    if (props.phone) {
+      makeCall(props.phone, props.conversationId, customCallerId, props.phone);
     } else {
-      openDialer(props.phone, props.conversationId);
+      openDialer('', props.conversationId);
     }
     return;
   }

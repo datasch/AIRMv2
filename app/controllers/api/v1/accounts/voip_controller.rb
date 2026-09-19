@@ -2,17 +2,42 @@
 
 class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
   before_action :check_admin_authorization, only: [:update_config, :update_agent]
-  skip_before_action :authenticate_user!, only: [:recording]
-  skip_before_action :validate_token_api_access, only: [:recording]
+  skip_before_action :authenticate_user!, :authenticate_access_token!, :validate_bot_access_token!, only: [:recording], raise: false
+  skip_before_action :current_account, :validate_token_api_access, only: [:recording], raise: false
+  skip_before_action :check_subscription, only: [:recording], raise: false
 
   def show_config
     account = Current.account
     user = Current.user
 
     voip_settings = account&.settings&.dig('voip') || {}
-    user_sip = user&.custom_attributes&.dig('sip') || {}
+    user_sip = (user&.custom_attributes || {}).dig('sip') || {}
 
-    is_admin = Current.account_user&.administrator?
+    # Auto-provision extension & password if missing for the current user
+    if user.present? && (user_sip['extension'].blank? || user_sip['password'].blank?)
+      is_user_admin = user.type == 'SuperAdmin' || Current.account_user&.administrator?
+      default_ext = if is_user_admin
+                      '1001'
+                    else
+                      "101#{(user.id % 4) + 1}"
+                    end
+      default_pass = 'Ventas2026*'
+
+      custom_attrs = (user.custom_attributes || {}).dup
+      custom_attrs['sip'] = {
+        'extension' => user_sip['extension'].presence || default_ext,
+        'password' => user_sip['password'].presence || default_pass
+      }
+      begin
+        user.update_column(:custom_attributes, custom_attrs)
+        user_sip = custom_attrs['sip']
+      rescue StandardError => e
+        Rails.logger.warn("[VoipController#show_config] Failed to auto-save SIP attributes: #{e.message}")
+        user_sip = custom_attrs['sip']
+      end
+    end
+
+    is_admin = Current.account_user&.administrator? || user&.type == 'SuperAdmin'
 
     response_data = {
       enabled: voip_settings['enabled'].nil? ? (ENV['ASTERISK_ENABLED'].to_s == 'true' || ENV['ASTERISK_WS_URL'].present?) : voip_settings['enabled'],
@@ -75,10 +100,15 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
 
   def agents
     account = Current.account
-    agents_list = account.users.order_by_full_name.includes(:account_users).map do |agent|
+    users_scope = account.users.order_by_full_name.includes(:account_users).to_a
+    if Current.user&.type == 'SuperAdmin' && users_scope.none? { |u| u.id == Current.user.id }
+      users_scope.unshift(Current.user)
+    end
+
+    agents_list = users_scope.map do |agent|
       sip_data = (agent.custom_attributes || {})['sip'] || {}
       account_user = agent.account_users.find { |au| au.account_id == account.id }
-      user_role = account_user&.role || agent.role || 'agent'
+      user_role = account_user&.role || (agent.type == 'SuperAdmin' ? 'administrator' : (agent.role || 'agent'))
       {
         id: agent.id,
         name: agent.available_name || agent.name,
@@ -97,7 +127,7 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
 
   def update_agent
     user_id = params[:user_id]
-    user = Current.account.users.find(user_id)
+    user = Current.account.users.find_by(id: user_id) || User.find_by(id: user_id)
 
     custom_attrs = (user.custom_attributes || {}).dup
     custom_attrs['sip'] = (custom_attrs['sip'] || {}).merge({
@@ -121,9 +151,9 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
   end
 
   def call_contact
-    contact_id = params[:contact_id]
-    conversation_id = params[:conversation_id]
-    raw_phone = params[:phone_number].to_s.strip
+    contact_id = params[:contact_id].presence || params[:contactId].presence
+    conversation_id = params[:conversation_id].presence || params[:conversationId].presence
+    raw_phone = (params[:phone_number].presence || params[:phoneNumber].presence).to_s.strip
 
     conversation = nil
     contact = nil
@@ -441,6 +471,9 @@ class Api::V1::Accounts::VoipController < Api::V1::Accounts::BaseController
   end
 
   def recording
+    account = Account.find_by(id: params[:account_id])
+    return render plain: 'Account not found or inactive', status: :unauthorized unless account&.active?
+
     call_id = params[:id].to_s.gsub(/[^a-zA-Z0-9_\-]/, '')
     filename = "#{call_id}.wav"
     search_paths = [

@@ -167,6 +167,7 @@ const startCall = async () => {
         const response = await VoipAPI.callContact({
           contactId,
           conversationId: props.chat.id,
+          phoneNumber: contactPhone.value,
         });
         const data = response.data || {};
         const dest = data.destination || contactPhone.value;
@@ -176,13 +177,10 @@ const startCall = async () => {
         voipState.remoteDisplayName = displayName;
         voipState.remoteNumber = displayPhone;
 
-        if (voipState.isRegistered && dest) {
+        if (dest) {
           makeCall(dest, props.chat.id, customCallerId, displayPhone);
         } else {
           openDialer(displayPhone, props.chat.id);
-          if (!voipState.isRegistered && dest) {
-            window.location.href = `tel:${dest}`;
-          }
         }
         return;
       } catch (error) {
@@ -195,7 +193,7 @@ const startCall = async () => {
       }
     }
 
-    if (voipState.isRegistered && contactPhone.value) {
+    if (contactPhone.value) {
       makeCall(
         contactPhone.value,
         props.chat.id,
@@ -203,10 +201,7 @@ const startCall = async () => {
         contactPhone.value
       );
     } else {
-      openDialer(contactPhone.value, props.chat.id);
-      if (!voipState.isRegistered && contactPhone.value) {
-        window.location.href = `tel:${contactPhone.value}`;
-      }
+      openDialer('', props.chat.id);
     }
     return;
   }

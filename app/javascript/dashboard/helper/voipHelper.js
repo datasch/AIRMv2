@@ -1,5 +1,6 @@
 import JsSIP from 'jssip';
 import { reactive } from 'vue';
+import { useAlert } from 'dashboard/composables';
 import VoipAPI from '../api/voip';
 
 // Turn off noisy debug logs in production
@@ -324,10 +325,27 @@ export const initVoIP = async () => {
       password: agent.password,
       display_name: agent.display_name || agent.extension,
       session_timers: false,
-      register: true,
+      register: false,
     };
 
     ua = new JsSIP.UA(configuration);
+
+    ua.on('connected', () => {
+      /* eslint-disable no-underscore-dangle */
+      if (ua._registrator) {
+        try {
+          ua._registrator._to_uri = new JsSIP.URI(
+            'sip',
+            `${agent.extension}-aor`,
+            sip_domain
+          );
+        } catch (e) {
+          // fallback
+        }
+      }
+      /* eslint-enable no-underscore-dangle */
+      ua.register();
+    });
 
     ua.on('registered', () => {
       voipState.isRegistered = true;
@@ -360,6 +378,11 @@ export const initVoIP = async () => {
   }
 };
 
+const sleep = ms =>
+  new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+
 export const makeCall = async (
   targetNumber,
   conversationId = null,
@@ -367,7 +390,13 @@ export const makeCall = async (
   displayLabel = null
 ) => {
   if (!ua || !voipState.isRegistered) {
-    initVoIP();
+    await initVoIP();
+    const startWait = Date.now();
+    while (!voipState.isRegistered && Date.now() - startWait < 3500) {
+      // eslint-disable-next-line no-await-in-loop
+      await sleep(200);
+      if (voipState.registrationError) break;
+    }
   }
 
   if (!targetNumber) return;
@@ -426,7 +455,15 @@ export const makeCall = async (
   if (!ua || !voipState.isRegistered) {
     stopRingbackTone();
     voipState.callState = 'idle';
-    window.location.href = `tel:${cleanNumber}`;
+    if (voipState.isEnabled) {
+      useAlert(
+        voipState.registrationError
+          ? `Error de telefonía VoIP: ${voipState.registrationError}. Verifica la extensión o conexión a Asterisk.`
+          : 'El servicio de telefonía VoIP no está conectado con Asterisk. Verifica la extensión del asesor.'
+      );
+    } else {
+      window.location.href = `tel:${cleanNumber}`;
+    }
     return;
   }
 
@@ -467,7 +504,7 @@ export const makeCall = async (
   } catch (err) {
     stopRingbackTone();
     voipState.callState = 'idle';
-    window.location.href = `tel:${cleanNumber}`;
+    useAlert(err.message || 'Error al conectar la llamada WebRTC');
   }
 };
 
