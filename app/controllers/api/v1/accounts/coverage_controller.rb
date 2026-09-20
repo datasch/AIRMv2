@@ -178,7 +178,7 @@ class Api::V1::Accounts::CoverageController < Api::V1::Accounts::BaseController
     end
   rescue StandardError => e
     Rails.logger.error "[CoverageController#sync] Error: #{e.message}\n#{e.backtrace&.first(5)&.join("\n")}"
-    render json: { ok: false, error: e.message }, status: :unprocessable_entity
+    render json: { ok: false, error: e.message }
   end
 
   def sync_status

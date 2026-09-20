@@ -13,6 +13,12 @@ import CoverageAPI from 'dashboard/api/coverage';
 import { emitter } from 'shared/helpers/mitt';
 import { voipState, makeCall } from 'dashboard/helper/voipHelper';
 import { useAlert } from 'dashboard/composables';
+import L from 'leaflet';
+import 'leaflet.markercluster';
+import Chart from 'chart.js/auto';
+import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import peruGeoJson from './data/peru_departments.json';
 
 const { t } = useI18n();
@@ -77,56 +83,6 @@ let chartRegions = null;
 let chartStatus = null;
 let chartSectors = null;
 let chartTimeline = null;
-
-// Cargar librerías externas Leaflet y Chart.js de forma dinámica
-const loadExternalAssets = async () => {
-  const loadStyle = href => {
-    if (document.querySelector(`link[href="${href}"]`))
-      return Promise.resolve();
-    return new Promise(resolve => {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = href;
-      link.onload = resolve;
-      document.head.appendChild(link);
-    });
-  };
-
-  const loadScript = src => {
-    if (document.querySelector(`script[src="${src}"]`))
-      return Promise.resolve();
-    return new Promise(resolve => {
-      const script = document.createElement('script');
-      script.src = src;
-      script.onload = resolve;
-      document.head.appendChild(script);
-    });
-  };
-
-  await Promise.all([
-    loadStyle('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'),
-    loadStyle(
-      'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css'
-    ),
-    loadStyle(
-      'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css'
-    ),
-  ]);
-
-  if (!window.L) {
-    await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
-  }
-  if (!window.L?.markerClusterGroup) {
-    await loadScript(
-      'https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js'
-    );
-  }
-  if (!window.Chart) {
-    await loadScript(
-      'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'
-    );
-  }
-};
 
 // Normalizar nombres de departamento para cruce exacto con GeoJSON
 const normalizeDepName = name => {
@@ -232,7 +188,7 @@ const createGoogleMapsPinIcon = (item, isSelected = false) => {
 
   const scaleClass = isSelected ? 'scale-125 z-50' : 'hover:scale-115';
 
-  return window.L.divIcon({
+  return L.divIcon({
     className: 'google-maps-pin-marker',
     html: `
       <div class="relative cursor-pointer flex flex-col items-center transition-transform ${scaleClass}">
@@ -336,7 +292,7 @@ const legendItems = computed(() => {
 
 // Renderizar capa coroplética departamental
 const renderChoropleth = () => {
-  if (!leafletMap || !window.L || !peruGeoJson) return;
+  if (!leafletMap || !peruGeoJson) return;
 
   if (choroplethLayer) {
     leafletMap.removeLayer(choroplethLayer);
@@ -344,7 +300,7 @@ const renderChoropleth = () => {
 
   if (!showChoropleth.value) return;
 
-  choroplethLayer = window.L.geoJSON(peruGeoJson, {
+  choroplethLayer = L.geoJSON(peruGeoJson, {
     style: feature => {
       const depName = feature.properties.NOMBDEP;
       const isSelected =
@@ -438,7 +394,7 @@ const centerOnLead = item => {
 
 // Renderizar pines POI estilo Google Maps en el mapa
 const renderMapMarkers = () => {
-  if (!leafletMap || !markersLayer || !window.L) return;
+  if (!leafletMap || !markersLayer) return;
 
   markersLayer.clearLayers();
   markersMap.clear();
@@ -447,7 +403,7 @@ const renderMapMarkers = () => {
     const isSelected = selectedLead.value?.id === item.id;
     const icon = createGoogleMapsPinIcon(item, isSelected);
 
-    const marker = window.L.marker([item.lat, item.lon], { icon });
+    const marker = L.marker([item.lat, item.lon], { icon });
 
     marker.on('click', () => {
       selectedLead.value = item;
@@ -461,8 +417,6 @@ const renderMapMarkers = () => {
 
 // Renderizar gráficos de Chart.js
 const renderCharts = () => {
-  if (!window.Chart) return;
-
   if (chartRegions) chartRegions.destroy();
   if (chartStatus) chartStatus.destroy();
   if (chartSectors) chartSectors.destroy();
@@ -473,7 +427,7 @@ const renderCharts = () => {
     .getElementById('chartRegionsCanvas')
     ?.getContext('2d');
   if (ctxReg && regionsDistribution.value.length) {
-    chartRegions = new window.Chart(ctxReg, {
+    chartRegions = new Chart(ctxReg, {
       type: 'bar',
       data: {
         labels: regionsDistribution.value.slice(0, 12).map(r => r.region),
@@ -500,7 +454,7 @@ const renderCharts = () => {
     .getElementById('chartStatusCanvas')
     ?.getContext('2d');
   if (ctxStat) {
-    chartStatus = new window.Chart(ctxStat, {
+    chartStatus = new Chart(ctxStat, {
       type: 'doughnut',
       data: {
         labels: ['Contactado', 'Por Contactar', 'Sin WhatsApp / Error'],
@@ -528,7 +482,7 @@ const renderCharts = () => {
     .getElementById('chartSectorsCanvas')
     ?.getContext('2d');
   if (ctxSec && sectorsDistribution.value.length) {
-    chartSectors = new window.Chart(ctxSec, {
+    chartSectors = new Chart(ctxSec, {
       type: 'bar',
       data: {
         labels: sectorsDistribution.value.slice(0, 10).map(s => s.sector),
@@ -557,7 +511,7 @@ const renderCharts = () => {
     .getElementById('chartTimelineCanvas')
     ?.getContext('2d');
   if (ctxTime && timeline.value.length) {
-    chartTimeline = new window.Chart(ctxTime, {
+    chartTimeline = new Chart(ctxTime, {
       type: 'line',
       data: {
         labels: timeline.value.map(pt => pt.date),
@@ -629,50 +583,53 @@ const triggerManualSync = async () => {
   try {
     isSyncing.value = true;
     syncFeedback.value = t('REPORT.COVERAGE.SYNCING');
-    await CoverageAPI.triggerSync();
-    syncFeedback.value = t('REPORT.COVERAGE.SYNC_SUCCESS');
-    await fetchCoverageData();
+    const res = await CoverageAPI.triggerSync();
+    if (res?.data?.ok === false) {
+      syncFeedback.value = res.data.error || t('REPORT.COVERAGE.SYNC_ERROR');
+    } else {
+      syncFeedback.value = t('REPORT.COVERAGE.SYNC_SUCCESS');
+      await fetchCoverageData();
+    }
   } catch {
     syncFeedback.value = t('REPORT.COVERAGE.SYNC_ERROR');
   } finally {
     isSyncing.value = false;
     setTimeout(() => {
       syncFeedback.value = '';
-    }, 4000);
+    }, 6000);
   }
 };
 
 // Inicialización de Leaflet
-const initMap = async () => {
-  await loadExternalAssets();
-  if (!window.L || !mapContainer.value) return;
+const initMap = () => {
+  if (!mapContainer.value) return;
 
   if (leafletMap) {
     leafletMap.remove();
   }
 
-  leafletMap = window.L.map(mapContainer.value, {
+  leafletMap = L.map(mapContainer.value, {
     center: [-9.5, -75.0],
     zoom: 6,
     zoomControl: false,
   });
 
-  window.L.control.zoom({ position: 'topright' }).addTo(leafletMap);
+  L.control.zoom({ position: 'topright' }).addTo(leafletMap);
 
-  window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors',
     maxZoom: 19,
   }).addTo(leafletMap);
 
-  if (window.L.markerClusterGroup) {
-    markersLayer = window.L.markerClusterGroup({
+  if (L.markerClusterGroup) {
+    markersLayer = L.markerClusterGroup({
       maxClusterRadius: 35,
       spiderfyOnMaxZoom: true,
       showCoverageOnHover: false,
       zoomToBoundsOnClick: true,
     });
   } else {
-    markersLayer = window.L.layerGroup();
+    markersLayer = L.layerGroup();
   }
 
   leafletMap.addLayer(markersLayer);
@@ -806,7 +763,7 @@ watch(showChoropleth, () => {
 onMounted(async () => {
   emitter.on('coverage:lead_updated', onLeadUpdated);
   await fetchCoverageData();
-  await initMap();
+  initMap();
 });
 
 onBeforeUnmount(() => {
