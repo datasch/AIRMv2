@@ -56,7 +56,7 @@ public/assets/.sprockets-manifest-*.json
 
 # coverage report
 buildreports
-coverage
+/coverage
 
 /storage
 

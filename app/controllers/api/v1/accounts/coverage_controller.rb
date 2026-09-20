@@ -89,7 +89,7 @@ class Api::V1::Accounts::CoverageController < Api::V1::Accounts::BaseController
     sectors_raw = sector_counts.map do |sec, cnt|
       cont = sector_contacted[sec] || 0
       pct = cnt.positive? ? ((cont.to_f / cnt) * 100).round(0) : 0
-      macro_info = Coverage::SyncService.clasificar_macro_sector(sec)
+      macro_info = ::Coverage::SyncService.clasificar_macro_sector(sec)
       { sector: sec.presence || 'Otros Servicios B2B', total: cnt, contactados: cont, pct: pct, color: macro_info[:color] }
     end
     sectors_distribution = sectors_raw.sort_by { |s| -s[:total] }
@@ -166,7 +166,7 @@ class Api::V1::Accounts::CoverageController < Api::V1::Accounts::BaseController
 
   def sync
     account = Current.account
-    service = Coverage::SyncService.new(account: account)
+    service = ::Coverage::SyncService.new(account: account)
     raw_rows = extract_rows_from_params
 
     if raw_rows.is_a?(Array) && raw_rows.any?
@@ -199,7 +199,7 @@ class Api::V1::Accounts::CoverageController < Api::V1::Accounts::BaseController
   end
 
   def format_lead_item(lead)
-    macro_info = Coverage::SyncService.clasificar_macro_sector(lead.macro_sector || lead.sector)
+    macro_info = ::Coverage::SyncService.clasificar_macro_sector(lead.macro_sector || lead.sector)
 
     {
       id: lead.id,
