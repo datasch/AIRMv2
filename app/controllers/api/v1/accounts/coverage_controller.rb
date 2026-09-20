@@ -132,39 +132,7 @@ class Api::V1::Accounts::CoverageController < Api::V1::Accounts::BaseController
     all_agents = account.coverage_leads.reorder(nil).distinct.pluck(:agente_nombre).compact_blank.sort
 
     # Formateo de los leads para mapa y lista
-    leads_list = leads_scope.limit(1000).map do |l|
-      macro_info = Coverage::SyncService.clasificar_macro_sector(l.macro_sector || l.sector)
-      clean_stat = l.clean_status
-      stat_color = l.status_color
-
-      {
-        id: l.id,
-        datatable_id: l.datatable_id,
-        empresa: l.empresa.presence || 'Empresa Sin Nombre',
-        sector: l.sector.presence || 'General',
-        macro_sector: l.macro_sector.presence || macro_info[:nombre],
-        sector_color: macro_info[:color],
-        contacto_sugerido: l.contacto_sugerido.presence || 'No especificado',
-        ubicacion: l.ubicacion.presence || '',
-        departamento: l.departamento.presence || 'Lima',
-        ciudad_distrito: l.ciudad_distrito.presence || 'Lima',
-        lat: l.lat&.to_f || -12.0520,
-        lon: l.lon&.to_f || -77.0380,
-        sitio_web: l.sitio_web.presence || '',
-        oferta_solucion: l.oferta_solucion.presence || '',
-        estado: l.estado.presence || 'Por Contactar',
-        estado_clean: clean_stat,
-        status_color: stat_color,
-        fecha_ingreso: l.fecha_ingreso&.strftime('%Y-%m-%d %H:%M'),
-        fecha_envio: l.fecha_envio&.strftime('%Y-%m-%d %H:%M'),
-        fecha_dia: (l.fecha_envio || l.fecha_ingreso)&.strftime('%Y-%m-%d'),
-        agente: l.agente_nombre.presence || 'Sin Asignar',
-        contact_id: l.contact_id,
-        conversation_id: l.conversation_id,
-        tiempo_operativo: l.tiempo_operativo.presence || '',
-        alerta_tiempo: l.alerta_tiempo.presence || ''
-      }
-    end
+    leads_list = leads_scope.limit(1000).map { |l| format_lead_item(l) }
 
     last_synced = account.coverage_leads.maximum(:synced_at) || account.coverage_leads.maximum(:updated_at)
 
@@ -199,9 +167,10 @@ class Api::V1::Accounts::CoverageController < Api::V1::Accounts::BaseController
   def sync
     account = Current.account
     service = Coverage::SyncService.new(account: account)
+    raw_rows = extract_rows_from_params
 
-    if params[:rows].is_a?(Array) && params[:rows].any?
-      synced = service.process_rows(params[:rows])
+    if raw_rows.is_a?(Array) && raw_rows.any?
+      synced = service.process_rows(raw_rows)
       render json: { ok: true, synced_count: synced, total: account.coverage_leads.count }
     else
       result = service.sync_from_datatable!
@@ -227,6 +196,54 @@ class Api::V1::Accounts::CoverageController < Api::V1::Accounts::BaseController
 
   def check_authorization
     head :forbidden unless Current.account_user&.administrator? || Current.account_user&.agent?
+  end
+
+  def format_lead_item(lead)
+    macro_info = Coverage::SyncService.clasificar_macro_sector(lead.macro_sector || lead.sector)
+
+    {
+      id: lead.id,
+      datatable_id: lead.datatable_id,
+      empresa: lead.empresa.presence || 'Empresa Sin Nombre',
+      sector: lead.sector.presence || 'General',
+      macro_sector: lead.macro_sector.presence || macro_info[:nombre],
+      sector_color: macro_info[:color],
+      contacto_sugerido: lead.contacto_sugerido.presence || 'No especificado',
+      phone_number: lead.phone_number,
+      ubicacion: lead.ubicacion.presence || '',
+      departamento: lead.departamento.presence || 'Lima',
+      ciudad_distrito: lead.ciudad_distrito.presence || 'Lima',
+      lat: lead.lat&.to_f || -12.0520,
+      lon: lead.lon&.to_f || -77.0380,
+      sitio_web: lead.sitio_web.presence || '',
+      oferta_solucion: lead.oferta_solucion.presence || '',
+      mensaje_whatsapp: lead.mensaje_whatsapp.presence || '',
+      estado: lead.estado.presence || 'Por Contactar',
+      estado_clean: lead.clean_status,
+      status_color: lead.status_color,
+      fecha_ingreso: lead.fecha_ingreso&.strftime('%Y-%m-%d %H:%M'),
+      fecha_envio: lead.fecha_envio&.strftime('%Y-%m-%d %H:%M'),
+      fecha_dia: (lead.fecha_envio || lead.fecha_ingreso)&.strftime('%Y-%m-%d'),
+      agente: lead.agente_nombre.presence || 'Sin Asignar',
+      contact_id: lead.contact_id,
+      conversation_id: lead.conversation_id,
+      tiempo_operativo: lead.tiempo_operativo.presence || '',
+      alerta_tiempo: lead.alerta_tiempo.presence || ''
+    }
+  end
+
+  def extract_rows_from_params
+    if params[:rows].is_a?(Array)
+      params[:rows]
+    elsif params[:data].is_a?(Array)
+      params[:data]
+    elsif params[:_json].is_a?(Array)
+      params[:_json]
+    elsif params[:row].is_a?(Hash) || params[:row].is_a?(ActionController::Parameters)
+      [params[:row]]
+    elsif params[:empresa].present? || params[:telefono].present?
+      [params.to_unsafe_h.except('controller', 'action', 'account_id', 'format')]
+    end
   end
 end
 # rubocop:enable Metrics/ClassLength, Metrics/MethodLength, Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity

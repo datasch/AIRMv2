@@ -1,15 +1,32 @@
 <script setup>
-import { ref, onMounted, computed, watch, nextTick } from 'vue';
+import {
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  computed,
+  watch,
+  nextTick,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 import CoverageAPI from 'dashboard/api/coverage';
+import { emitter } from 'shared/helpers/mitt';
+import { voipState, makeCall } from 'dashboard/helper/voipHelper';
+import { useAlert } from 'dashboard/composables';
+import peruGeoJson from './data/peru_departments.json';
 
 const { t } = useI18n();
+const route = useRoute();
+const accountId = computed(() => route.params.accountId || 1);
 
 // Estado general
 const activeTab = ref('map'); // 'map' | 'metrics'
 const isLoading = ref(true);
 const isSyncing = ref(false);
 const syncFeedback = ref('');
+
+// Lead seleccionado para el Drawer estilo Google Maps
+const selectedLead = ref(null);
 
 // Datos del backend
 const summary = ref({
@@ -45,12 +62,15 @@ const selectedAgent = ref('ALL');
 const dateStart = ref('');
 const dateEnd = ref('');
 const colorMode = ref('sector'); // 'sector' | 'status'
+const showChoropleth = ref(true);
 
-// Referencias DOM
+// Referencias DOM y Leaflet
 const mapContainer = ref(null);
 let leafletMap = null;
 let markersLayer = null;
+let choroplethLayer = null;
 const markersMap = new Map();
+let fetchCoverageData = () => {};
 
 // Gráficos Chart.js
 let chartRegions = null;
@@ -108,6 +128,127 @@ const loadExternalAssets = async () => {
   }
 };
 
+// Normalizar nombres de departamento para cruce exacto con GeoJSON
+const normalizeDepName = name => {
+  return String(name || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .trim();
+};
+
+// Estadísticas agregadas por departamento para el mapa coroplético
+const departmentStats = computed(() => {
+  const stats = {};
+  leads.value.forEach(l => {
+    const key = normalizeDepName(l.departamento);
+    if (!stats[key]) {
+      stats[key] = {
+        total: 0,
+        contactados: 0,
+        pendientes: 0,
+        enviando: 0,
+        sin_whatsapp: 0,
+      };
+    }
+    stats[key].total += 1;
+    if (l.estado_clean === 'Contactado') stats[key].contactados += 1;
+    else if (l.estado_clean === 'Por Contactar') stats[key].pendientes += 1;
+    else if (l.estado_clean === 'Enviando') stats[key].enviando += 1;
+    else stats[key].sin_whatsapp += 1;
+  });
+  return stats;
+});
+
+// Escala cromática de intensidad para cada departamento
+const getDepartmentColor = depName => {
+  const key = normalizeDepName(depName);
+  const stat = departmentStats.value[key];
+  if (!stat || stat.total === 0) return '#94a3b8'; // gris suave neutro
+
+  const count = stat.total;
+  if (count >= 500) return '#1e3a8a'; // blue-900 (alta densidad)
+  if (count >= 150) return '#2563eb'; // blue-600
+  if (count >= 50) return '#3b82f6'; // blue-500
+  if (count >= 15) return '#60a5fa'; // blue-400
+  return '#93c5fd'; // blue-300
+};
+
+// Iconos SVG en línea según macro sector para los pines estilo Google Maps
+const getSectorIconSvg = macroSector => {
+  const s = String(macroSector || '').toLowerCase();
+  if (
+    s.includes('salud') ||
+    s.includes('dental') ||
+    s.includes('estética') ||
+    s.includes('estetica')
+  ) {
+    return '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
+  }
+  if (s.includes('inmobilia') || s.includes('construc')) {
+    return '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M8 10h.01"/><path d="M16 10h.01"/></svg>';
+  }
+  if (s.includes('software') || s.includes('tecnolog') || s.includes('ti')) {
+    return '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>';
+  }
+  if (
+    s.includes('logístic') ||
+    s.includes('logistic') ||
+    s.includes('courier') ||
+    s.includes('transporte')
+  ) {
+    return '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>';
+  }
+  if (s.includes('auto') || s.includes('taller')) {
+    return '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.1 11.2 2 11.6 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>';
+  }
+  if (s.includes('educa') || s.includes('capacita')) {
+    return '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>';
+  }
+  if (s.includes('market') || s.includes('publicidad')) {
+    return '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>';
+  }
+  if (s.includes('legal') || s.includes('abogad')) {
+    return '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/></svg>';
+  }
+  if (s.includes('vet') || s.includes('mascot')) {
+    return '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a2.5 2.5 0 0 1-5 0V15a2 2 0 0 0-2-2 2 2 0 0 0-2 2v3.5a2.5 2.5 0 0 1-5 0V15a5 5 0 0 1 5-5z"/></svg>';
+  }
+  return '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+};
+
+const getRingColor = status => {
+  if (status === 'Contactado') return '#22c55e';
+  if (status === 'Por Contactar') return '#f59e0b';
+  return '#ef4444';
+};
+
+// Generar Pin POI estilo Google Maps
+const createGoogleMapsPinIcon = (item, isSelected = false) => {
+  const color =
+    colorMode.value === 'status' ? item.status_color : item.sector_color;
+  const ringColor = getRingColor(item.estado_clean);
+  const iconSvg = getSectorIconSvg(item.macro_sector);
+
+  const scaleClass = isSelected ? 'scale-125 z-50' : 'hover:scale-115';
+
+  return window.L.divIcon({
+    className: 'google-maps-pin-marker',
+    html: `
+      <div class="relative cursor-pointer flex flex-col items-center transition-transform ${scaleClass}">
+        <div class="w-8 h-8 rounded-full shadow-lg flex items-center justify-center text-white border-2 transition-all"
+             style="background: ${color}; border-color: ${isSelected ? '#ffffff' : ringColor}; box-shadow: 0 4px 10px ${color}77;">
+          ${iconSvg}
+        </div>
+        <div class="w-2 h-2 -mt-1 rotate-45" style="background: ${color}"></div>
+      </div>
+    `,
+    iconSize: [32, 36],
+    iconAnchor: [16, 36],
+    popupAnchor: [0, -36],
+  });
+};
+
 // Distritos calculados según la región seleccionada
 const availableDistricts = computed(() => {
   const filtered =
@@ -118,7 +259,7 @@ const availableDistricts = computed(() => {
   return Array.from(set).sort();
 });
 
-// Leads filtrados en cliente (para búsqueda y filtros locales inmediatos)
+// Leads filtrados en cliente
 const filteredLeads = computed(() => {
   const q = searchQuery.value.toLowerCase().trim();
   return leads.value.filter(item => {
@@ -152,7 +293,7 @@ const filteredLeads = computed(() => {
     }
 
     if (q) {
-      const matchEmpresa = item.empresa.toLowerCase().includes(q);
+      const matchEmpresa = (item.empresa || '').toLowerCase().includes(q);
       const matchContacto = (item.contacto_sugerido || '')
         .toLowerCase()
         .includes(q);
@@ -162,13 +303,15 @@ const filteredLeads = computed(() => {
         .includes(q);
       const matchDpto = (item.departamento || '').toLowerCase().includes(q);
       const matchAgente = (item.agente || '').toLowerCase().includes(q);
+      const matchPhone = (item.phone_number || '').includes(q);
       return (
         matchEmpresa ||
         matchContacto ||
         matchUbi ||
         matchCiudad ||
         matchDpto ||
-        matchAgente
+        matchAgente ||
+        matchPhone
       );
     }
 
@@ -184,13 +327,116 @@ const legendItems = computed(() => {
     return Array.from(map.entries()).map(([name, color]) => ({ name, color }));
   }
   return [
-    { name: 'Contactado (Enviado)', color: '#27ae60' },
+    { name: 'Contactado (WhatsApp Enviado)', color: '#27ae60' },
     { name: 'Por Contactar (Pendiente)', color: '#f39c12' },
     { name: 'Enviando (En Proceso)', color: '#3498db' },
     { name: 'Sin WhatsApp / Error', color: '#e74c3c' },
   ];
 });
 
+// Renderizar capa coroplética departamental
+const renderChoropleth = () => {
+  if (!leafletMap || !window.L || !peruGeoJson) return;
+
+  if (choroplethLayer) {
+    leafletMap.removeLayer(choroplethLayer);
+  }
+
+  if (!showChoropleth.value) return;
+
+  choroplethLayer = window.L.geoJSON(peruGeoJson, {
+    style: feature => {
+      const depName = feature.properties.NOMBDEP;
+      const isSelected =
+        selectedRegion.value !== 'ALL' &&
+        normalizeDepName(selectedRegion.value) === normalizeDepName(depName);
+
+      return {
+        fillColor: getDepartmentColor(depName),
+        weight: isSelected ? 3 : 1.5,
+        opacity: 1,
+        color: isSelected ? '#0284c7' : '#475569',
+        dashArray: isSelected ? '' : '3',
+        fillOpacity: isSelected ? 0.65 : 0.35,
+      };
+    },
+    onEachFeature: (feature, layer) => {
+      const depName = feature.properties.NOMBDEP;
+      const key = normalizeDepName(depName);
+      const stat = departmentStats.value[key] || {
+        total: 0,
+        contactados: 0,
+        pendientes: 0,
+      };
+      const pct =
+        stat.total > 0 ? Math.round((stat.contactados / stat.total) * 100) : 0;
+
+      const tooltipContent = `
+        <div class="p-1 font-sans text-xs">
+          <div class="font-bold text-sm text-slate-900">${depName}</div>
+          <div class="text-slate-600 mt-1">Total Prospectos: <strong class="text-slate-900">${stat.total}</strong></div>
+          <div class="text-emerald-700">Contactados: <strong>${stat.contactados} (${pct}%)</strong></div>
+          <div class="text-amber-700">Por Contactar: <strong>${stat.pendientes}</strong></div>
+          <div class="text-[10px] text-sky-600 mt-1 font-medium italic">${t('REPORT.COVERAGE.CLICK_DEPARTMENT')}</div>
+        </div>
+      `;
+      layer.bindTooltip(tooltipContent, { sticky: true });
+
+      layer.on({
+        mouseover: e => {
+          const l = e.target;
+          l.setStyle({
+            weight: 2.5,
+            color: '#0284c7',
+            fillOpacity: 0.6,
+          });
+          l.bringToFront();
+          if (markersLayer) markersLayer.bringToFront();
+        },
+        mouseout: e => {
+          choroplethLayer.resetStyle(e.target);
+        },
+        click: () => {
+          const matchedLead = leads.value.find(
+            l => normalizeDepName(l.departamento) === key
+          );
+          const targetName = matchedLead ? matchedLead.departamento : depName;
+          selectedRegion.value =
+            selectedRegion.value === targetName ? 'ALL' : targetName;
+          selectedDistrict.value = 'ALL';
+
+          leafletMap.fitBounds(layer.getBounds(), {
+            padding: [30, 30],
+            maxZoom: 11,
+            animate: true,
+          });
+          fetchCoverageData();
+        },
+      });
+    },
+  });
+
+  choroplethLayer.addTo(leafletMap);
+  if (markersLayer) markersLayer.bringToFront();
+};
+
+const centerOnLead = item => {
+  selectedLead.value = item;
+  const marker = markersMap.get(item.id);
+  if (marker && leafletMap) {
+    if (markersLayer.zoomToShowLayer) {
+      markersLayer.zoomToShowLayer(marker, () => {
+        leafletMap.setView([item.lat, item.lon], 16, { animate: true });
+      });
+    } else {
+      leafletMap.setView([item.lat, item.lon], 16, { animate: true });
+    }
+  } else if (leafletMap) {
+    leafletMap.setView([item.lat, item.lon], 16, { animate: true });
+  }
+};
+
+// Renderizar pines POI estilo Google Maps en el mapa
 const renderMapMarkers = () => {
   if (!leafletMap || !markersLayer || !window.L) return;
 
@@ -198,50 +444,16 @@ const renderMapMarkers = () => {
   markersMap.clear();
 
   filteredLeads.value.forEach(item => {
-    const color =
-      colorMode.value === 'status' ? item.status_color : item.sector_color;
+    const isSelected = selectedLead.value?.id === item.id;
+    const icon = createGoogleMapsPinIcon(item, isSelected);
 
-    const marker = window.L.circleMarker([item.lat, item.lon], {
-      radius: 7,
-      fillColor: color,
-      color: '#ffffff',
-      weight: 2,
-      opacity: 1,
-      fillOpacity: 0.85,
+    const marker = window.L.marker([item.lat, item.lon], { icon });
+
+    marker.on('click', () => {
+      selectedLead.value = item;
+      centerOnLead(item);
     });
 
-    let dateFormatted = '';
-    if (item.fecha_envio) {
-      dateFormatted = `<div class="flex items-center gap-1.5 text-xs text-slate-600"><i class="i-lucide-calendar-check text-blue-500"></i><span><strong>Envío:</strong> ${item.fecha_envio}</span></div>`;
-    } else if (item.fecha_ingreso) {
-      dateFormatted = `<div class="flex items-center gap-1.5 text-xs text-slate-600"><i class="i-lucide-calendar text-slate-400"></i><span><strong>Ingreso:</strong> ${item.fecha_ingreso}</span></div>`;
-    }
-
-    const agentFormatted =
-      item.agente && item.agente !== 'Sin Asignar'
-        ? `<div class="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-200"><i class="i-lucide-user-check text-emerald-600"></i><span>Asesor: ${item.agente}</span></div>`
-        : `<div class="flex items-center gap-1.5 text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-md"><i class="i-lucide-user-x"></i><span>Asesor: Sin Asignar</span></div>`;
-
-    const popupHtml = `
-      <div class="p-3 font-sans w-72">
-        <div class="bg-slate-900 text-white p-2.5 -m-3 mb-2.5 rounded-t-lg">
-          <h3 class="font-bold text-sm leading-tight">${item.empresa}</h3>
-          <div class="flex gap-1.5 mt-1.5 flex-wrap">
-            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium text-white" style="background:${item.sector_color}">${item.macro_sector}</span>
-            <span class="text-[10px] px-1.5 py-0.5 rounded font-medium text-white" style="background:${item.status_color}">${item.estado_clean}</span>
-          </div>
-        </div>
-        <div class="space-y-1.5 text-xs text-slate-700 mt-3">
-          <div class="flex items-start gap-1.5"><i class="i-lucide-user text-slate-400 mt-0.5"></i><div><strong>Contacto:</strong> ${item.contacto_sugerido}</div></div>
-          <div class="flex items-start gap-1.5"><i class="i-lucide-map-pin text-slate-400 mt-0.5"></i><div>${item.ubicacion || ''} (<em>${item.ciudad_distrito}, ${item.departamento}</em>)</div></div>
-          ${dateFormatted}
-          ${agentFormatted}
-          ${item.oferta_solucion ? `<div class="bg-slate-50 p-2 rounded border-l-2 border-blue-500 text-[11px] mt-2"><strong>Propuesta:</strong> ${item.oferta_solucion}</div>` : ''}
-        </div>
-      </div>
-    `;
-
-    marker.bindPopup(popupHtml);
     markersLayer.addLayer(marker);
     markersMap.set(item.id, marker);
   });
@@ -370,7 +582,7 @@ const renderCharts = () => {
 };
 
 // Carga de datos desde la API
-const fetchCoverageData = async () => {
+fetchCoverageData = async () => {
   try {
     isLoading.value = true;
     const response = await CoverageAPI.getReports({
@@ -400,6 +612,7 @@ const fetchCoverageData = async () => {
 
     await nextTick();
     if (activeTab.value === 'map') {
+      renderChoropleth();
       renderMapMarkers();
     } else if (activeTab.value === 'metrics') {
       renderCharts();
@@ -453,7 +666,7 @@ const initMap = async () => {
 
   if (window.L.markerClusterGroup) {
     markersLayer = window.L.markerClusterGroup({
-      maxClusterRadius: 40,
+      maxClusterRadius: 35,
       spiderfyOnMaxZoom: true,
       showCoverageOnHover: false,
       zoomToBoundsOnClick: true,
@@ -463,22 +676,67 @@ const initMap = async () => {
   }
 
   leafletMap.addLayer(markersLayer);
+  renderChoropleth();
   renderMapMarkers();
 };
 
-const centerOnLead = item => {
-  const marker = markersMap.get(item.id);
-  if (marker && leafletMap) {
-    if (markersLayer.zoomToShowLayer) {
-      markersLayer.zoomToShowLayer(marker, () => {
-        leafletMap.setView([item.lat, item.lon], 16, { animate: true });
-        marker.openPopup();
-      });
-    } else {
-      leafletMap.setView([item.lat, item.lon], 16, { animate: true });
-      marker.openPopup();
-    }
+const closeDrawer = () => {
+  selectedLead.value = null;
+};
+
+// Acciones de contacto estilo Google Maps
+const handleCallLead = lead => {
+  if (!lead.phone_number) return;
+  const cleanPhone = lead.phone_number.replace(/\D/g, '');
+  if (voipState.isConfigured || voipState.isEnabled) {
+    makeCall(
+      cleanPhone,
+      lead.conversation_id,
+      null,
+      lead.empresa || cleanPhone
+    );
+  } else {
+    window.location.href = `tel:${cleanPhone}`;
   }
+};
+
+const handleOpenWhatsApp = lead => {
+  if (!lead.phone_number) return;
+  const cleanPhone = lead.phone_number.replace(/\D/g, '');
+  window.open(`https://wa.me/${cleanPhone}`, '_blank');
+};
+
+const handleOpenChat = lead => {
+  if (lead.conversation_id) {
+    window.location.href = `/app/accounts/${accountId.value}/conversations/${lead.conversation_id}`;
+  } else if (lead.contact_id) {
+    window.location.href = `/app/accounts/${accountId.value}/contacts/${lead.contact_id}`;
+  } else if (lead.phone_number) {
+    handleOpenWhatsApp(lead);
+  }
+};
+
+const handleOpenGoogleMaps = lead => {
+  if (lead.lat && lead.lon) {
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${lead.lat},${lead.lon}`,
+      '_blank'
+    );
+  } else {
+    const q = encodeURIComponent(
+      `${lead.empresa} ${lead.ubicacion || ''} ${lead.ciudad_distrito || ''} Peru`
+    );
+    window.open(
+      `https://www.google.com/maps/search/?api=1&query=${q}`,
+      '_blank'
+    );
+  }
+};
+
+const handleCopyPhone = lead => {
+  if (!lead.phone_number) return;
+  navigator.clipboard.writeText(lead.phone_number);
+  useAlert(t('REPORT.COVERAGE.PHONE_COPIED'));
 };
 
 const clearDates = () => {
@@ -500,6 +758,37 @@ const setTab = tab => {
   });
 };
 
+// Suscripción reactiva WebSocket ActionCable a coverage.lead_updated
+const onLeadUpdated = data => {
+  const updated = data.lead || data;
+  if (!updated || !updated.id) return;
+
+  const idx = leads.value.findIndex(
+    l =>
+      l.id === updated.id ||
+      (updated.phone_number && l.phone_number === updated.phone_number)
+  );
+
+  if (idx !== -1) {
+    leads.value[idx] = { ...leads.value[idx], ...updated };
+  } else {
+    leads.value.unshift(updated);
+  }
+
+  // Actualizar drawer si está viendo este lead
+  if (
+    selectedLead.value &&
+    (selectedLead.value.id === updated.id ||
+      (updated.phone_number &&
+        selectedLead.value.phone_number === updated.phone_number))
+  ) {
+    selectedLead.value = { ...selectedLead.value, ...updated };
+  }
+
+  renderChoropleth();
+  renderMapMarkers();
+};
+
 watch(filteredLeads, () => {
   if (activeTab.value === 'map') {
     renderMapMarkers();
@@ -510,25 +799,43 @@ watch(colorMode, () => {
   renderMapMarkers();
 });
 
+watch(showChoropleth, () => {
+  renderChoropleth();
+});
+
 onMounted(async () => {
+  emitter.on('coverage:lead_updated', onLeadUpdated);
   await fetchCoverageData();
   await initMap();
+});
+
+onBeforeUnmount(() => {
+  emitter.off('coverage:lead_updated', onLeadUpdated);
 });
 </script>
 
 <template>
   <div
-    class="flex flex-col h-[calc(100vh-4rem)] w-full overflow-hidden bg-slate-50 dark:bg-slate-900"
+    class="flex flex-col h-[calc(100vh-4rem)] w-full overflow-hidden bg-slate-50 dark:bg-slate-900 font-sans"
   >
     <!-- Barra superior / Header -->
     <header
       class="h-14 bg-slate-900 text-white flex items-center justify-between px-5 shadow-sm shrink-0 z-30"
     >
       <div class="flex items-center gap-3">
-        <i class="i-lucide-map-pin text-sky-400 text-lg" />
-        <span class="font-bold text-sm tracking-wide">{{
-          t('REPORT.COVERAGE.TITLE')
-        }}</span>
+        <div
+          class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center border border-sky-500/30"
+        >
+          <i class="i-lucide-map-pin text-base" />
+        </div>
+        <div>
+          <h1 class="font-bold text-sm tracking-wide leading-tight">
+            {{ t('REPORT.COVERAGE.TITLE') }}
+          </h1>
+          <p class="text-[10px] text-slate-400">
+            {{ t('REPORT.COVERAGE.DESCRIPTION') }}
+          </p>
+        </div>
       </div>
 
       <!-- Pestañas de navegación interna -->
@@ -538,7 +845,7 @@ onMounted(async () => {
           class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all"
           :class="
             activeTab === 'map'
-              ? 'bg-sky-400 text-slate-900 shadow-sm'
+              ? 'bg-sky-400 text-slate-900 shadow-sm font-bold'
               : 'bg-white/10 text-slate-200 hover:bg-white/20'
           "
           @click="setTab('map')"
@@ -551,7 +858,7 @@ onMounted(async () => {
           class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all"
           :class="
             activeTab === 'metrics'
-              ? 'bg-sky-400 text-slate-900 shadow-sm'
+              ? 'bg-sky-400 text-slate-900 shadow-sm font-bold'
               : 'bg-white/10 text-slate-200 hover:bg-white/20'
           "
           @click="setTab('metrics')"
@@ -568,9 +875,9 @@ onMounted(async () => {
           class="inline-flex items-center gap-1.5 bg-emerald-500/15 text-emerald-400 px-2.5 py-1 rounded-full font-medium"
         >
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span
-            >{{ t('REPORT.COVERAGE.LIVE') }}: {{ summary.last_synced_at }}</span
-          >
+          <span>
+            {{ `${t('REPORT.COVERAGE.LIVE')}: ${summary.last_synced_at}` }}
+          </span>
         </span>
 
         <button
@@ -610,8 +917,8 @@ onMounted(async () => {
 
     <!-- Contenido Principal -->
     <main class="flex-1 flex overflow-hidden relative">
-      <!-- PESTAÑA 1: MAPA NACIONAL -->
-      <div v-show="activeTab === 'map'" class="w-full h-full flex">
+      <!-- PESTAÑA 1: MAPA NACIONAL HÍBRIDO -->
+      <div v-show="activeTab === 'map'" class="w-full h-full flex relative">
         <!-- Sidebar lateral de filtros y prospectos -->
         <aside
           class="w-[420px] min-w-[360px] h-full bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col z-20 shadow-sm"
@@ -776,10 +1083,10 @@ onMounted(async () => {
               <div
                 class="flex items-center justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-300"
               >
-                <span class="flex items-center gap-1"
-                  ><i class="i-lucide-calendar text-xs" />
-                  {{ t('REPORT.COVERAGE.DATE_RANGE') }}</span
-                >
+                <span class="flex items-center gap-1">
+                  <i class="i-lucide-calendar text-xs" />
+                  {{ t('REPORT.COVERAGE.DATE_RANGE') }}
+                </span>
                 <button
                   type="button"
                   class="text-sky-600 hover:underline text-[10px]"
@@ -814,14 +1121,24 @@ onMounted(async () => {
               </div>
             </div>
 
-            <!-- Modo de color de marcadores -->
+            <!-- Controles de Capas y Colores del Mapa -->
             <div
               class="flex items-center justify-between p-1.5 bg-slate-50 dark:bg-slate-700/50 rounded-md border border-slate-200 dark:border-slate-600 text-[11px]"
             >
-              <span class="font-medium text-slate-600 dark:text-slate-300">{{
-                t('REPORT.COVERAGE.COLOR_BY')
-              }}</span>
-              <div class="flex gap-1">
+              <label
+                class="flex items-center gap-1.5 cursor-pointer text-slate-700 dark:text-slate-200"
+              >
+                <input
+                  v-model="showChoropleth"
+                  type="checkbox"
+                  class="rounded text-sky-600 focus:ring-0"
+                />
+                <span class="font-medium">{{
+                  t('REPORT.COVERAGE.CHOROPLETH_LAYER')
+                }}</span>
+              </label>
+
+              <div class="flex items-center gap-1">
                 <button
                   type="button"
                   class="px-2 py-0.5 rounded text-[11px] font-semibold transition"
@@ -871,6 +1188,9 @@ onMounted(async () => {
               v-for="item in filteredLeads.slice(0, 200)"
               :key="item.id"
               class="bg-white dark:bg-slate-700 p-2.5 rounded-lg border border-slate-200 dark:border-slate-600 cursor-pointer hover:shadow-md transition-all border-l-4"
+              :class="{
+                'ring-2 ring-sky-500 shadow-md': selectedLead?.id === item.id,
+              }"
               :style="{
                 borderLeftColor:
                   colorMode === 'status'
@@ -907,10 +1227,12 @@ onMounted(async () => {
                 class="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 mt-0.5"
               >
                 <i class="i-lucide-map-pin text-xs shrink-0" />
-                <span class="font-medium text-slate-700 dark:text-slate-200">{{
-                  item.departamento
-                }}</span>
-                <span>&bull;</span>
+                <span class="font-medium text-slate-700 dark:text-slate-200">
+                  {{ item.departamento }}
+                </span>
+                <span
+                  class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"
+                />
                 <span class="truncate">{{ item.ciudad_distrito }}</span>
               </div>
 
@@ -922,9 +1244,9 @@ onMounted(async () => {
                   class="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium"
                 >
                   <i class="i-lucide-user-check text-emerald-600 text-xs" />
-                  <span class="truncate"
-                    >{{ t('REPORT.COVERAGE.ADVISOR') }} {{ item.agente }}</span
-                  >
+                  <span class="truncate">
+                    {{ `${t('REPORT.COVERAGE.ADVISOR')} ${item.agente}` }}
+                  </span>
                 </div>
                 <div
                   v-if="item.fecha_envio || item.fecha_ingreso"
@@ -944,24 +1266,61 @@ onMounted(async () => {
           </div>
         </aside>
 
-        <!-- Mapa de Leaflet -->
-        <div class="flex-1 h-full relative">
+        <!-- Área del Mapa y Drawer Google Maps -->
+        <div class="flex-1 h-full relative overflow-hidden">
           <div ref="mapContainer" class="w-full h-full z-10" />
+
+          <!-- Banner indicador regional superior -->
+          <div
+            class="absolute top-4 left-4 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md px-3.5 py-2 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 z-20 flex items-center gap-3 text-xs"
+          >
+            <div class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse" />
+            <div>
+              <span class="font-bold text-slate-800 dark:text-white">
+                {{
+                  selectedRegion === 'ALL'
+                    ? t('REPORT.COVERAGE.ALL_PERU_NATIONAL')
+                    : selectedRegion
+                }}
+              </span>
+              <span class="text-slate-400 ml-1">
+                {{
+                  t('REPORT.COVERAGE.BUSINESSES_COUNT', {
+                    count: filteredLeads.length,
+                  })
+                }}
+              </span>
+            </div>
+            <button
+              v-if="selectedRegion !== 'ALL'"
+              type="button"
+              class="text-sky-600 dark:text-sky-400 hover:underline font-semibold text-[11px] ml-1"
+              @click="
+                selectedRegion = 'ALL';
+                fetchCoverageData();
+              "
+            >
+              {{ t('REPORT.COVERAGE.VIEW_ALL') }}
+            </button>
+          </div>
 
           <!-- Leyenda flotante -->
           <div
-            class="absolute bottom-5 right-5 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm p-3 rounded-lg border border-slate-200 dark:border-slate-700 shadow-lg z-20 max-w-xs text-xs"
+            class="absolute bottom-5 left-5 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 shadow-lg z-20 max-w-xs text-xs"
           >
             <div
-              class="font-bold text-slate-800 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-1 mb-2"
+              class="font-bold text-slate-800 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-1 mb-2 flex items-center justify-between"
             >
-              {{
+              <span>{{
                 colorMode === 'sector'
                   ? t('REPORT.COVERAGE.LEGEND_SECTORS')
                   : t('REPORT.COVERAGE.LEGEND_STATUS')
-              }}
+              }}</span>
+              <span class="text-[10px] text-slate-400 font-normal">{{
+                t('REPORT.COVERAGE.POI_PINS')
+              }}</span>
             </div>
-            <div class="space-y-1 max-h-48 overflow-y-auto pr-1">
+            <div class="space-y-1 max-h-40 overflow-y-auto pr-1">
               <div
                 v-for="item in legendItems"
                 :key="item.name"
@@ -973,15 +1332,392 @@ onMounted(async () => {
                 />
                 <span
                   class="text-[11px] text-slate-700 dark:text-slate-200 truncate"
-                  >{{ item.name }}</span
                 >
+                  {{ item.name }}
+                </span>
               </div>
             </div>
           </div>
+
+          <!-- FICHA LATERAL DE NEGOCIO (DRAWER ESTILO GOOGLE MAPS) -->
+          <transition
+            enter-active-class="transition-transform duration-300 ease-out"
+            enter-from-class="translate-x-full"
+            enter-to-class="translate-x-0"
+            leave-active-class="transition-transform duration-200 ease-in"
+            leave-from-class="translate-x-0"
+            leave-to-class="translate-x-full"
+          >
+            <aside
+              v-if="selectedLead"
+              class="absolute top-3 right-3 bottom-3 w-[400px] max-w-[calc(100%-1.5rem)] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-30 flex flex-col overflow-hidden backdrop-blur-md"
+            >
+              <!-- Cabecera de la ficha comercial -->
+              <div
+                class="p-4 text-white relative shadow-sm shrink-0"
+                :style="{
+                  background: `linear-gradient(135deg, ${selectedLead.sector_color || '#1e293b'} 0%, #0f172a 100%)`,
+                }"
+              >
+                <button
+                  type="button"
+                  class="absolute top-3 right-3 w-7 h-7 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition"
+                  :title="t('REPORT.COVERAGE.CLOSE')"
+                  @click="closeDrawer"
+                >
+                  <i class="i-lucide-x text-sm" />
+                </button>
+
+                <div class="flex items-center gap-2 mb-1.5">
+                  <span
+                    class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-white/20 text-white border border-white/30"
+                  >
+                    {{ selectedLead.macro_sector }}
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider text-white"
+                    :style="{ background: selectedLead.status_color }"
+                  >
+                    <span
+                      class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"
+                    />
+                    {{ selectedLead.estado_clean }}
+                  </span>
+                </div>
+
+                <h2
+                  class="text-base font-extrabold leading-tight text-white pr-6"
+                >
+                  {{ selectedLead.empresa }}
+                </h2>
+
+                <div
+                  class="flex items-center gap-1.5 text-xs text-white/80 mt-1"
+                >
+                  <i class="i-lucide-map-pin text-xs text-sky-300" />
+                  <span>
+                    {{
+                      `${selectedLead.ciudad_distrito}, ${selectedLead.departamento}`
+                    }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- BARRA DE ACCIONES RÁPIDAS ESTILO GOOGLE MAPS -->
+              <div
+                class="grid grid-cols-4 gap-1 p-2 bg-slate-50 dark:bg-slate-700/60 border-b border-slate-200 dark:border-slate-700 shrink-0 text-center"
+              >
+                <!-- Botón Llamar VoIP -->
+                <button
+                  type="button"
+                  class="flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-600 text-blue-600 dark:text-sky-400 transition group"
+                  :title="t('REPORT.COVERAGE.CALL')"
+                  @click="handleCallLead(selectedLead)"
+                >
+                  <div
+                    class="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center group-hover:scale-110 transition shadow-sm mb-1"
+                  >
+                    <i
+                      class="i-lucide-phone text-base text-blue-600 dark:text-sky-400"
+                    />
+                  </div>
+                  <span class="text-[10px] font-bold">{{
+                    t('REPORT.COVERAGE.CALL')
+                  }}</span>
+                </button>
+
+                <!-- Botón Abrir Chat AIRM -->
+                <button
+                  type="button"
+                  class="flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-indigo-50 dark:hover:bg-slate-600 text-indigo-600 dark:text-indigo-400 transition group"
+                  :title="t('REPORT.COVERAGE.CHAT')"
+                  @click="handleOpenChat(selectedLead)"
+                >
+                  <div
+                    class="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center group-hover:scale-110 transition shadow-sm mb-1"
+                  >
+                    <i
+                      class="i-lucide-message-circle text-base text-indigo-600 dark:text-indigo-400"
+                    />
+                  </div>
+                  <span class="text-[10px] font-bold">{{
+                    t('REPORT.COVERAGE.CHAT')
+                  }}</span>
+                </button>
+
+                <!-- Botón WhatsApp -->
+                <button
+                  type="button"
+                  class="flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-emerald-50 dark:hover:bg-slate-600 text-emerald-600 dark:text-emerald-400 transition group"
+                  :title="t('REPORT.COVERAGE.WHATSAPP')"
+                  @click="handleOpenWhatsApp(selectedLead)"
+                >
+                  <div
+                    class="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center group-hover:scale-110 transition shadow-sm mb-1"
+                  >
+                    <i
+                      class="i-lucide-share-2 text-base text-emerald-600 dark:text-emerald-400"
+                    />
+                  </div>
+                  <span class="text-[10px] font-bold">{{
+                    t('REPORT.COVERAGE.WHATSAPP')
+                  }}</span>
+                </button>
+
+                <!-- Botón Google Maps -->
+                <button
+                  type="button"
+                  class="flex flex-col items-center justify-center py-2 px-1 rounded-xl hover:bg-amber-50 dark:hover:bg-slate-600 text-amber-600 dark:text-amber-400 transition group"
+                  :title="t('REPORT.COVERAGE.MAPS')"
+                  @click="handleOpenGoogleMaps(selectedLead)"
+                >
+                  <div
+                    class="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center group-hover:scale-110 transition shadow-sm mb-1"
+                  >
+                    <i
+                      class="i-lucide-map text-base text-amber-600 dark:text-amber-400"
+                    />
+                  </div>
+                  <span class="text-[10px] font-bold">{{
+                    t('REPORT.COVERAGE.MAPS')
+                  }}</span>
+                </button>
+              </div>
+
+              <!-- Cuerpo de la ficha con scroll -->
+              <div class="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs">
+                <!-- Información de Contacto Directo -->
+                <div
+                  class="bg-slate-50 dark:bg-slate-700/40 p-3 rounded-xl border border-slate-200 dark:border-slate-600 space-y-2"
+                >
+                  <div class="flex items-center justify-between">
+                    <div
+                      class="flex items-center gap-2 text-slate-700 dark:text-slate-200 font-semibold"
+                    >
+                      <i class="i-lucide-user text-slate-400" />
+                      <span>{{ selectedLead.contacto_sugerido }}</span>
+                    </div>
+                  </div>
+
+                  <div
+                    class="flex items-center justify-between pt-1 border-t border-slate-200/60 dark:border-slate-600/60"
+                  >
+                    <div
+                      class="flex items-center gap-2 text-slate-800 dark:text-white font-mono font-bold"
+                    >
+                      <i class="i-lucide-phone text-xs text-blue-500" />
+                      <span>{{
+                        selectedLead.phone_number ||
+                        t('REPORT.COVERAGE.NO_PHONE')
+                      }}</span>
+                    </div>
+                    <button
+                      v-if="selectedLead.phone_number"
+                      type="button"
+                      class="text-sky-600 hover:text-sky-700 p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-600 transition"
+                      :title="t('REPORT.COVERAGE.COPY_PHONE')"
+                      @click="handleCopyPhone(selectedLead)"
+                    >
+                      <i class="i-lucide-copy text-xs" />
+                    </button>
+                  </div>
+
+                  <div
+                    class="flex items-start gap-2 text-slate-600 dark:text-slate-300 pt-1 border-t border-slate-200/60 dark:border-slate-600/60"
+                  >
+                    <i
+                      class="i-lucide-map-pin text-xs text-rose-500 mt-0.5 shrink-0"
+                    />
+                    <div>
+                      {{
+                        selectedLead.ubicacion ||
+                        t('REPORT.COVERAGE.NO_ADDRESS')
+                      }}
+                    </div>
+                  </div>
+
+                  <div
+                    v-if="selectedLead.sitio_web"
+                    class="flex items-center gap-2 pt-1 border-t border-slate-200/60 dark:border-slate-600/60"
+                  >
+                    <i class="i-lucide-globe text-xs text-slate-400" />
+                    <a
+                      :href="
+                        selectedLead.sitio_web.startsWith('http')
+                          ? selectedLead.sitio_web
+                          : 'https://' + selectedLead.sitio_web
+                      "
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-sky-600 dark:text-sky-400 hover:underline truncate"
+                    >
+                      {{ selectedLead.sitio_web }}
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Oferta / Propuesta de Valor Giantucchi -->
+                <div
+                  v-if="selectedLead.oferta_solucion"
+                  class="bg-sky-50 dark:bg-sky-950/40 p-3 rounded-xl border border-sky-200 dark:border-sky-800/60 space-y-1.5"
+                >
+                  <div
+                    class="flex items-center gap-1.5 text-sky-900 dark:text-sky-300 font-bold text-[11px] uppercase tracking-wider"
+                  >
+                    <i class="i-lucide-sparkles text-sky-500 text-xs" />
+                    <span>{{ t('REPORT.COVERAGE.PROPOSAL') }}</span>
+                  </div>
+                  <p
+                    class="text-slate-700 dark:text-slate-200 leading-relaxed text-[11px]"
+                  >
+                    {{ selectedLead.oferta_solucion }}
+                  </p>
+                </div>
+
+                <!-- Mensaje de WhatsApp Enviado -->
+                <div
+                  v-if="selectedLead.mensaje_whatsapp"
+                  class="bg-emerald-50 dark:bg-emerald-950/40 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800/60 space-y-1.5"
+                >
+                  <div
+                    class="flex items-center justify-between text-emerald-900 dark:text-emerald-300 font-bold text-[11px] uppercase tracking-wider"
+                  >
+                    <span class="flex items-center gap-1.5">
+                      <i
+                        class="i-lucide-message-circle text-emerald-600 text-xs"
+                      />
+                      <span>{{ t('REPORT.COVERAGE.SENT_MESSAGE') }}</span>
+                    </span>
+                    <span class="text-[10px] text-emerald-600 font-normal">{{
+                      t('REPORT.COVERAGE.WHATSAPP')
+                    }}</span>
+                  </div>
+                  <div
+                    class="bg-white dark:bg-slate-800 p-2.5 rounded-lg border border-emerald-100 dark:border-emerald-900 text-slate-800 dark:text-slate-200 text-[11px] leading-relaxed italic"
+                  >
+                    {{ `"${selectedLead.mensaje_whatsapp}"` }}
+                  </div>
+                </div>
+
+                <!-- Trazabilidad Comercial & Tiempos en Tiempo Real -->
+                <div
+                  class="bg-slate-50 dark:bg-slate-700/40 p-3 rounded-xl border border-slate-200 dark:border-slate-600 space-y-2"
+                >
+                  <div
+                    class="text-[10px] font-bold uppercase tracking-wider text-slate-500"
+                  >
+                    {{ t('REPORT.COVERAGE.TRACEABILITY_TITLE') }}
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-2 text-[11px]">
+                    <div>
+                      <span class="text-slate-400 block text-[10px]">{{
+                        t('REPORT.COVERAGE.DATE_ENTERED')
+                      }}</span>
+                      <span
+                        class="font-semibold text-slate-700 dark:text-slate-200"
+                      >
+                        {{ selectedLead.fecha_ingreso || '—' }}
+                      </span>
+                    </div>
+                    <div>
+                      <span class="text-slate-400 block text-[10px]">{{
+                        t('REPORT.COVERAGE.DATE_SENT')
+                      }}</span>
+                      <span class="font-semibold text-emerald-600">
+                        {{ selectedLead.fecha_envio || '—' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    class="grid grid-cols-2 gap-2 text-[11px] pt-1.5 border-t border-slate-200 dark:border-slate-600/50"
+                  >
+                    <div>
+                      <span class="text-slate-400 block text-[10px]">{{
+                        t('REPORT.COVERAGE.DATE_REPLIED')
+                      }}</span>
+                      <span class="font-semibold text-blue-600">
+                        {{
+                          selectedLead.fecha_respuesta ||
+                          t('REPORT.COVERAGE.PENDING_RESPONSE')
+                        }}
+                      </span>
+                    </div>
+                    <div>
+                      <span class="text-slate-400 block text-[10px]">{{
+                        t('REPORT.COVERAGE.OPERATING_TIME')
+                      }}</span>
+                      <span
+                        class="inline-flex items-center gap-1 font-bold text-slate-800 dark:text-white"
+                      >
+                        <i class="i-lucide-clock text-xs text-amber-500" />
+                        {{ selectedLead.tiempo_operativo || '—' }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Asesor Comercial Asignado -->
+                  <div
+                    class="pt-2 border-t border-slate-200 dark:border-slate-600/50 flex items-center justify-between"
+                  >
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px]"
+                      >
+                        {{ (selectedLead.agente || 'A').charAt(0) }}
+                      </div>
+                      <div>
+                        <span
+                          class="text-[10px] text-slate-400 block leading-tight"
+                        >
+                          {{ t('REPORT.COVERAGE.COMMERCIAL_ADVISOR') }}
+                        </span>
+                        <span
+                          class="font-bold text-slate-800 dark:text-white leading-tight"
+                        >
+                          {{ selectedLead.agente }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <span
+                      class="px-2 py-0.5 rounded text-[10px] font-semibold"
+                      :class="
+                        selectedLead.contact_id
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : 'bg-slate-200 text-slate-700'
+                      "
+                    >
+                      {{
+                        selectedLead.contact_id
+                          ? t('REPORT.COVERAGE.LINKED_AIRM')
+                          : t('REPORT.COVERAGE.SYNCED')
+                      }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pie de la ficha -->
+              <div
+                class="p-3 bg-slate-100 dark:bg-slate-700/80 border-t border-slate-200 dark:border-slate-600 shrink-0 flex gap-2"
+              >
+                <button
+                  type="button"
+                  class="flex-1 py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition"
+                  @click="handleOpenChat(selectedLead)"
+                >
+                  <i class="i-lucide-message-circle text-sm text-sky-400" />
+                  <span>{{ t('REPORT.COVERAGE.OPEN_CHAT_IN_AIRM') }}</span>
+                </button>
+              </div>
+            </aside>
+          </transition>
         </div>
       </div>
 
-      <!-- PESTAÑA 2: MÉTRICAS Y RENDIMIENTO -->
+      <!-- PESTAÑA 2: MÉTRICAS Y RENDIMIENTO NACIONAL -->
       <div
         v-show="activeTab === 'metrics'"
         class="w-full h-full overflow-y-auto p-6 space-y-6 bg-slate-50 dark:bg-slate-900"
@@ -1035,7 +1771,7 @@ onMounted(async () => {
                 {{ t('REPORT.COVERAGE.CONTACT_RATE') }}
               </div>
               <div class="text-2xl font-black text-emerald-600 mt-1">
-                {{ summary.tasa_contacto }}%
+                {{ `${summary.tasa_contacto}%` }}
               </div>
               <div class="text-[11px] text-slate-400 mt-1">
                 {{
@@ -1215,9 +1951,9 @@ onMounted(async () => {
                             :style="{ width: `${r.pct}%` }"
                           />
                         </div>
-                        <span class="text-[11px] font-semibold w-8 text-right"
-                          >{{ r.pct }}%</span
-                        >
+                        <span class="text-[11px] font-semibold w-8 text-right">
+                          {{ `${r.pct}%` }}
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -1282,9 +2018,9 @@ onMounted(async () => {
                             :style="{ width: `${s.pct}%` }"
                           />
                         </div>
-                        <span class="text-[11px] font-semibold w-8 text-right"
-                          >{{ s.pct }}%</span
-                        >
+                        <span class="text-[11px] font-semibold w-8 text-right">
+                          {{ `${s.pct}%` }}
+                        </span>
                       </div>
                     </td>
                   </tr>
@@ -1368,7 +2104,7 @@ onMounted(async () => {
                           : 'bg-amber-100 text-amber-800'
                       "
                     >
-                      {{ a.tasa_respuesta }}%
+                      {{ `${a.tasa_respuesta}%` }}
                     </span>
                   </td>
                   <td class="p-3 text-center">

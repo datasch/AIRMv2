@@ -63,4 +63,7 @@ module Events::Types
 
   # copilot events
   COPILOT_MESSAGE_CREATED = 'copilot.message.created'
+
+  # coverage events
+  COVERAGE_LEAD_UPDATED = 'coverage.lead_updated'
 end
